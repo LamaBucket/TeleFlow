@@ -1,0 +1,28 @@
+using Telegram.Bot.Types;
+
+namespace LisBot.Common.Telegram.Commands;
+
+public abstract class OutputCommand : ICommandHandler
+{
+    public event Func<Task>? CommandFinished;
+
+    public async Task Handle(Update args)
+    {
+        throw new Exception("The Handle Should not be executed in output commands");
+    }
+
+    public async Task OnCommandCreated()
+    {
+        await Handle();
+
+        if(CommandFinished is not null)
+            await CommandFinished.Invoke();
+    }
+
+    protected abstract Task Handle();
+
+    protected OutputCommand()
+    {
+        
+    }
+}

@@ -1,0 +1,140 @@
+using LisBot.Common.Telegram.Commands.MultiStep;
+using LisBot.Common.Telegram.Factories.CommandFactories;
+using LisBot.Common.Telegram.Models;
+using LisBot.Common.Telegram.ViewModels;
+using LisBot.Common.Telegram.ViewModels.CallbackQuery;
+using Newtonsoft.Json;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+
+namespace LisBot.Common.Telegram.Services;
+
+public class StateValidationMessageFormatter<TState> 
+{
+    private bool _awaitsUserResponse;
+
+    private readonly MessageBuilderOptions _messageBuilderOptions;
+
+
+    private readonly Func<TState, string> _confirmMessageFormatter;
+
+    private readonly IEnumerable<Tuple<IStateValidationDisplayNameProvider, ICommandFactory<StepCommand, Update, StepCommand>>> _btnDisplayNameProviders;
+
+    private readonly string _allGoodButtonDisplayName;
+     
+
+    private readonly Dictionary<int, ICommandFactory<StepCommand, Update, StepCommand>> _lastSessionDisplayButtonContext;
+
+
+    private readonly CallbackButtonGenerator _buttonGenerator;
+
+
+    public Message GenerateMessage(TState state)
+    {
+        if(!_awaitsUserResponse)
+        {
+            _lastSessionDisplayButtonContext.Clear();
+            _buttonGenerator.StartNewSession();
+
+
+            MessageBuilder builder = new(_messageBuilderOptions);
+
+            var confirmationMessage = _confirmMessageFormatter(state);
+
+            builder.WithText(confirmationMessage);
+
+            foreach(var tuple in _btnDisplayNameProviders)
+            {
+                var displayNameProvider = tuple.Item1;
+                var stepFactory = tuple.Item2;
+
+                var replyButton = GenerateReplyButton(displayNameProvider);
+                var buttonId = replyButton.InnerArgs.BID;
+
+                builder.WithInlineButton(replyButton);
+                _lastSessionDisplayButtonContext.Add(buttonId, stepFactory);
+            }
+
+            builder.WithInlineButton(GenerateAllGoodButton());
+
+            ToggleUserLock();
+
+            return builder.Build();
+        }
+
+        throw new Exception("Cannot generate message. System awaits for response");
+    }
+
+    private ReplyButtonModel<CallbackQueryViewModel> GenerateReplyButton(IStateValidationDisplayNameProvider displayNameProvider)
+    {
+        return new(_buttonGenerator.GenerateVM(), displayNameProvider.GetDisplayName());
+    }
+
+    private ReplyButtonModel<CallbackQueryViewModel> GenerateAllGoodButton()
+    {
+        return new(_buttonGenerator.GenerateSpecialButton(), _allGoodButtonDisplayName);
+    }
+
+
+    public ICommandFactory<StepCommand, Update, StepCommand>? ParseUserResponse(Update args)
+    {
+        if(!_awaitsUserResponse)
+            throw new Exception("That Command does not await user response");
+
+        if(args.CallbackQuery is null || args.Type != UpdateType.CallbackQuery)
+            throw new Exception("This Command awaits only callback query");
+
+        var result = ParseCallbackQuery(args.CallbackQuery);
+
+        ToggleUserLock();
+
+        return result;
+    }
+
+    private ICommandFactory<StepCommand, Update, StepCommand>? ParseCallbackQuery(CallbackQuery query)
+    {
+        if(string.IsNullOrEmpty(query.Data))
+            throw new Exception("No Query Data");
+
+        var btnViewModel = JsonConvert.DeserializeObject<CallbackQueryViewModel>(query.Data);
+
+        if(btnViewModel is null)
+            throw new Exception("Incorrect Query Data");
+
+        
+        if(!_buttonGenerator.IsFromCurrentSession(btnViewModel))
+            throw new Exception("Btn is not from current Session");
+
+        
+        if(_buttonGenerator.IsSpecialButton(btnViewModel))
+            return null;
+
+        _lastSessionDisplayButtonContext.TryGetValue(btnViewModel.BID, out var factory);
+
+        if(factory is null)
+            throw new Exception("The Button UID was not found");
+
+        return factory;
+    }
+
+
+    private void ToggleUserLock()
+    {
+        _awaitsUserResponse = !_awaitsUserResponse;
+    }
+
+
+    public StateValidationMessageFormatter(MessageBuilderOptions messageBuilderOptions, Func<TState, string> confirmMessageFormatter, IEnumerable<Tuple<IStateValidationDisplayNameProvider, ICommandFactory<StepCommand, Update, StepCommand>>> btnDisplayNameProviders, string allGoodButtonDisplayName)
+    {
+        _awaitsUserResponse = false;
+
+        _messageBuilderOptions = messageBuilderOptions;
+        
+        _confirmMessageFormatter = confirmMessageFormatter;
+        _btnDisplayNameProviders = btnDisplayNameProviders;
+        _allGoodButtonDisplayName = allGoodButtonDisplayName;
+        
+        _lastSessionDisplayButtonContext = new();
+        _buttonGenerator = new();
+    }
+}
