@@ -18,8 +18,6 @@ public class UpdateListener : IHandler<Update>, INavigatorHandler
 
     public async Task Handle(Update args)
     {
-        EnsureChatIdIsCorrect(args);
-
         if(_currentCommand is not null)
         {
             await _currentCommand.Handle(args);
@@ -31,12 +29,6 @@ public class UpdateListener : IHandler<Update>, INavigatorHandler
         var command = _handlerFactory.Create();
         
         await SetCurrentCommand(command);
-    }
-
-    private void EnsureChatIdIsCorrect(Update update)
-    {
-        if(update.GetChatId() != _chatIdProvider.GetChatId())
-            throw new Exception("The Chat Id Is Wrong");
     }
 
     public async Task Handle(string args)
@@ -73,7 +65,9 @@ public class UpdateListener : IHandler<Update>, INavigatorHandler
         _chatIdProvider = chatIdProvider;
     }
 
-    internal UpdateListener(Func<IChatIdProvider, INavigatorHandler, ICommandFactory> commandFactory, Func<IChatIdProvider, INavigatorHandler, ICommandFactory<ICommandHandler, Update, string>> navigatorFactory, IChatIdProvider chatIdProvider)
+    internal UpdateListener(Func<IChatIdProvider, INavigatorHandler, ICommandFactory> commandFactory,
+                            Func<IChatIdProvider, INavigatorHandler, ICommandFactory<ICommandHandler, Update, string>> navigatorFactory,
+                            IChatIdProvider chatIdProvider)
     {
         _handlerFactory = commandFactory.Invoke(chatIdProvider, this);
         _stringHandlerFactory = navigatorFactory.Invoke(chatIdProvider, this);

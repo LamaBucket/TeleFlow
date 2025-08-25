@@ -11,13 +11,10 @@ public class UpdateDistributor : IHandler<Update>
 {
     private readonly Dictionary<long, IHandler<Update>> _chatHandlers;
 
-    private readonly ICommandFactory<UpdateListener, Update, IChatIdProvider> _userHandlerFactory; 
 
-    private readonly Func<IChatIdProvider, IMessageService<string>> _messageServiceFactory; // TODO: TEMP SHIT
+    private readonly ICommandFactory<UpdateListener, Update, IChatIdProvider> _updateListenerFactory;
 
-    private readonly string[] _commandsToIntercept;
-
-    private readonly string _baseCommand;
+    private readonly Func<UpdateListener, IHandler<Update>> _updateListenerPostCreationSetup;
 
 
     public async Task Handle(Update args)
@@ -33,42 +30,25 @@ public class UpdateDistributor : IHandler<Update>
         if(!_chatHandlers.ContainsKey(chatId))
         {   
             var updateListener = GenerateUpdateListener(chatIdProvider);
-            var interceptor = WrapUpdateListenerInInterceptor(updateListener);
-            var exceptionHandler = WrapInterceptorInExceptionHandler(interceptor, chatIdProvider, updateListener, _baseCommand);
-            
-            _chatHandlers.Add(chatId, exceptionHandler);
+
+            var handler = _updateListenerPostCreationSetup.Invoke(updateListener);
+
+            _chatHandlers.Add(chatId, handler);
         }
 
         return _chatHandlers[chatId];
     }
 
-    private ExceptionHandler WrapInterceptorInExceptionHandler(UpdateInterceptor interceptor, IChatIdProvider chatIdProvider, INavigatorHandler navigatorHandler, string baseCommand)
-    {
-        var messageService = _messageServiceFactory.Invoke(chatIdProvider);
-        var exceptionHandler = new ExceptionHandler(interceptor, messageService, navigatorHandler, baseCommand);
-
-        return exceptionHandler;
-    }
-
-    private UpdateInterceptor WrapUpdateListenerInInterceptor(UpdateListener listener)
-    {
-        var updateInterceptor = new UpdateInterceptor(listener, _commandsToIntercept);
-
-        return updateInterceptor;
-    }
-
     private UpdateListener GenerateUpdateListener(IChatIdProvider chatIdProvider)
     {
-        _userHandlerFactory.SetContext(chatIdProvider);
-        return _userHandlerFactory.Create();
+        _updateListenerFactory.SetContext(chatIdProvider);
+        return _updateListenerFactory.Create();
     }
 
-    public UpdateDistributor(ICommandFactory<UpdateListener, Update, IChatIdProvider> userHandlerFactory, Func<IChatIdProvider, IMessageService<string>> messageServiceFactory, string[] commandsToIntercept, string baseCommand)
+    public UpdateDistributor(ICommandFactory<UpdateListener, Update, IChatIdProvider> userHandlerFactory, Func<UpdateListener, IHandler<Update>> updateListenerPostCreationSetup)
     {
         _chatHandlers = [];
-        _userHandlerFactory = userHandlerFactory;
-        _messageServiceFactory = messageServiceFactory;
-        _commandsToIntercept = commandsToIntercept;
-        _baseCommand = baseCommand;
+        _updateListenerFactory = userHandlerFactory;
+        _updateListenerPostCreationSetup = updateListenerPostCreationSetup;
     }
 }
