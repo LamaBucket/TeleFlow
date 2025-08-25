@@ -14,8 +14,6 @@ public class UpdateListener : IHandler<Update>, INavigatorHandler
 
     private readonly IHandlerFactoryWithArgs<ICommandHandler, Update, string> _stringHandlerFactory;
 
-    private readonly IChatIdProvider _chatIdProvider;
-
     public async Task Handle(Update args)
     {
         if(_currentCommand is not null)
@@ -58,19 +56,16 @@ public class UpdateListener : IHandler<Update>, INavigatorHandler
     }
 
 
-    public UpdateListener(IHandlerFactoryWithArgs handlerFactory, IHandlerFactoryWithArgs<ICommandHandler, Update, string> stringHandlerFactory, IChatIdProvider chatIdProvider)
+    public UpdateListener(IHandlerFactoryWithArgs handlerFactory, IHandlerFactoryWithArgs<ICommandHandler, Update, string> stringHandlerFactory)
     {
         _handlerFactory = handlerFactory;
         _stringHandlerFactory = stringHandlerFactory;
-        _chatIdProvider = chatIdProvider;
     }
 
-    internal UpdateListener(Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs> commandFactory,
-                            Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs<ICommandHandler, Update, string>> navigatorFactory,
-                            IChatIdProvider chatIdProvider)
+    internal UpdateListener(Func<INavigatorHandler, IHandlerFactoryWithArgs> commandFactory,
+                            Func<INavigatorHandler, IHandlerFactoryWithArgs<ICommandHandler, Update, string>> navigatorFactory)
     {
-        _handlerFactory = commandFactory.Invoke(chatIdProvider, this);
-        _stringHandlerFactory = navigatorFactory.Invoke(chatIdProvider, this);
-        _chatIdProvider = chatIdProvider;
+        _handlerFactory = commandFactory.Invoke(this);
+        _stringHandlerFactory = navigatorFactory.Invoke(this);
     }
 }

@@ -1,12 +1,13 @@
 using LisBot.Common.Telegram.Factories.CommandFactories;
 using LisBot.Common.Telegram.Services;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Factories;
 
 public class UpdateListenerFactory : IHandlerFactoryWithArgs<UpdateListener, Update, IChatIdProvider>
 {
-    private readonly Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs> _processorFactory;
+    private readonly Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs> _handlerFactory;
 
     private readonly Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs<ICommandHandler, Update, string>> _navigatorFactory;
 
@@ -17,7 +18,19 @@ public class UpdateListenerFactory : IHandlerFactoryWithArgs<UpdateListener, Upd
         if(_chatIdProvider is null)
             throw new Exception("The Listener Does not know which chat it is in");
 
-        var listener = new UpdateListener(_processorFactory, _navigatorFactory, _chatIdProvider);
+
+        var handlerFactory = (INavigatorHandler navHandler) =>
+        {
+            return _handlerFactory.Invoke(_chatIdProvider, navHandler);
+        };
+
+        var navigatorFactory = (INavigatorHandler navHandler) =>
+        {
+            return _navigatorFactory.Invoke(_chatIdProvider, navHandler);
+        };
+
+        var listener = new UpdateListener(handlerFactory, navigatorFactory);
+
 
         _chatIdProvider = null;
 
@@ -31,7 +44,7 @@ public class UpdateListenerFactory : IHandlerFactoryWithArgs<UpdateListener, Upd
 
     public UpdateListenerFactory(Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs> commandFactory, Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs<ICommandHandler, Update, string>> navigatorFactory)
     {
-        _processorFactory = commandFactory;
+        _handlerFactory = commandFactory;
         _navigatorFactory = navigatorFactory;
     }
 
