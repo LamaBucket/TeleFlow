@@ -4,8 +4,3 @@ public interface IHandlerFactory<THandler, TArgs> where THandler : IHandler<TArg
 {
     THandler Create();
 }
-
-public interface IHandlerFactory<TArgs> : IHandlerFactory<IHandler<TArgs>, TArgs>
-{
-
-}
