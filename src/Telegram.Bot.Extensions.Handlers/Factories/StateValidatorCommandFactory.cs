@@ -6,7 +6,7 @@ using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Factories;
 
-public class StateValidatorCommandFactory<TState> : ICommandFactory<ICommandHandler, Update, ICommandHandler>
+public class StateValidatorCommandFactory<TState> : IHandlerFactoryWithArgs<ICommandHandler, Update, ICommandHandler>
 {
     private ICommandHandler? _next;
 

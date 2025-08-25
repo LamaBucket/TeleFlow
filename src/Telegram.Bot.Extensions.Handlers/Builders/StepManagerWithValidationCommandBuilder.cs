@@ -8,30 +8,30 @@ namespace LisBot.Common.Telegram.Builders;
 
 public class StepManagerWithValidationCommandBuilder<TState>
 {
-    private readonly Queue<Func<MultiStepCommandBuilderArgs<TState>, ICommandFactory<StepCommand, Update, StepCommand>>> _factoryBuildQueue;
+    private readonly Queue<Func<MultiStepCommandBuilderArgs<TState>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> _factoryBuildQueue;
 
 
-    public StepManagerWithValidationCommandBuilder<TState> WithStepWithValidation(Func<MultiStepCommandBuilderArgs<TState>, ICommandFactory<StepCommand, Update, StepCommand>> stepFactory, string stepValidationDisplayName)
+    public StepManagerWithValidationCommandBuilder<TState> WithStepWithValidation(Func<MultiStepCommandBuilderArgs<TState>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> stepFactory, string stepValidationDisplayName)
     {
         return WithStep((args) => {
             return new StepCommandWithValidationFactory(stepFactory.Invoke(args), () => { return stepValidationDisplayName;});
         });
     }
 
-    public StepManagerWithValidationCommandBuilder<TState> WithStep(Func<MultiStepCommandBuilderArgs<TState>, ICommandFactory<StepCommand, Update, StepCommand>> stepFactory)
+    public StepManagerWithValidationCommandBuilder<TState> WithStep(Func<MultiStepCommandBuilderArgs<TState>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> stepFactory)
     {
         _factoryBuildQueue.Enqueue(stepFactory);
 
         return this;
     }
 
-    public Tuple<StepManagerCommand, IEnumerable<Tuple<IStateValidationDisplayNameProvider, ICommandFactory<StepCommand, Update, StepCommand>>>> Build(MultiStepCommandBuilderArgs<TState> args)
+    public Tuple<StepManagerCommand, IEnumerable<Tuple<IStateValidationDisplayNameProvider, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>>> Build(MultiStepCommandBuilderArgs<TState> args)
     {
         var stepChainBuilder = args.StepChainBuilder;
 
-        Queue<Func<MultiStepCommandBuilderArgs<TState>, ICommandFactory<StepCommand, Update, StepCommand>>> factoryBuildQueueClone = new(_factoryBuildQueue);
+        Queue<Func<MultiStepCommandBuilderArgs<TState>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> factoryBuildQueueClone = new(_factoryBuildQueue);
     
-        List<Tuple<IStateValidationDisplayNameProvider, ICommandFactory<StepCommand, Update, StepCommand>>> factoriesWithValidation = new();
+        List<Tuple<IStateValidationDisplayNameProvider, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> factoriesWithValidation = new();
 
         while(factoryBuildQueueClone.Count != 0)
         {

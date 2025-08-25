@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Factories;
 
-public class LambdaCommandFactoryWithArgs<TArgs> : ICommandFactory<ICommandHandler, Update, TArgs> where TArgs: class
+public class LambdaCommandFactoryWithArgs<TArgs> : IHandlerFactoryWithArgs<ICommandHandler, Update, TArgs> where TArgs: class
 {
     private TArgs? _args;
 

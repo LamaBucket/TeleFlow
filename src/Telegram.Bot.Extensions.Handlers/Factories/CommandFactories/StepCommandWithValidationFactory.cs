@@ -4,14 +4,14 @@ using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Factories.CommandFactories;
 
-public class StepCommandWithValidationFactory : ICommandFactory<StepCommand, Update, StepCommand>, IStateValidationDisplayNameProvider
+public class StepCommandWithValidationFactory : IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>, IStateValidationDisplayNameProvider
 {
     private readonly Func<string> _displayNameFunction;
 
-    private readonly ICommandFactory<StepCommand, Update, StepCommand> _innerCommandFactory;
+    private readonly IHandlerFactoryWithArgs<StepCommand, Update, StepCommand> _innerCommandFactory;
 
 
-    public ICommandFactory<StepCommand, Update, StepCommand> StepToRestartCommandFactory => _innerCommandFactory;
+    public IHandlerFactoryWithArgs<StepCommand, Update, StepCommand> StepToRestartCommandFactory => _innerCommandFactory;
 
 
     public StepCommand Create()
@@ -29,7 +29,7 @@ public class StepCommandWithValidationFactory : ICommandFactory<StepCommand, Upd
         _innerCommandFactory.SetContext(args);
     }
 
-    public StepCommandWithValidationFactory(ICommandFactory<StepCommand, Update, StepCommand> innerCommandFactory, Func<string> displayNameFunction)
+    public StepCommandWithValidationFactory(IHandlerFactoryWithArgs<StepCommand, Update, StepCommand> innerCommandFactory, Func<string> displayNameFunction)
     {
         _innerCommandFactory = innerCommandFactory;
         _displayNameFunction = displayNameFunction;

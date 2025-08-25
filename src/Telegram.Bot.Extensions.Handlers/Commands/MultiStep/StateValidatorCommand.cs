@@ -64,7 +64,7 @@ public class StateValidatorCommand<TState> : ICommandHandler
             await CommandFinished.Invoke();
     }
 
-    private async Task RestartStep(ICommandFactory<StepCommand, Update, StepCommand> commandToRecreate)
+    private async Task RestartStep(IHandlerFactoryWithArgs<StepCommand, Update, StepCommand> commandToRecreate)
     {
         var lastChainItem = _stepChainBuilder.BuildChain(commandToRecreate);
         

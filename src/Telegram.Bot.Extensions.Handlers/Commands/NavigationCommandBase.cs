@@ -20,7 +20,7 @@ public abstract class NavigationCommandBase : UpdateListener, ICommandHandler
         
     }
 
-    protected NavigationCommandBase(ICommandFactory handlerFactory, ICommandFactory<ICommandHandler, Update, string> stringHandlerFactory, IChatIdProvider chatIdProvider) : base(handlerFactory, stringHandlerFactory, chatIdProvider)
+    protected NavigationCommandBase(IHandlerFactoryWithArgs handlerFactory, IHandlerFactoryWithArgs<ICommandHandler, Update, string> stringHandlerFactory, IChatIdProvider chatIdProvider) : base(handlerFactory, stringHandlerFactory, chatIdProvider)
     {
     }
 }

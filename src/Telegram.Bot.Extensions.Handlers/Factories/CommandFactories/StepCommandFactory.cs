@@ -3,7 +3,7 @@ using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Factories.CommandFactories;
 
-public class StepCommandFactory : ICommandFactory<StepCommand, Update, StepCommand>
+public class StepCommandFactory : IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>
 {
     private StepCommand? _nextCommand;
 

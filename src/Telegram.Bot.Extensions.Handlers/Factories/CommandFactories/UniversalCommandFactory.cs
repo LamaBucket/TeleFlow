@@ -6,9 +6,9 @@ using Telegram.Bot.Types.Enums;
 
 namespace LisBot.Common.Telegram.Factories.CommandFactories;
 
-public class UniversalCommandFactory : CommandFactoryBase<string>, ICommandFactory
+public class UniversalCommandFactory : HandlerFactoryWithArgsBase<string>, IHandlerFactoryWithArgs
 {
-    private readonly Dictionary<string, ICommandFactory<ICommandHandler, Update, NavigatorFactoryArgs>> _factories;
+    private readonly Dictionary<string, IHandlerFactoryWithArgs<ICommandHandler, Update, NavigatorFactoryArgs>> _factories;
 
 
     protected override ICommandHandler Create(string args)
@@ -62,7 +62,7 @@ public class UniversalCommandFactory : CommandFactoryBase<string>, ICommandFacto
         SetContext(args.GetCommandName() ?? throw new Exception("Unable To Retrieve Command Name"));
     }
 
-    public void AddCommandFactory(string commandName, ICommandFactory<ICommandHandler, Update, NavigatorFactoryArgs> factory)
+    public void AddCommandFactory(string commandName, IHandlerFactoryWithArgs<ICommandHandler, Update, NavigatorFactoryArgs> factory)
     {
         if (_factories.ContainsKey(commandName))
             throw new Exception("The factory for that command already exists!");

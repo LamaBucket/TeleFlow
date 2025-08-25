@@ -6,7 +6,7 @@ namespace LisBot.Common.Telegram.Services;
 
 public interface IStateValidationDisplayNameProvider
 {
-    ICommandFactory<StepCommand, Update, StepCommand> StepToRestartCommandFactory { get; }
+    IHandlerFactoryWithArgs<StepCommand, Update, StepCommand> StepToRestartCommandFactory { get; }
     
     string GetDisplayName();
 }

@@ -10,10 +10,10 @@ public class StepCommandWithDisplayName : StepCommand, IStateValidationDisplayNa
 
     private readonly StepCommand _innerStepCommand;
 
-    private readonly ICommandFactory<StepCommand, Update, StepCommand> _innerStepCommandFactory;
+    private readonly IHandlerFactoryWithArgs<StepCommand, Update, StepCommand> _innerStepCommandFactory;
 
 
-    public ICommandFactory<StepCommand, Update, StepCommand> StepToRestartCommandFactory => _innerStepCommandFactory;
+    public IHandlerFactoryWithArgs<StepCommand, Update, StepCommand> StepToRestartCommandFactory => _innerStepCommandFactory;
 
 
     public string GetDisplayName()
@@ -37,7 +37,7 @@ public class StepCommandWithDisplayName : StepCommand, IStateValidationDisplayNa
         await FinalizeCommand();
     }
 
-    public StepCommandWithDisplayName(ICommandFactory<StepCommand, Update, StepCommand> innerStepCommandFactory, Func<string> displayNameProvider)
+    public StepCommandWithDisplayName(IHandlerFactoryWithArgs<StepCommand, Update, StepCommand> innerStepCommandFactory, Func<string> displayNameProvider)
     {
         _innerStepCommandFactory = innerStepCommandFactory;
         _displayNameProvider = displayNameProvider;

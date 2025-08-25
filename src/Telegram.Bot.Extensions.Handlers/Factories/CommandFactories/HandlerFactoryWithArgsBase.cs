@@ -2,7 +2,7 @@ using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Factories.CommandFactories;
 
-public abstract class CommandFactoryBase<TArgs> : ICommandFactory<ICommandHandler, Update, TArgs> 
+public abstract class HandlerFactoryWithArgsBase<TArgs> : IHandlerFactoryWithArgs<ICommandHandler, Update, TArgs> 
     where TArgs: class
 {
     private TArgs? _args;
@@ -26,7 +26,7 @@ public abstract class CommandFactoryBase<TArgs> : ICommandFactory<ICommandHandle
         _args = args;
     }
 
-    protected CommandFactoryBase()
+    protected HandlerFactoryWithArgsBase()
     {
     }
 }

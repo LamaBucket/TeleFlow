@@ -9,7 +9,7 @@ namespace LisBot.Common.Telegram.Builders;
 
 public class UpdateListenerCommandFactoryBuilder
 {
-    private readonly Dictionary<string, ICommandFactory<ICommandHandler, Update, NavigatorFactoryArgs>> _factories;
+    private readonly Dictionary<string, IHandlerFactoryWithArgs<ICommandHandler, Update, NavigatorFactoryArgs>> _factories;
 
 
     private readonly Queue<Action<UpdateListenerFactoryBuildArgs>> _oneTimeSetupActionQueue;

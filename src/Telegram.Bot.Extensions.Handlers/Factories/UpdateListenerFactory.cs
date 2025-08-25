@@ -4,11 +4,11 @@ using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Factories;
 
-public class UpdateListenerFactory : ICommandFactory<UpdateListener, Update, IChatIdProvider>
+public class UpdateListenerFactory : IHandlerFactoryWithArgs<UpdateListener, Update, IChatIdProvider>
 {
-    private readonly Func<IChatIdProvider, INavigatorHandler, ICommandFactory> _processorFactory;
+    private readonly Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs> _processorFactory;
 
-    private readonly Func<IChatIdProvider, INavigatorHandler, ICommandFactory<ICommandHandler, Update, string>> _navigatorFactory;
+    private readonly Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs<ICommandHandler, Update, string>> _navigatorFactory;
 
     private IChatIdProvider? _chatIdProvider;
 
@@ -29,7 +29,7 @@ public class UpdateListenerFactory : ICommandFactory<UpdateListener, Update, ICh
         _chatIdProvider = args;
     }
 
-    public UpdateListenerFactory(Func<IChatIdProvider, INavigatorHandler, ICommandFactory> commandFactory, Func<IChatIdProvider, INavigatorHandler, ICommandFactory<ICommandHandler, Update, string>> navigatorFactory)
+    public UpdateListenerFactory(Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs> commandFactory, Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs<ICommandHandler, Update, string>> navigatorFactory)
     {
         _processorFactory = commandFactory;
         _navigatorFactory = navigatorFactory;

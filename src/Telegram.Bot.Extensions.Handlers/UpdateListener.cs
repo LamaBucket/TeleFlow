@@ -10,9 +10,9 @@ public class UpdateListener : IHandler<Update>, INavigatorHandler
 {
     private ICommandHandler? _currentCommand;
 
-    private readonly ICommandFactory _handlerFactory;
+    private readonly IHandlerFactoryWithArgs _handlerFactory;
 
-    private readonly ICommandFactory<ICommandHandler, Update, string> _stringHandlerFactory;
+    private readonly IHandlerFactoryWithArgs<ICommandHandler, Update, string> _stringHandlerFactory;
 
     private readonly IChatIdProvider _chatIdProvider;
 
@@ -58,15 +58,15 @@ public class UpdateListener : IHandler<Update>, INavigatorHandler
     }
 
 
-    public UpdateListener(ICommandFactory handlerFactory, ICommandFactory<ICommandHandler, Update, string> stringHandlerFactory, IChatIdProvider chatIdProvider)
+    public UpdateListener(IHandlerFactoryWithArgs handlerFactory, IHandlerFactoryWithArgs<ICommandHandler, Update, string> stringHandlerFactory, IChatIdProvider chatIdProvider)
     {
         _handlerFactory = handlerFactory;
         _stringHandlerFactory = stringHandlerFactory;
         _chatIdProvider = chatIdProvider;
     }
 
-    internal UpdateListener(Func<IChatIdProvider, INavigatorHandler, ICommandFactory> commandFactory,
-                            Func<IChatIdProvider, INavigatorHandler, ICommandFactory<ICommandHandler, Update, string>> navigatorFactory,
+    internal UpdateListener(Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs> commandFactory,
+                            Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs<ICommandHandler, Update, string>> navigatorFactory,
                             IChatIdProvider chatIdProvider)
     {
         _handlerFactory = commandFactory.Invoke(chatIdProvider, this);

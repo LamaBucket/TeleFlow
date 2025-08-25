@@ -9,10 +9,10 @@ namespace LisBot.Common.Telegram.Builders;
 
 public class StepManagerCommandBuilder<TState>
 {
-    private readonly Queue<Func<MultiStepCommandBuilderArgs<TState>, ICommandFactory<StepCommand, Update, StepCommand>>> _factoryBuildQueue;
+    private readonly Queue<Func<MultiStepCommandBuilderArgs<TState>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> _factoryBuildQueue;
 
 
-    public virtual StepManagerCommandBuilder<TState> WithStep(Func<MultiStepCommandBuilderArgs<TState>, ICommandFactory<StepCommand, Update, StepCommand>> stepFactory)
+    public virtual StepManagerCommandBuilder<TState> WithStep(Func<MultiStepCommandBuilderArgs<TState>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> stepFactory)
     {
         _factoryBuildQueue.Enqueue(stepFactory);
 
@@ -28,7 +28,7 @@ public class StepManagerCommandBuilder<TState>
 
     private void SetupStepChainBuilder(MultiStepCommandBuilderArgs<TState> args)
     {
-        Queue<Func<MultiStepCommandBuilderArgs<TState>, ICommandFactory<StepCommand, Update, StepCommand>>> factoryBuildQueueClone = new(_factoryBuildQueue);
+        Queue<Func<MultiStepCommandBuilderArgs<TState>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> factoryBuildQueueClone = new(_factoryBuildQueue);
 
         while(factoryBuildQueueClone.Count != 0)
         {

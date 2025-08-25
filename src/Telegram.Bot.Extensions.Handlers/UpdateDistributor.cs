@@ -12,7 +12,7 @@ public class UpdateDistributor : IHandler<Update>
     private readonly Dictionary<long, IHandler<Update>> _chatHandlers;
 
 
-    private readonly ICommandFactory<UpdateListener, Update, IChatIdProvider> _updateListenerFactory;
+    private readonly IHandlerFactoryWithArgs<UpdateListener, Update, IChatIdProvider> _updateListenerFactory;
 
     private readonly Func<UpdateListener, IHandler<Update>> _updateListenerPostCreationSetup;
 
@@ -45,7 +45,7 @@ public class UpdateDistributor : IHandler<Update>
         return _updateListenerFactory.Create();
     }
 
-    public UpdateDistributor(ICommandFactory<UpdateListener, Update, IChatIdProvider> userHandlerFactory, Func<UpdateListener, IHandler<Update>> updateListenerPostCreationSetup)
+    public UpdateDistributor(IHandlerFactoryWithArgs<UpdateListener, Update, IChatIdProvider> userHandlerFactory, Func<UpdateListener, IHandler<Update>> updateListenerPostCreationSetup)
     {
         _chatHandlers = [];
         _updateListenerFactory = userHandlerFactory;

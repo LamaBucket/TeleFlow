@@ -7,28 +7,28 @@ public class StepChainBuilder
 {
     public event Func<Task>? ChainFinished;
 
-    public Stack<ICommandFactory<StepCommand, Update, StepCommand>> StepFactoryChain => new(_stepFactoryChain);
+    public Stack<IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> StepFactoryChain => new(_stepFactoryChain);
 
     public StepCommand? Head => _head;
 
 
-    private readonly Stack<ICommandFactory<StepCommand, Update, StepCommand>> _stepFactoryChain;
+    private readonly Stack<IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> _stepFactoryChain;
     
     private StepCommand? _head;
 
 
-    public void AddItemToChain(ICommandFactory<StepCommand, Update, StepCommand> factory)
+    public void AddItemToChain(IHandlerFactoryWithArgs<StepCommand, Update, StepCommand> factory)
     {
         _stepFactoryChain.Push(factory);
     }
 
 
-    public StepCommand BuildChain(ICommandFactory<StepCommand, Update, StepCommand> factory, bool overwrite = false)
+    public StepCommand BuildChain(IHandlerFactoryWithArgs<StepCommand, Update, StepCommand> factory, bool overwrite = false)
     {
         if(!_stepFactoryChain.Contains(factory))
             throw new Exception("That Step Factory does not belong to that step factory chain");
 
-        var stack = new Stack<ICommandFactory<StepCommand, Update, StepCommand>>();
+        var stack = new Stack<IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>();
         stack.Push(factory);
 
         return BuildChain(stack, overwrite);
@@ -39,7 +39,7 @@ public class StepChainBuilder
         return BuildChain(StepFactoryChain, overwrite);
     }
 
-    private StepCommand BuildChain(Stack<ICommandFactory<StepCommand, Update, StepCommand>> stepFactoryChain, bool overwrite = false)
+    private StepCommand BuildChain(Stack<IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> stepFactoryChain, bool overwrite = false)
     {
         if(!overwrite && _head is not null)
             throw new Exception("Next command already exists");
