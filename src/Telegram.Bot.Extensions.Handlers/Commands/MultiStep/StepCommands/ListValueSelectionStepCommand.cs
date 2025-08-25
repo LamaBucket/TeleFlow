@@ -65,7 +65,13 @@ public class ListValueSelectionStepCommand<TEnumerable> : StepCommand where TEnu
         await FinalizeCommand();
     }
 
-    public ListValueSelectionStepCommand(IMessageService<Message> messageService, string onCommandCreatedMessage, Func<TEnumerable, Task> onHandleUserSelect, MessageBuilderOptions options, IEnumerable<TEnumerable> values, Func<TEnumerable, string> displayNameFormatter)
+    public ListValueSelectionStepCommand(IMessageService<Message> messageService,
+                                         string onCommandCreatedMessage,
+                                         Func<TEnumerable, Task> onHandleUserSelect,
+                                         MessageBuilderOptions options,
+                                         IEnumerable<TEnumerable> values,
+                                         Func<TEnumerable, string> displayNameFormatter,
+                                         StepCommand? next) : base(next)
     {
         _messageService = messageService;
 
@@ -77,7 +83,13 @@ public class ListValueSelectionStepCommand<TEnumerable> : StepCommand where TEnu
         _onCommandCreatedMessage = onCommandCreatedMessage;
     }
 
-    public ListValueSelectionStepCommand(IMessageService<Message> messageService, string onCommandCreatedMessage, Func<TEnumerable, Task> onHandleUserSelect, MessageBuilderOptions options, Func<Task<IEnumerable<TEnumerable>>> values, Func<TEnumerable, string> displayNameFormatter)
+    public ListValueSelectionStepCommand(IMessageService<Message> messageService,
+                                         string onCommandCreatedMessage,
+                                         Func<TEnumerable, Task> onHandleUserSelect,
+                                         MessageBuilderOptions options,
+                                         Func<Task<IEnumerable<TEnumerable>>> values,
+                                         Func<TEnumerable, string> displayNameFormatter,
+                                         StepCommand? next) : base(next)
     {
         _messageService = messageService;
 

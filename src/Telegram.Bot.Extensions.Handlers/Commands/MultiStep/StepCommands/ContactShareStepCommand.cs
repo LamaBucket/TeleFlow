@@ -48,7 +48,8 @@ public class ContactShareStepCommand : StepCommand
                                    IReplyMarkupManager replyMarkupManager,
                                    Action<Contact> onHandleUserMessage,
                                    string onCommandCreatedMessage,
-                                   string shareContactButtonDisplayName)
+                                   string shareContactButtonDisplayName,
+                                   StepCommand? next) : base(next)
     {
         _messageService = messageService;
         _replyMarkupManager = replyMarkupManager;

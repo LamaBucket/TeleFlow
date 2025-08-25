@@ -3,7 +3,7 @@ using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Commands.MultiStep.StepCommands;
 
-public class EnumValueSelectionStepCommand<TEnum> : StepCommand 
+public class EnumValueSelectionStepCommand<TEnum> : StepCommand
     where TEnum : Enum
 {
     private readonly IMessageService<Message> _messageService;
@@ -25,9 +25,9 @@ public class EnumValueSelectionStepCommand<TEnum> : StepCommand
 
     protected override async Task HandleCurrentStep(Update args)
     {
-        if(_noSelectButtonName is null)
+        if (_noSelectButtonName is null)
         {
-            if(_onHandleUserSelectCannotBeNull is not null)
+            if (_onHandleUserSelectCannotBeNull is not null)
             {
                 var enumValue = _formatter.ParseUserResponseCannotBeEmpty(args);
                 await _onHandleUserSelectCannotBeNull.Invoke(enumValue);
@@ -35,7 +35,7 @@ public class EnumValueSelectionStepCommand<TEnum> : StepCommand
         }
         else
         {
-            if(_onHandleUserSelect is not null)
+            if (_onHandleUserSelect is not null)
             {
                 var enumValue = _formatter.ParseUserResponse(args);
                 await _onHandleUserSelect.Invoke(enumValue);
@@ -45,28 +45,32 @@ public class EnumValueSelectionStepCommand<TEnum> : StepCommand
         await FinalizeCommand();
     }
 
-    public EnumValueSelectionStepCommand(IMessageService<Message> messageService, string onCommandCreatedMessage, string noSelectButtonName, Func<Tuple<TEnum>?, Task> onHandleUserSelect, MessageBuilderOptions options, Func<TEnum, string> displayNameFormatter)
+
+    public EnumValueSelectionStepCommand(IMessageService<Message> messageService,
+                                         string onCommandCreatedMessage,
+                                         Func<TEnum, Task> onHandleUserSelect,
+                                         Func<TEnum, string?> displayNameFormatter,
+                                         StepCommand? next,
+                                         MessageBuilderOptions options) : base(next)
     {
         _messageService = messageService;
 
-        _formatter = new(options, displayNameFormatter, onCommandCreatedMessage, noSelectButtonName);
+        _formatter = new(options, displayNameFormatter, onCommandCreatedMessage);
+        _onHandleUserSelectCannotBeNull = onHandleUserSelect;
+    }
+
+    public EnumValueSelectionStepCommand(IMessageService<Message> messageService,
+                                         string onCommandCreatedMessage,
+                                         string noSelectButtonName,
+                                         Func<Tuple<TEnum>?, Task>? onHandleUserSelect,
+                                         Func<TEnum, string?> displayNameFormatter,
+                                         StepCommand? next,
+                                         MessageBuilderOptions options) : base(next)
+    {
+        _messageService = messageService;
+
+        _formatter = new(options, displayNameFormatter, onCommandCreatedMessage);
         _noSelectButtonName = noSelectButtonName;
         _onHandleUserSelect = onHandleUserSelect;
-    }
-
-    public EnumValueSelectionStepCommand(IMessageService<Message> messageService, string onCommandCreatedMessage, Func<TEnum, Task> onHandleUserSelect, MessageBuilderOptions options, Func<TEnum, string?> displayNameFormatter)
-    {
-        _messageService = messageService;
-
-        _formatter = new(options, displayNameFormatter, onCommandCreatedMessage);
-        _onHandleUserSelectCannotBeNull = onHandleUserSelect;
-    }
-
-    public EnumValueSelectionStepCommand(IMessageService<Message> messageService, string onCommandCreatedMessage, Func<TEnum, Task> onHandleUserSelect, MessageBuilderOptions options, Func<TEnum, string?> displayNameFormatter, StepCommand next) : base(next)
-    {
-        _messageService = messageService;
-
-        _formatter = new(options, displayNameFormatter, onCommandCreatedMessage);
-        _onHandleUserSelectCannotBeNull = onHandleUserSelect;
     }
 }

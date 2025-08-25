@@ -27,14 +27,11 @@ public class TextInputStepCommand : StepCommand
         await FinalizeCommand();
     }
 
-    public TextInputStepCommand(IMessageService<string> messageService, string onCommandCreatedMessage, Func<string, Task> onHandleUserMessage) : base()
-    {
-        _messageService = messageService;
-        _onCommandCreatedMessage = onCommandCreatedMessage;
-        _onHandleUserMessage = onHandleUserMessage;
-    }
 
-    public TextInputStepCommand(IMessageService<string> messageService, string onCommandCreatedMessage, Func<string, Task> onHandleUserMessage, StepCommand next) : base(next)
+    public TextInputStepCommand(IMessageService<string> messageService,
+                                string onCommandCreatedMessage,
+                                Func<string, Task> onHandleUserMessage,
+                                StepCommand? next) : base(next)
     {
         _messageService = messageService;
         _onCommandCreatedMessage = onCommandCreatedMessage;
