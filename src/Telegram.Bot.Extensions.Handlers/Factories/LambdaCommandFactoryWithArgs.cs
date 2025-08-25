@@ -1,5 +1,4 @@
 using LisBot.Common.Telegram.Factories.CommandFactories;
-using LisBot.Common.Telegram.Models;
 using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Factories;

@@ -1,8 +1,5 @@
 using LisBot.Common.Telegram.Models;
-using LisBot.Common.Telegram.ViewModels.CallbackQuery;
-using Newtonsoft.Json;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 
 namespace LisBot.Common.Telegram.Factories.CommandFactories;
 

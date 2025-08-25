@@ -1,12 +1,8 @@
-using System.Collections.Generic;
 using System.Text;
-using LisBot.Common.Telegram.Models;
 using LisBot.Common.Telegram.ViewModels;
 using LisBot.Common.Telegram.ViewModels.CallbackQuery;
 using Newtonsoft.Json;
-using Telegram.Bot.Extensions;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace LisBot.Common.Telegram.Services;

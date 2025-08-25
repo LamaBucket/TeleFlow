@@ -1,12 +1,7 @@
 using LisBot.Common.Telegram.Factories.CommandFactories;
 using LisBot.Common.Telegram.Models;
-using LisBot.Common.Telegram.Models.StepCommands;
 using LisBot.Common.Telegram.Services;
-using LisBot.Common.Telegram.ViewModels;
-using LisBot.Common.Telegram.ViewModels.CallbackQuery;
-using Newtonsoft.Json;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 
 namespace LisBot.Common.Telegram.Commands.MultiStep;
 

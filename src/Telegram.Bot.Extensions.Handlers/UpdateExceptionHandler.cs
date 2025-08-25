@@ -1,5 +1,3 @@
-using System.Text;
-using LisBot.Common.Telegram.Services;
 using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram;

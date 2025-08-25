@@ -1,6 +1,5 @@
 using LisBot.Common.Telegram.Commands.MultiStep;
 using LisBot.Common.Telegram.Factories.CommandFactories;
-using LisBot.Common.Telegram.Models;
 using LisBot.Common.Telegram.ViewModels;
 using LisBot.Common.Telegram.ViewModels.CallbackQuery;
 using Newtonsoft.Json;
