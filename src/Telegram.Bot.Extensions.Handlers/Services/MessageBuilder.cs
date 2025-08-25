@@ -22,11 +22,8 @@ public class MessageBuilder
         message.Text = _sb.ToString();
         message.ReplyMarkup = BuildMarkup();
 
-        if(_options.ClearOnBuild)
-        {
-            _sb.Clear();
-            _buttons.Clear();
-        }
+        _sb.Clear();
+        _buttons.Clear();
 
         return message;
     }
