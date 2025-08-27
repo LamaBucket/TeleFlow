@@ -28,7 +28,7 @@ public abstract class StepCommand : ICommandHandler
     protected async Task FinalizeCommand()
     {
         if (_next is not null)
-            throw new Exception("Cannot Finalize current command (Next command is not NULL)");
+            throw new NullReferenceException($"Cannot Finalize current command ({_next} command is not NULL)");
 
         if (CommandFinished is not null)
             await CommandFinished.Invoke();
@@ -38,7 +38,7 @@ public abstract class StepCommand : ICommandHandler
     private async Task OnNextCommandFinished()
     {
         if (_next is null)
-            throw new Exception("Invalid Object State");
+            throw new NullReferenceException(nameof(_next));
 
         _next.CommandFinished -= OnNextCommandFinished;
         _next = null;

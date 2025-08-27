@@ -8,7 +8,7 @@ public abstract class OutputCommand : ICommandHandler
 
     public async Task Handle(Update args)
     {
-        throw new Exception("The Handle Should not be executed in output commands");
+        throw new InvalidOperationException("The Handle Should not be executed in output commands");
     }
 
     public async Task OnCommandCreated()

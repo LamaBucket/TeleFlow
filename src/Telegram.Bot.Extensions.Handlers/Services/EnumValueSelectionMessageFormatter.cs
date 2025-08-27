@@ -1,3 +1,4 @@
+using LisBot.Common.Telegram.Exceptions;
 using LisBot.Common.Telegram.ViewModels;
 using LisBot.Common.Telegram.ViewModels.CallbackQuery;
 using Newtonsoft.Json;
@@ -63,7 +64,7 @@ public class EnumValueSelectionMessageFormatter<TEnum>
             return builder.Build();
         }
 
-        throw new Exception("Cannot generate message. System awaits for response");
+        throw new InvalidOperationException("Cannot generate message. System awaits for response");
     }
 
     private ReplyButtonModel<CallbackQueryViewModel> GenerateReplyButton(string displayName)
@@ -74,7 +75,7 @@ public class EnumValueSelectionMessageFormatter<TEnum>
     private ReplyButtonModel<CallbackQueryViewModel> GenerateNoSelectButton()
     {
         if(_noSelectButtonName is null)
-            throw new Exception("The No Select button name should not be null!");
+            throw new NullReferenceException(nameof(_noSelectButtonName));
 
         return new(_buttonGenerator.GenerateSpecialButton(), _noSelectButtonName);
     }
@@ -91,19 +92,19 @@ public class EnumValueSelectionMessageFormatter<TEnum>
         else
         {
             if(CanHaveNoResult)
-                throw new Exception("This method is intended to work without possible null result.");
+                throw new ArgumentNullException($"This method is intended to work without possible null {nameof(result)}.");
             else
-                throw new Exception("The result was null, which is not inteded");
+                throw new NullReferenceException($"The {nameof(result)} was null, which is not inteded");
         }
     }
 
     public Tuple<TEnum>? ParseUserResponse(Update args)
     {
         if(!_awaitsUserResponse)
-            throw new Exception("That Command does not await user response");
+            throw new InvalidOperationException("That Command does not await user response");
 
         if(args.CallbackQuery is null || args.Type != UpdateType.CallbackQuery)
-            throw new Exception("This Command awaits only callback query");
+            throw new InvalidUserInput("This command accepts only the button input");
 
         var result = ParseCallbackQuery(args.CallbackQuery);
 
@@ -115,15 +116,12 @@ public class EnumValueSelectionMessageFormatter<TEnum>
     private Tuple<TEnum>? ParseCallbackQuery(CallbackQuery query)
     {
         if(string.IsNullOrEmpty(query.Data))
-            throw new Exception("No Query Data");
+            throw new ArgumentException($"No data in {nameof(query)}");
 
-        var btnViewModel = JsonConvert.DeserializeObject<CallbackQueryViewModel>(query.Data);
+        var btnViewModel = JsonConvert.DeserializeObject<CallbackQueryViewModel>(query.Data) ?? throw new ArgumentException($"The data in {nameof(query)} was in incorrect format.");
 
-        if(btnViewModel is null)
-            throw new Exception("Incorrect Query Data");
-
-        if(!_buttonGenerator.IsFromCurrentSession(btnViewModel))
-            throw new Exception("You pressed the wrong button");
+        if (!_buttonGenerator.IsFromCurrentSession(btnViewModel))
+            throw new InvalidUserInput("The button is not from current session");
         
         if(_buttonGenerator.IsSpecialButton(btnViewModel))
             return null;
@@ -131,7 +129,7 @@ public class EnumValueSelectionMessageFormatter<TEnum>
         _lastSessionDisplayButtonContext.TryGetValue(btnViewModel.BID, out var factory);
 
         if(factory is null)
-            throw new Exception("The Button UID was not found");
+            throw new ArgumentException("The Button UID was not found");
 
         return new(factory);
     }

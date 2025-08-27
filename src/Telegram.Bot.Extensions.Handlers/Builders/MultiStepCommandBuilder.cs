@@ -34,7 +34,7 @@ public class MultiStepCommandBuilder<TState>
     public MultiStepCommandBuilder<TState> WithValidation(MessageBuilderOptions messageBuilderConfig, Func<TState, string> confirmMessageFormatter, string allGoodButtonDisplayName, Action<StepManagerWithValidationCommandBuilder<TState>> options)
     {
         if(_nextFactory is not null)
-            throw new Exception("The Factory is already set!");
+            throw new InvalidOperationException($"The {nameof(_nextFactory)} is already set!");
 
         _nextFactory = (args) => {
             StepManagerWithValidationCommandBuilder<TState> builder = new();
@@ -61,7 +61,7 @@ public class MultiStepCommandBuilder<TState>
     public MultiStepCommandBuilder<TState> WithoutValidation(Action<StepManagerCommandBuilder<TState>> options)
     {
         if(_nextFactory is not null)
-            throw new Exception("The Factory is already set!");
+            throw new InvalidOperationException($"The {nameof(_nextFactory)} is already set!");
 
         _nextFactory = (args) => {
             StepManagerCommandBuilder<TState> builder = new();
@@ -88,13 +88,13 @@ public class MultiStepCommandBuilder<TState>
     public StateCommand<TState> Build(UpdateListenerCommandFactoryArgs args)
     {
         if(_nextFactory is null)
-            throw new Exception("Unable To build Command without next");
-        
+            throw new ArgumentNullException(nameof(_nextFactory));
+
         if(_resultHandlerFactory is null)
-            throw new Exception("Unable to build Command without result");
+            throw new ArgumentNullException(nameof(_resultHandlerFactory));
 
         if(_state is null)
-            throw new Exception("Unable to build Command without default state value");
+            throw new ArgumentNullException(nameof(_state));
 
         var state = _state.Invoke(args);
 

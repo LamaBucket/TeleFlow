@@ -1,3 +1,4 @@
+using LisBot.Common.Telegram.Exceptions;
 using LisBot.Common.Telegram.Models;
 using Telegram.Bot.Types;
 
@@ -14,7 +15,7 @@ public class UniversalCommandFactory : HandlerFactoryWithArgsBase<string>, IHand
         _factories.TryGetValue(GetPathOnly(args), out var factory);
 
         if(factory is null)
-            throw new Exception("Command Not Found");
+            throw new InvalidUserInput("Command not found.");
 
         var query = ParseQuery(args);
 
@@ -45,7 +46,7 @@ public class UniversalCommandFactory : HandlerFactoryWithArgsBase<string>, IHand
             var queryKeyAndValue = queryItem.Split('=');
 
             if(queryKeyAndValue.Length != 2)
-                throw new Exception("Invalid Query");
+                throw new ArgumentNullException($"Invalid query in {nameof(url)}");
             
             result.Add(queryKeyAndValue[0], queryKeyAndValue[1]);
         }
@@ -62,7 +63,7 @@ public class UniversalCommandFactory : HandlerFactoryWithArgsBase<string>, IHand
     public void AddCommandFactory(string commandName, IHandlerFactoryWithArgs<ICommandHandler, Update, NavigatorFactoryArgs> factory)
     {
         if (_factories.ContainsKey(commandName))
-            throw new Exception("The factory for that command already exists!");
+            throw new InvalidOperationException("The factory for that command already exists!");
 
         _factories.Add(commandName, factory);
     }

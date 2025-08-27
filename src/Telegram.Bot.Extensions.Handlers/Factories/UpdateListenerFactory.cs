@@ -15,7 +15,7 @@ public class UpdateListenerFactory : IHandlerFactoryWithArgs<UpdateListener, Upd
     public UpdateListener Create()
     {
         if(_chatIdProvider is null)
-            throw new Exception("The Listener Does not know which chat it is in");
+            throw new ArgumentNullException(nameof(_chatIdProvider));
 
 
         var handlerFactory = (INavigatorHandler navHandler) =>

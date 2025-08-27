@@ -8,7 +8,7 @@ public class StateCommand<TState> : ICommandHandler
     public event Func<Task>? CommandFinished;
 
 
-    protected ICommandHandler Next => _next ?? throw new Exception("Invalid Object State");
+    protected ICommandHandler Next => _next ?? throw new NullReferenceException(nameof(_next));
 
     private ICommandHandler? _next;
 

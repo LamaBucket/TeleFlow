@@ -1,3 +1,4 @@
+using LisBot.Common.Telegram.Exceptions;
 using LisBot.Common.Telegram.Factories.CommandFactories;
 using LisBot.Common.Telegram.Models;
 using LisBot.Common.Telegram.Services;
@@ -9,7 +10,7 @@ public class StateValidatorCommand<TState> : ICommandHandler
 {
     public event Func<Task>? CommandFinished;
 
-    protected ICommandHandler Next => _next ?? throw new Exception("Intended to work only with state");
+    protected ICommandHandler Next => _next ?? throw new UnableToHandleException(nameof(StateValidatorCommand<TState>), "Next was null. State Validator does not handle updates itself.");
 
     private ICommandHandler? _next;
 
@@ -40,17 +41,14 @@ public class StateValidatorCommand<TState> : ICommandHandler
         }
         else
         {
-            if(_next is null)
-                throw new Exception("Next Should be newer null in here!");
-
-            await _next.Handle(args);
+            await Next.Handle(args);
         }
     }
 
     private async Task FinalizeCommand()
     {
         if(_next is null)
-            throw new Exception("Cannot Finalize Current command");
+            throw new NullReferenceException(nameof(_next));
 
         _next.CommandFinished -= OnNextFinished;
         _next = null;

@@ -1,3 +1,4 @@
+using LisBot.Common.Telegram.Exceptions;
 using LisBot.Common.Telegram.Services;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -19,10 +20,10 @@ public class TextInputStepCommand : StepCommand
 
     protected override async Task HandleCurrentStep(Update args)
     {
-        if(args.Type != UpdateType.Message || args.Message is null)
-            throw new Exception("Awaits messages only");
+        if(args.Type != UpdateType.Message || args.Message is null || args.Message.Text is null)
+            throw new InvalidUserInput("This command accepts only text messages.");
 
-        await _onHandleUserMessage(args.Message.Text ?? throw new Exception("Empty Message"));
+        await _onHandleUserMessage(args.Message.Text);
 
         await FinalizeCommand();
     }

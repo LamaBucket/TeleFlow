@@ -7,7 +7,7 @@ public class ListValueSelectionStepCommand<TEnumerable> : StepCommand where TEnu
 {
     private readonly IMessageService<Message> _messageService;
 
-    private ListValueSelectionMessageFormatter<TEnumerable> Formatter => _formatter ?? throw new Exception("The Formatter was not set!");
+    private ListValueSelectionMessageFormatter<TEnumerable> Formatter => _formatter ?? throw new ArgumentNullException(nameof(_formatter));
 
     private ListValueSelectionMessageFormatter<TEnumerable>? _formatter;
 

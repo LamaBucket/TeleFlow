@@ -12,7 +12,7 @@ public class LambdaCommandFactoryWithArgs<TArgs> : IHandlerFactoryWithArgs<IComm
     public ICommandHandler Create()
     {
         if(_args is null)
-            throw new Exception("Args Were null");
+            throw new ArgumentNullException(nameof(_args));
 
         var handler = _factory.Invoke(_args);
 

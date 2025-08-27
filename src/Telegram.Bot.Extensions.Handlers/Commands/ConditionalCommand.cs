@@ -21,7 +21,7 @@ public class ConditionalCommand : ICommandHandler
     public async Task Handle(Update args)
     {
         if(_nextHandler is null)
-            throw new Exception("The Next Was Null");
+            throw new NullReferenceException(nameof(_nextHandler));
             
         await _nextHandler.Handle(args);
     }
@@ -42,7 +42,7 @@ public class ConditionalCommand : ICommandHandler
     private async Task OnNextFinished()
     {
         if(_nextHandler is null)
-            throw new Exception("The Next handler was null");
+            throw new NullReferenceException(nameof(_nextHandler));
             
         _nextHandler.CommandFinished -= OnNextFinished;
         _handlerIfMeetsCondition.CommandFinished -= OnNextFinished;

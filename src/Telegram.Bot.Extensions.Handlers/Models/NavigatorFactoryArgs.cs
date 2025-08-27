@@ -9,7 +9,7 @@ public class NavigatorFactoryArgs
         _query.TryGetValue(key, out var value);
 
         if(value is null)
-            throw new Exception("value was null");
+            throw new ArgumentNullException($"The key '{key}' was not found in the query");
         
         return value;
     }

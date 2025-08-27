@@ -26,7 +26,7 @@ public class StepChainBuilder
     public StepCommand BuildChain(IHandlerFactoryWithArgs<StepCommand, Update, StepCommand> factory, bool overwrite = false)
     {
         if(!_stepFactoryChain.Contains(factory))
-            throw new Exception("That Step Factory does not belong to that step factory chain");
+            throw new ArgumentException("That Step Factory does not belong to that step factory chain", nameof(factory));
 
         var stack = new Stack<IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>();
         stack.Push(factory);
@@ -42,10 +42,10 @@ public class StepChainBuilder
     private StepCommand BuildChain(Stack<IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> stepFactoryChain, bool overwrite = false)
     {
         if(!overwrite && _head is not null)
-            throw new Exception("Next command already exists");
+            throw new InvalidOperationException("Next command already exists");
 
         if(stepFactoryChain.Count == 0)
-            throw new Exception("The Factory chain was empty");
+            throw new InvalidOperationException("The Factory chain was empty");
 
 
         var last = stepFactoryChain.Pop().Create();
@@ -70,7 +70,7 @@ public class StepChainBuilder
     private async Task OnNextCommandFinished()
     {
         if(_head is null)
-            throw new Exception("Something went wrong");
+            throw new NullReferenceException(nameof(_head));
 
         _head.CommandFinished -= OnNextCommandFinished;
         _head = null;

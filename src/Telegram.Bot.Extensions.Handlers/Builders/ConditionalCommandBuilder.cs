@@ -53,13 +53,13 @@ public class ConditionalCommandBuilder
     public ConditionalCommand Build(UpdateListenerCommandFactoryArgs args)
     {
         if(_condition is null)
-            throw new Exception("Condition Cannot Be Null!");
+            throw new ArgumentNullException(nameof(_condition));
 
         if(_ifOkHandler is null)
-            throw new Exception("Execution Cannot Be Null!");
+            throw new ArgumentNullException(nameof(_ifOkHandler));
 
         if(_ifNotOkHandler is null)
-            throw new Exception("Execution Cannot Be Null!");
+            throw new ArgumentNullException(nameof(_ifNotOkHandler));
 
         return new(async () => { return await _condition.Invoke(args); }, _ifOkHandler.Invoke(args).Create(), _ifNotOkHandler.Invoke(args).Create());
     }

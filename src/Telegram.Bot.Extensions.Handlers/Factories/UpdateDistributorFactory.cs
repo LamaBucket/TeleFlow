@@ -105,7 +105,7 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
                 return action.Invoke(typeSafeHandler);
             }
 
-            throw new Exception("The Type was wrong");
+            throw new InvalidCastException($"the {nameof(handler)} has a wrong type.");
         });
     } 
 

@@ -9,7 +9,7 @@ public abstract class TemplatedMessageService : IMessageService<Message>
 
     public async Task<Message> SendMessage(Message message)
     {
-        var messageText = message.Text ?? throw new Exception("Message Text Cannot be null!");
+        var messageText = message.Text ?? throw new ArgumentNullException(nameof(message.Text));
         var messageReplyMarkup = message.ReplyMarkup;
 
         RemovePreviousMessageReplyMarkup();

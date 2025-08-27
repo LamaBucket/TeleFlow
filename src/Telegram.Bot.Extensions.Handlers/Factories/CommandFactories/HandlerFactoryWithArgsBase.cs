@@ -10,7 +10,7 @@ public abstract class HandlerFactoryWithArgsBase<TArgs> : IHandlerFactoryWithArg
     public ICommandHandler Create()
     {
         if (_args is null)
-            throw new Exception("Args was null!");
+            throw new ArgumentNullException(nameof(_args));
 
         var handler = Create(_args);
 

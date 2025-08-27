@@ -23,7 +23,7 @@ public class StateValidatorCommandFactory<TState> : IHandlerFactoryWithArgs<ICom
     public ICommandHandler Create()
     {
         if(_next is null)
-            throw new Exception("The Next was null");
+            throw new ArgumentNullException(nameof(_next));
 
         return new StateValidatorCommand<TState>(_next, _stepChainBuilder, _messageFormatter, _messageService, _state);
     }

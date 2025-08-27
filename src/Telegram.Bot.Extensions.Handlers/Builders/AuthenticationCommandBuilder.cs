@@ -4,9 +4,9 @@ namespace LisBot.Common.Telegram.Builders;
 
 public class AuthenticationCommandBuilder
 {
-    internal Func<UpdateListenerCommandFactoryArgs, ICommandHandler> HandlerIfAuthenticated => _handlerIfAuthenticated ?? throw new Exception("The Handler Was Null");
+    internal Func<UpdateListenerCommandFactoryArgs, ICommandHandler> HandlerIfAuthenticated => _handlerIfAuthenticated ?? throw new ArgumentNullException(nameof(_handlerIfAuthenticated));
 
-    internal Func<UpdateListenerCommandFactoryArgs, ICommandHandler> HandlerIfNotAuthenticated => _handlerIfNotAuthenticated ?? throw new Exception("The Handler Was Null");
+    internal Func<UpdateListenerCommandFactoryArgs, ICommandHandler> HandlerIfNotAuthenticated => _handlerIfNotAuthenticated ?? throw new ArgumentNullException(nameof(_handlerIfNotAuthenticated));
 
 
     private Func<UpdateListenerCommandFactoryArgs, ICommandHandler>? _handlerIfAuthenticated;

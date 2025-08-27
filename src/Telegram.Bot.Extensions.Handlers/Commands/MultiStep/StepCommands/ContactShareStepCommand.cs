@@ -1,3 +1,4 @@
+using LisBot.Common.Telegram.Exceptions;
 using LisBot.Common.Telegram.Services;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -27,21 +28,26 @@ public class ContactShareStepCommand : StepCommand
     protected override async Task HandleCurrentStep(Update args)
     {
         if(args.Type != UpdateType.Message || args.Message is null)
-            throw new Exception("Awaits messages only");
+            throw new InvalidUserInput("This command accepts only messages.");
 
         var message = args.Message;
         
-        if(message.Type != MessageType.Contact || message.Contact is null)
-            throw new Exception("Awaits contacts only");
 
+        var contact = ParseUserMessage(message);        
 
         await _replyMarkupManager.ClearReplyButtons();       
-
-        var contact = message.Contact;
 
         _onHandleUserMessage(contact);
 
         await FinalizeCommand();
+    }
+
+    protected virtual Contact ParseUserMessage(Message message)
+    {
+        if (message.Type != MessageType.Contact || message.Contact is null)
+            throw new InvalidUserInput("This command accepts only contacts.");
+            
+        return message.Contact;
     }
 
     public ContactShareStepCommand(IMessageService<Tuple<string, KeyboardButton>> messageService,
