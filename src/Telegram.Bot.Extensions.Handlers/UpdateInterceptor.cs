@@ -11,7 +11,7 @@ public class UpdateInterceptor : IHandler<Update>
 
     public async Task Handle(Update args)
     {
-        var commandName = args.GetCommandName();
+        var commandName = GetCommandName(args);
 
         if(commandName is not null && _commandsToIntercept.Contains(commandName))
         {
@@ -21,6 +21,11 @@ public class UpdateInterceptor : IHandler<Update>
         {
             await _listener.Handle(args);
         }
+    }
+
+    public virtual string? GetCommandName(Update args)
+    {
+        return args.GetCommandName();
     }
 
     public UpdateInterceptor(UpdateListener listener, string[] commandsToIntercept)

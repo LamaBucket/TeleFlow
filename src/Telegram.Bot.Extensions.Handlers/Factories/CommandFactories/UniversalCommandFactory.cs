@@ -57,7 +57,12 @@ public class UniversalCommandFactory : HandlerFactoryWithArgsBase<string>, IHand
 
     public void SetContext(Update args)
     {
-        SetContext(args.GetCommandName() ?? throw new Exception("Unable To Retrieve Command Name"));
+        SetContext(GetCommandName(args) ?? throw new ArgumentException($"Unable to retrieve command name from update {nameof(args)}."));
+    }
+
+    public virtual string? GetCommandName(Update args)
+    {
+        return args.GetCommandName();
     }
 
     public void AddCommandFactory(string commandName, IHandlerFactoryWithArgs<ICommandHandler, Update, NavigatorFactoryArgs> factory)

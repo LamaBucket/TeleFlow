@@ -11,9 +11,9 @@ public static class LibraryExtensions
     {
         return update.Type switch
         {
-            UpdateType.Message => update.Message?.Chat.Id ?? throw new Exception("Unable To Retrieve Chat Id From Message"),
-            UpdateType.CallbackQuery => update.CallbackQuery?.Message?.Chat.Id ?? throw new Exception("Unable To Retrieve Chat Id From CallbackQuery"),
-            _ => throw new Exception("This MessageType is not supported"),
+            UpdateType.Message => update.Message?.Chat.Id ?? throw new NullReferenceException("Unable To Retrieve Chat Id From Message"),
+            UpdateType.CallbackQuery => update.CallbackQuery?.Message?.Chat.Id ?? throw new NullReferenceException("Unable To Retrieve Chat Id From CallbackQuery"),
+            _ => throw new InvalidOperationException("This MessageType is not supported"),
         };
     }
 
@@ -24,14 +24,14 @@ public static class LibraryExtensions
             case UpdateType.Message:
                 return args.Message?.Text;
             case UpdateType.CallbackQuery:
-                return GetCommandNameFromCallbackQuery(args.CallbackQuery ?? throw new Exception("The callback query was not provided"));
+                return GetCommandNameFromCallbackQuery(args.CallbackQuery ?? throw new ArgumentNullException($"The callback query in {nameof(args)} was not provided"));
         }
-        throw new Exception("Unknown update type");
+        throw new InvalidOperationException("Unknown update type");
     }
 
     private static string? GetCommandNameFromCallbackQuery(CallbackQuery query)
     {
-        string queryData = query.Data ?? throw new Exception("CallbackQuery contains no data!");
+        string queryData = query.Data ?? throw new ArgumentNullException($"The data in {nameof(query)} was not provided");
 
         var args = JsonConvert.DeserializeObject<UniversalCommandFactoryViewModel>(queryData);
 
