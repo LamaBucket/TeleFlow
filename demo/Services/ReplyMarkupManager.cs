@@ -1,0 +1,26 @@
+using LisBot.Common.Telegram.Services;
+using Telegram.Bot;
+using Telegram.Bot.Types.ReplyMarkups;
+
+namespace demo.Services;
+
+public class ReplyMarkupManager : IReplyMarkupManager
+{
+    private readonly long _chatId;
+
+    private readonly ITelegramBotClient _botClient;
+
+    public async Task ClearReplyButtons()
+    {
+        var deleteMessage = await _botClient.SendTextMessageAsync(_chatId, "We're clearing up, hang on a sec...", replyMarkup: new ReplyKeyboardRemove());
+        await _botClient.DeleteMessageAsync(_chatId, deleteMessage.MessageId);
+    }
+
+    public ReplyMarkupManager(long chatId, ITelegramBotClient botClient)
+    {
+        _chatId = chatId;
+        _botClient = botClient;
+    }
+
+    
+}

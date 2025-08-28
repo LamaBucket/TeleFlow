@@ -1,7 +1,34 @@
+using demo;
+using demo.Services;
+using LisBot.Common.Telegram.Factories;
+using LisBot.Common.Telegram.Services;
+using Telegram.Bot;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
+
+const string BOT_TOKEN = "YourBotToken";
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSingleton<IMessageServiceFactory<Message>, UniversalMessageServiceFactory>();
+builder.Services.AddSingleton<IMessageServiceFactory<string>, UniversalMessageServiceFactory>();
+builder.Services.AddSingleton<IMessageServiceFactory<Tuple<string, KeyboardButton>>, UniversalMessageServiceFactory>();
+
+builder.Services.AddSingleton<IReplyMarkupManagerFactory, ReplyMarkupManagerFactory>();
+
+builder.Services.AddSingleton<IAuthenticationServiceFactory, DemoAuthenticationServiceFactory>();
+
+builder.Services.AddSingleton<UpdateDistributorFactory>();
+
+builder.Services.AddHttpClient("tgwebhook")
+                .RemoveAllLoggers()
+                .AddTypedClient<ITelegramBotClient>(httpClient => new TelegramBotClient(BOT_TOKEN, httpClient));
+
+builder.Services.ConfigureTelegramBotMvc();
 
 var app = builder.Build();
 
@@ -14,7 +41,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
 
 app.UseRouting();
 
