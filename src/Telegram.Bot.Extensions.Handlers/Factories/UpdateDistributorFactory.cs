@@ -14,16 +14,17 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
     protected UpdateDistributor? Instance { get; set; }
 
 
-    private readonly Func<IChatIdProvider, IMessageService<Message>> _messageServiceProvider;
+    private readonly IMessageServiceFactory<Message> _messageServiceFactory;
 
-    private readonly Func<IChatIdProvider, IMessageService<string>> _messageServiceStringProvider;
-
-    private readonly Func<IChatIdProvider, IMessageService<Tuple<string, KeyboardButton>>> _messageServiceWithReplyKeyboardProvider;
+    private readonly IMessageServiceFactory<string> _messageServiceStringFactory;
 
 
-    private readonly Func<IChatIdProvider, IReplyMarkupManager> _replyMarkupManagerProvider;
+    private readonly IMessageServiceFactory<Tuple<string, KeyboardButton>> _messageServiceWithReplyKeyboardFactory;
 
-    private readonly Func<IChatIdProvider, IAuthenticationService> _authenticationServiceProvider;
+
+    private readonly IReplyMarkupManagerFactory _replyMarkupManagerFactory;
+
+    private readonly IAuthenticationServiceFactory _authenticationServiceFactory;
 
 
     private Func<UpdateDistributorNextHandlerBuildArgs, IHandler<Update>, IHandler<Update>> _postBuildUpdateListenerSetup;
@@ -52,36 +53,19 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
     {
         return new LambdaHandlerFactoryWithArgs<IHandler<Update>, Update, IChatIdProvider>((chatIdProvider) =>
         {
-            UpdateDistributorNextHandlerBuildArgs args = new(_messageServiceStringProvider.Invoke(chatIdProvider),
-                                                             _messageServiceProvider.Invoke(chatIdProvider),
-                                                             _messageServiceWithReplyKeyboardProvider.Invoke(chatIdProvider),
-                                                             _replyMarkupManagerProvider.Invoke(chatIdProvider),
-                                                             _authenticationServiceProvider.Invoke(chatIdProvider),
+            UpdateDistributorNextHandlerBuildArgs args = new(_messageServiceStringFactory.CreateMessageService(chatIdProvider.GetChatId()),
+                                                             _messageServiceFactory.CreateMessageService(chatIdProvider.GetChatId()),
+                                                             _messageServiceWithReplyKeyboardFactory.CreateMessageService(chatIdProvider.GetChatId()),
+                                                             _replyMarkupManagerFactory.CreateReplyMarkupManager(chatIdProvider.GetChatId()),
+                                                             _authenticationServiceFactory.CreateAuthenticationService(chatIdProvider.GetChatId()),
                                                              chatIdProvider);
 
-            var listenerFactory = BuildUpdateListenerFactory();
+            UpdateDistributorNextHandlerFactoryBuilder nextHandlerBuilder = new(SetupUpdateListenerFactoryBuilder);
 
-            listenerFactory.SetContext(args);
-            var listener = listenerFactory.Create();
+            ConfigureBeforeUpdateListenerHandler(nextHandlerBuilder);
 
-            return _postBuildUpdateListenerSetup.Invoke(args, listener);
+            return nextHandlerBuilder.Build(args);
         });
-    }
-
-    protected UpdateListenerFactory BuildUpdateListenerFactory()
-    {
-        var listenerFactory = new UpdateListenerFactory((updateDistributorArgs, navHandler) =>
-        {
-            var updateListenerFactoryBuilder = new UpdateListenerCommandFactoryBuilder();
-
-            SetupUpdateListenerFactoryBuilder(updateListenerFactoryBuilder);
-
-            UpdateListenerCommandBuildArgs args = new(updateDistributorArgs, navHandler);
-
-            return updateListenerFactoryBuilder.Build(args);
-        });
-
-        return listenerFactory;
     }
 
     protected virtual void SetupUpdateListenerFactoryBuilder(UpdateListenerCommandFactoryBuilder builder)
@@ -89,6 +73,10 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
 
     }
 
+    protected virtual void ConfigureBeforeUpdateListenerHandler(UpdateDistributorNextHandlerFactoryBuilder options)
+    {
+        
+    }
 
     protected virtual void BuildFinished(UpdateDistributor buildResult)
     {
@@ -97,73 +85,17 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
         // if you need the update distributor not to be Singleton - clear the created instance here.
     }
 
-
-    public UpdateDistributorFactory WithExceptionHandler(Func<Exception, UpdateDistributorNextHandlerBuildArgs, Task> handlerAction)
+    public UpdateDistributorFactory(IMessageServiceFactory<Message> messageServiceFactory,
+                                    IMessageServiceFactory<string> messageServiceStringFactory,
+                                    IMessageServiceFactory<Tuple<string, KeyboardButton>> messageServiceWithReplyKeyboardFactory,
+                                    IReplyMarkupManagerFactory replyMarkupManagerFactory,
+                                    IAuthenticationServiceFactory authenticationServiceFactory)
     {
-        return WithCustomPostUpdateListenerBuildAction((args, handler) =>
-        {
-            UpdateExceptionHandler exceptionHandler = new(handler, async (ex) =>
-            {
-                await handlerAction.Invoke(ex, args);
-            });
-
-            return exceptionHandler;
-        });
-    }
-
-    public UpdateDistributorFactory WithInterceptor(string[] commandsToIntercept)
-    {
-        return WithCustomPostUpdateListenerBuildAction<UpdateListener>((args, listener) =>
-        {
-            UpdateInterceptor interceptor = new(listener, commandsToIntercept);
-
-            return interceptor;
-        });
-    }
-
-
-    public UpdateDistributorFactory WithCustomPostUpdateListenerBuildAction<THandler>(Func<UpdateDistributorNextHandlerBuildArgs, THandler, IHandler<Update>> action)
-        where THandler : IHandler<Update>
-    {
-        return WithCustomPostUpdateListenerBuildAction((args, handler) =>
-        {
-            if (handler is THandler typeSafeHandler)
-            {
-                return action.Invoke(args, typeSafeHandler);
-            }
-
-            throw new InvalidCastException($"the {nameof(handler)} has a wrong type.");
-        });
-    } 
-
-    public UpdateDistributorFactory WithCustomPostUpdateListenerBuildAction(Func<UpdateDistributorNextHandlerBuildArgs, IHandler<Update>, IHandler<Update>> action)
-    {
-        var newAction = (UpdateDistributorNextHandlerBuildArgs args, IHandler<Update> handler) =>
-        {
-            var previousPostBuildAction = _postBuildUpdateListenerSetup;
-            var previousPostBuildActionResult = previousPostBuildAction.Invoke(args, handler);
-
-            return action.Invoke(args, previousPostBuildActionResult);
-        };
-
-        _postBuildUpdateListenerSetup = newAction;
-
-        return this;
-    }
-
-
-    public UpdateDistributorFactory(Func<IChatIdProvider, IMessageService<Message>> messageServiceProvider,
-                                    Func<IChatIdProvider, IMessageService<string>> messageServiceStringProvider,
-                                    Func<IChatIdProvider, IMessageService<Tuple<string, KeyboardButton>>> messageServiceWithReplyKeyboardProvider,
-                                    Func<IChatIdProvider, IReplyMarkupManager> replyMarkupManagerProvider,
-                                    Func<IChatIdProvider, IAuthenticationService> authenticationServiceProvider)
-    {
-        _messageServiceProvider = messageServiceProvider;
-        _messageServiceStringProvider = messageServiceStringProvider;
-        _messageServiceWithReplyKeyboardProvider = messageServiceWithReplyKeyboardProvider;
-
-        _replyMarkupManagerProvider = replyMarkupManagerProvider;
-        _authenticationServiceProvider = authenticationServiceProvider;
+        _messageServiceFactory = messageServiceFactory;
+        _messageServiceStringFactory = messageServiceStringFactory;
+        _messageServiceWithReplyKeyboardFactory = messageServiceWithReplyKeyboardFactory;
+        _replyMarkupManagerFactory = replyMarkupManagerFactory;
+        _authenticationServiceFactory = authenticationServiceFactory;
 
         _postBuildUpdateListenerSetup = (args, listener) =>
         {

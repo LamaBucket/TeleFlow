@@ -5,7 +5,7 @@ using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Factories;
 
-public class UpdateListenerFactory : IHandlerFactoryWithArgs<IHandler<Update>, Update, UpdateDistributorNextHandlerBuildArgs>
+public class UpdateListenerFactory : IHandlerFactoryWithArgs<UpdateListener, Update, UpdateDistributorNextHandlerBuildArgs>
 {
     private readonly Func<UpdateDistributorNextHandlerBuildArgs, INavigatorHandler, IHandlerFactoryWithArgs> _handlerFactory;
 
@@ -13,7 +13,7 @@ public class UpdateListenerFactory : IHandlerFactoryWithArgs<IHandler<Update>, U
 
     private UpdateDistributorNextHandlerBuildArgs? _args;
 
-    public IHandler<Update> Create()
+    public UpdateListener Create()
     {
         if(_args is null)
             throw new ArgumentNullException(nameof(_args));
