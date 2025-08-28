@@ -4,24 +4,24 @@ namespace LisBot.Common.Telegram.Builders;
 
 public class AuthenticationCommandBuilder
 {
-    internal Func<UpdateListenerCommandFactoryArgs, ICommandHandler> HandlerIfAuthenticated => _handlerIfAuthenticated ?? throw new ArgumentNullException(nameof(_handlerIfAuthenticated));
+    internal Func<UpdateListenerCommandExecutionArgs, ICommandHandler> HandlerIfAuthenticated => _handlerIfAuthenticated ?? throw new ArgumentNullException(nameof(_handlerIfAuthenticated));
 
-    internal Func<UpdateListenerCommandFactoryArgs, ICommandHandler> HandlerIfNotAuthenticated => _handlerIfNotAuthenticated ?? throw new ArgumentNullException(nameof(_handlerIfNotAuthenticated));
-
-
-    private Func<UpdateListenerCommandFactoryArgs, ICommandHandler>? _handlerIfAuthenticated;
-
-    private Func<UpdateListenerCommandFactoryArgs, ICommandHandler>? _handlerIfNotAuthenticated;
+    internal Func<UpdateListenerCommandExecutionArgs, ICommandHandler> HandlerIfNotAuthenticated => _handlerIfNotAuthenticated ?? throw new ArgumentNullException(nameof(_handlerIfNotAuthenticated));
 
 
-    public AuthenticationCommandBuilder WithLambdaIfAuthenticated(Func<UpdateListenerCommandFactoryArgs, ICommandHandler> factory)
+    private Func<UpdateListenerCommandExecutionArgs, ICommandHandler>? _handlerIfAuthenticated;
+
+    private Func<UpdateListenerCommandExecutionArgs, ICommandHandler>? _handlerIfNotAuthenticated;
+
+
+    public AuthenticationCommandBuilder WithLambdaIfAuthenticated(Func<UpdateListenerCommandExecutionArgs, ICommandHandler> factory)
     {
         _handlerIfAuthenticated = factory;
 
         return this;
     } 
 
-    public AuthenticationCommandBuilder WithLambdaIfNotAuthenticated(Func<UpdateListenerCommandFactoryArgs, ICommandHandler> factory)
+    public AuthenticationCommandBuilder WithLambdaIfNotAuthenticated(Func<UpdateListenerCommandExecutionArgs, ICommandHandler> factory)
     {
         _handlerIfNotAuthenticated = factory;
 

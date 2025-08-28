@@ -8,14 +8,14 @@ namespace LisBot.Common.Telegram.Builders;
 public class ConditionalCommandBuilder
 {
 
-    private Func<UpdateListenerCommandFactoryArgs, Task<bool>>? _condition;
+    private Func<UpdateListenerCommandExecutionArgs, Task<bool>>? _condition;
 
-    private Func<UpdateListenerCommandFactoryArgs, IHandlerFactory<ICommandHandler, Update>>? _ifOkHandler;
+    private Func<UpdateListenerCommandExecutionArgs, IHandlerFactory<ICommandHandler, Update>>? _ifOkHandler;
 
-    private Func<UpdateListenerCommandFactoryArgs, IHandlerFactory<ICommandHandler, Update>>? _ifNotOkHandler;
+    private Func<UpdateListenerCommandExecutionArgs, IHandlerFactory<ICommandHandler, Update>>? _ifNotOkHandler;
 
 
-    public ConditionalCommandBuilder WithCondition(Func<UpdateListenerCommandFactoryArgs, Task<bool>> condition)
+    public ConditionalCommandBuilder WithCondition(Func<UpdateListenerCommandExecutionArgs, Task<bool>> condition)
     {
         _condition = condition;
 
@@ -23,10 +23,10 @@ public class ConditionalCommandBuilder
     }
 
 
-    public ConditionalCommandBuilder WithLambdaIfTrue(Func<UpdateListenerCommandFactoryArgs, ICommandHandler> factory)
+    public ConditionalCommandBuilder WithLambdaIfTrue(Func<UpdateListenerCommandExecutionArgs, ICommandHandler> factory)
     {
         _ifOkHandler = (args) => {
-            return new LambdaCommandFactory<UpdateListenerCommandFactoryArgs>(factory, args);
+            return new LambdaCommandFactory<UpdateListenerCommandExecutionArgs>(factory, args);
         };
 
         return this;
@@ -40,17 +40,17 @@ public class ConditionalCommandBuilder
             });
     }
 
-    public ConditionalCommandBuilder WithLambdaIfFalse(Func<UpdateListenerCommandFactoryArgs, ICommandHandler> factory)
+    public ConditionalCommandBuilder WithLambdaIfFalse(Func<UpdateListenerCommandExecutionArgs, ICommandHandler> factory)
     {
         _ifNotOkHandler = (args) => {
-            return new LambdaCommandFactory<UpdateListenerCommandFactoryArgs>(factory, args);
+            return new LambdaCommandFactory<UpdateListenerCommandExecutionArgs>(factory, args);
         };
 
         return this;
     }
 
 
-    public ConditionalCommand Build(UpdateListenerCommandFactoryArgs args)
+    public ConditionalCommand Build(UpdateListenerCommandExecutionArgs args)
     {
         if(_condition is null)
             throw new ArgumentNullException(nameof(_condition));

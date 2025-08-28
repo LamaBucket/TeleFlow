@@ -13,10 +13,10 @@ public class MultiStepCommandBuilder<TState>
 
     private Func<MultiStepCommandBuilderArgs<TState>, IHandlerFactory<IHandler<TState>, TState>>? _resultHandlerFactory;
 
-    private Func<UpdateListenerCommandFactoryArgs, State<TState>>? _state;
+    private Func<UpdateListenerCommandExecutionArgs, State<TState>>? _state;
 
 
-    public MultiStepCommandBuilder<TState> SetDefaultStateValueBasedOnArgs(Func<UpdateListenerCommandFactoryArgs, TState> value)
+    public MultiStepCommandBuilder<TState> SetDefaultStateValueBasedOnArgs(Func<UpdateListenerCommandExecutionArgs, TState> value)
     {
         _state = (args) => { return new(value.Invoke(args)); };
 
@@ -75,17 +75,17 @@ public class MultiStepCommandBuilder<TState>
     }
 
 
-    public MultiStepCommandBuilder<TState> WithLambdaResult(Func<UpdateListenerCommandFactoryArgs, IHandler<TState>> handlerFactory)
+    public MultiStepCommandBuilder<TState> WithLambdaResult(Func<UpdateListenerCommandExecutionArgs, IHandler<TState>> handlerFactory)
     {
         _resultHandlerFactory = (args) => {
-            return new LambdaHandlerFactory<IHandler<TState>, TState, UpdateListenerCommandFactoryArgs>(handlerFactory, args.UpdateListenerBuilderArgs);
+            return new LambdaHandlerFactory<IHandler<TState>, TState, UpdateListenerCommandExecutionArgs>(handlerFactory, args.UpdateListenerBuilderArgs);
         };
 
         return this;
     }
 
 
-    public StateCommand<TState> Build(UpdateListenerCommandFactoryArgs args)
+    public StateCommand<TState> Build(UpdateListenerCommandExecutionArgs args)
     {
         if(_nextFactory is null)
             throw new ArgumentNullException(nameof(_nextFactory));

@@ -4,13 +4,13 @@ namespace LisBot.Common.Telegram.Models;
 
 public class MultiStepCommandBuilderArgs<TState>
 {
-    public UpdateListenerCommandFactoryArgs UpdateListenerBuilderArgs { get; init; }
+    public UpdateListenerCommandExecutionArgs UpdateListenerBuilderArgs { get; init; }
 
     public State<TState> State { get; init; }
 
     public StepChainBuilder StepChainBuilder { get; init; }
 
-    public MultiStepCommandBuilderArgs(UpdateListenerCommandFactoryArgs updateListenerBuilderArgs, State<TState> state, StepChainBuilder stepChainBuilder)
+    public MultiStepCommandBuilderArgs(UpdateListenerCommandExecutionArgs updateListenerBuilderArgs, State<TState> state, StepChainBuilder stepChainBuilder)
     {
         UpdateListenerBuilderArgs = updateListenerBuilderArgs;
         State = state;

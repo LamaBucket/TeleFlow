@@ -11,15 +11,15 @@ public class UpdateListenerCommandFactoryBuilder
     private readonly Dictionary<string, IHandlerFactoryWithArgs<ICommandHandler, Update, NavigatorFactoryArgs>> _factories;
 
 
-    private readonly Queue<Action<UpdateListenerFactoryBuildArgs>> _oneTimeSetupActionQueue;
+    private readonly Queue<Action<UpdateListenerCommandBuildArgs>> _oneTimeSetupActionQueue;
 
     private bool _oneTimeSetupComplete;
 
 
-    private readonly Queue<Action<UpdateListenerFactoryBuildArgs>> _setupQueue;
+    private readonly Queue<Action<UpdateListenerCommandBuildArgs>> _setupQueue;
 
 
-    public UpdateListenerCommandFactoryBuilder WithAuthentication(Action<UpdateListenerCommandFactoryBuilder> options, Func<UpdateListenerCommandFactoryArgs, ICommandHandler> handlerIfNotAuthenticated)
+    public UpdateListenerCommandFactoryBuilder WithAuthentication(Action<UpdateListenerCommandFactoryBuilder> options, Func<UpdateListenerCommandExecutionArgs, ICommandHandler> handlerIfNotAuthenticated)
     {
         UpdateListenerCommandFactoryBuilder builder = new();
 
@@ -81,7 +81,7 @@ public class UpdateListenerCommandFactoryBuilder
 
     public UpdateListenerCommandFactoryBuilder WithSendText(string command, string text)
     {
-        return WithLambda(command, (UpdateListenerCommandFactoryArgs args) => {
+        return WithLambda(command, (UpdateListenerCommandExecutionArgs args) => {
             return new SendTextCommand(args.MessageServiceString, text);
         });
     }
@@ -96,13 +96,13 @@ public class UpdateListenerCommandFactoryBuilder
     }
 
     
-    public UpdateListenerCommandFactoryBuilder WithLambda(string command, Func<UpdateListenerCommandFactoryArgs, ICommandHandler> factory)
+    public UpdateListenerCommandFactoryBuilder WithLambda(string command, Func<UpdateListenerCommandExecutionArgs, ICommandHandler> factory)
     {
-        _setupQueue.Enqueue((UpdateListenerFactoryBuildArgs args) => {
+        _setupQueue.Enqueue((UpdateListenerCommandBuildArgs args) => {
             _factories.Add(command, new LambdaCommandFactoryWithArgs<NavigatorFactoryArgs>((navigatorArgs) => {
 
-                var listenerCommandTimeArgs = new UpdateListenerCommandFactoryArgs(navigatorArgs, args.MessageServiceString, args.MessageService, args.MessageServiceWithReplyButton, args.ChatIdProvider, args.Navigator, args.ReplyMarkupManager, args.AuthenticationService);
-                var listenerArgsFactory = new LambdaCommandFactory<UpdateListenerCommandFactoryArgs>(factory, listenerCommandTimeArgs);
+                var listenerCommandTimeArgs = new UpdateListenerCommandExecutionArgs(navigatorArgs, args);
+                var listenerArgsFactory = new LambdaCommandFactory<UpdateListenerCommandExecutionArgs>(factory, listenerCommandTimeArgs);
                 
                 return listenerArgsFactory.Create();
             }));
@@ -111,7 +111,7 @@ public class UpdateListenerCommandFactoryBuilder
         return this;
     }
 
-    public UniversalCommandFactory Build(UpdateListenerFactoryBuildArgs args)
+    public UniversalCommandFactory Build(UpdateListenerCommandBuildArgs args)
     {
         UniversalCommandFactory result = new();
 
@@ -127,7 +127,7 @@ public class UpdateListenerCommandFactoryBuilder
         return result;
     }
 
-    private void SetupFactory(UpdateListenerFactoryBuildArgs args)
+    private void SetupFactory(UpdateListenerCommandBuildArgs args)
     {
         if (!_oneTimeSetupComplete)
         {

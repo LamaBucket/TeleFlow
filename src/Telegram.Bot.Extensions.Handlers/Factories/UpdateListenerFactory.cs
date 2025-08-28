@@ -1,53 +1,54 @@
 using LisBot.Common.Telegram.Factories.CommandFactories;
+using LisBot.Common.Telegram.Models;
 using LisBot.Common.Telegram.Services;
 using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Factories;
 
-public class UpdateListenerFactory : IHandlerFactoryWithArgs<UpdateListener, Update, IChatIdProvider>
+public class UpdateListenerFactory : IHandlerFactoryWithArgs<IHandler<Update>, Update, UpdateDistributorNextHandlerBuildArgs>
 {
-    private readonly Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs> _handlerFactory;
+    private readonly Func<UpdateDistributorNextHandlerBuildArgs, INavigatorHandler, IHandlerFactoryWithArgs> _handlerFactory;
 
-    private readonly Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs<ICommandHandler, Update, string>> _navigatorFactory;
+    private readonly Func<UpdateDistributorNextHandlerBuildArgs, INavigatorHandler, IHandlerFactoryWithArgs<ICommandHandler, Update, string>> _navigatorFactory;
 
-    private IChatIdProvider? _chatIdProvider;
+    private UpdateDistributorNextHandlerBuildArgs? _args;
 
-    public UpdateListener Create()
+    public IHandler<Update> Create()
     {
-        if(_chatIdProvider is null)
-            throw new ArgumentNullException(nameof(_chatIdProvider));
+        if(_args is null)
+            throw new ArgumentNullException(nameof(_args));
 
 
         var handlerFactory = (INavigatorHandler navHandler) =>
         {
-            return _handlerFactory.Invoke(_chatIdProvider, navHandler);
+            return _handlerFactory.Invoke(_args, navHandler);
         };
 
         var navigatorFactory = (INavigatorHandler navHandler) =>
         {
-            return _navigatorFactory.Invoke(_chatIdProvider, navHandler);
+            return _navigatorFactory.Invoke(_args, navHandler);
         };
 
         var listener = new UpdateListener(handlerFactory, navigatorFactory);
 
 
-        _chatIdProvider = null;
+        _args = null;
 
         return listener;
     }
 
-    public void SetContext(IChatIdProvider args)
+    public void SetContext(UpdateDistributorNextHandlerBuildArgs args)
     {
-        _chatIdProvider = args;
+        _args = args;
     }
 
-    public UpdateListenerFactory(Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs> commandFactory, Func<IChatIdProvider, INavigatorHandler, IHandlerFactoryWithArgs<ICommandHandler, Update, string>> navigatorFactory)
+    public UpdateListenerFactory(Func<UpdateDistributorNextHandlerBuildArgs, INavigatorHandler, IHandlerFactoryWithArgs> commandFactory, Func<UpdateDistributorNextHandlerBuildArgs, INavigatorHandler, IHandlerFactoryWithArgs<ICommandHandler, Update, string>> navigatorFactory)
     {
         _handlerFactory = commandFactory;
         _navigatorFactory = navigatorFactory;
     }
 
-    public UpdateListenerFactory(Func<IChatIdProvider, INavigatorHandler, UniversalCommandFactory> universalCommandFactory) : this(universalCommandFactory, universalCommandFactory)
+    public UpdateListenerFactory(Func<UpdateDistributorNextHandlerBuildArgs, INavigatorHandler, UniversalCommandFactory> universalCommandFactory) : this(universalCommandFactory, universalCommandFactory)
     {
         
     }

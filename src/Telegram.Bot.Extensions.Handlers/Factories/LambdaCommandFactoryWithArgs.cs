@@ -3,31 +3,9 @@ using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Factories;
 
-public class LambdaCommandFactoryWithArgs<TArgs> : IHandlerFactoryWithArgs<ICommandHandler, Update, TArgs> where TArgs: class
+public class LambdaCommandFactoryWithArgs<TArgs> : LambdaHandlerFactoryWithArgs<ICommandHandler, Update, TArgs> where TArgs: class
 {
-    private TArgs? _args;
-
-    private Func<TArgs, ICommandHandler> _factory;
-
-    public ICommandHandler Create()
+    public LambdaCommandFactoryWithArgs(Func<TArgs, ICommandHandler> factory) : base(factory)
     {
-        if(_args is null)
-            throw new ArgumentNullException(nameof(_args));
-
-        var handler = _factory.Invoke(_args);
-
-        _args = null;
-
-        return handler;
-    }
-
-    public void SetContext(TArgs args)
-    {
-        _args = args;
-    }
-
-    public LambdaCommandFactoryWithArgs(Func<TArgs, ICommandHandler> factory)
-    {
-        _factory = factory;
     }
 }

@@ -8,10 +8,7 @@ public class UpdateDistributor : IHandler<Update>
 {
     private readonly Dictionary<long, IHandler<Update>> _chatHandlers;
 
-
-    private readonly IHandlerFactoryWithArgs<UpdateListener, Update, IChatIdProvider> _updateListenerFactory;
-
-    private readonly Func<UpdateListener, IHandler<Update>> _updateListenerPostCreationSetup;
+    private readonly IHandlerFactoryWithArgs<IHandler<Update>, Update, IChatIdProvider> _nextHandlerFactory;
 
 
     public async Task Handle(Update args)
@@ -26,9 +23,7 @@ public class UpdateDistributor : IHandler<Update>
 
         if(!_chatHandlers.ContainsKey(chatId))
         {   
-            var updateListener = GenerateUpdateListener(chatIdProvider);
-
-            var handler = _updateListenerPostCreationSetup.Invoke(updateListener);
+            var handler = GenerateNextHandler(chatIdProvider);
 
             _chatHandlers.Add(chatId, handler);
         }
@@ -36,16 +31,15 @@ public class UpdateDistributor : IHandler<Update>
         return _chatHandlers[chatId];
     }
 
-    private UpdateListener GenerateUpdateListener(IChatIdProvider chatIdProvider)
+    private IHandler<Update> GenerateNextHandler(IChatIdProvider chatIdProvider)
     {
-        _updateListenerFactory.SetContext(chatIdProvider);
-        return _updateListenerFactory.Create();
+        _nextHandlerFactory.SetContext(chatIdProvider);
+        return _nextHandlerFactory.Create();
     }
 
-    public UpdateDistributor(IHandlerFactoryWithArgs<UpdateListener, Update, IChatIdProvider> userHandlerFactory, Func<UpdateListener, IHandler<Update>> updateListenerPostCreationSetup)
+    public UpdateDistributor(IHandlerFactoryWithArgs<IHandler<Update>, Update, IChatIdProvider> nextHandlerFactory)
     {
         _chatHandlers = [];
-        _updateListenerFactory = userHandlerFactory;
-        _updateListenerPostCreationSetup = updateListenerPostCreationSetup;
+        _nextHandlerFactory = nextHandlerFactory;
     }
 }
