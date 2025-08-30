@@ -1,5 +1,3 @@
-using System.Runtime.Serialization;
-
 namespace LisBot.Common.Telegram.Exceptions;
 
 public class UserException : Exception

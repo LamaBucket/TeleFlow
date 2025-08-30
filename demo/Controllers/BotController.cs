@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using LisBot.Common.Telegram;
 using LisBot.Common.Telegram.Factories;
 using Microsoft.AspNetCore.Mvc;

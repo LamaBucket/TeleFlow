@@ -1,6 +1,5 @@
 using System.Text;
 using demo.Models;
-using demo.Services;
 using demo.ViewModels;
 using LisBot.Common.Telegram;
 using LisBot.Common.Telegram.Attributes;
@@ -8,13 +7,8 @@ using LisBot.Common.Telegram.Builders;
 using LisBot.Common.Telegram.Commands;
 using LisBot.Common.Telegram.Commands.MultiStep;
 using LisBot.Common.Telegram.Commands.MultiStep.StepCommands;
-using LisBot.Common.Telegram.Factories;
 using LisBot.Common.Telegram.Factories.CommandFactories;
 using LisBot.Common.Telegram.Models;
-using LisBot.Common.Telegram.Services;
-using Telegram.Bot;
-using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
 
 namespace demo;
 

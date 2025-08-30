@@ -1,13 +1,15 @@
 using LisBot.Common.Telegram.Commands.MultiStep;
 using LisBot.Common.Telegram.Exceptions;
 using LisBot.Common.Telegram.Factories.CommandFactories;
+using LisBot.Common.Telegram.Services;
 using LisBot.Common.Telegram.ViewModels;
 using LisBot.Common.Telegram.ViewModels.CallbackQuery;
 using Newtonsoft.Json;
+using Telegram.Bot.Extensions.Handlers.Services.Markup;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace LisBot.Common.Telegram.Services;
+namespace Telegram.Bot.Extensions.Handlers.Services.Messaging;
 
 public class StateValidationMessageFormatter<TState> 
 {

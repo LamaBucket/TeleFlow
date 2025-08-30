@@ -1,4 +1,4 @@
-namespace LisBot.Common.Telegram.Services;
+namespace Telegram.Bot.Extensions.Handlers.Services.Messaging;
 
 public interface IMessageServiceFactory<TMessage>
 {

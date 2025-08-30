@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace LisBot.Common.Telegram.Services;
+namespace Telegram.Bot.Extensions.Handlers.Services.Messaging;
 
 public class MessageBuilder
 {

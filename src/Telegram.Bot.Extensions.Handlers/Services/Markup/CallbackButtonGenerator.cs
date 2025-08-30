@@ -1,6 +1,6 @@
 using LisBot.Common.Telegram.ViewModels.CallbackQuery;
 
-namespace LisBot.Common.Telegram.Services;
+namespace Telegram.Bot.Extensions.Handlers.Services.Markup;
 
 public class CallbackButtonGenerator
 {

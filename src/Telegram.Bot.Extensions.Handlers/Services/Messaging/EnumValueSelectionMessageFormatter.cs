@@ -2,19 +2,23 @@ using LisBot.Common.Telegram.Exceptions;
 using LisBot.Common.Telegram.ViewModels;
 using LisBot.Common.Telegram.ViewModels.CallbackQuery;
 using Newtonsoft.Json;
+using Telegram.Bot.Extensions.Handlers.Services.Markup;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace LisBot.Common.Telegram.Services;
+namespace Telegram.Bot.Extensions.Handlers.Services.Messaging;
 
-public class ListValueSelectionMessageFormatter<TEnumerable>  where TEnumerable : class
+public class EnumValueSelectionMessageFormatter<TEnum> 
+    where TEnum : Enum
 {
+    private static IEnumerable<TEnum> EnumValues => Enum.GetValues(typeof(TEnum)).Cast<TEnum>();
+
     private bool CanHaveNoResult => _noSelectButtonName is not null;
 
 
     private bool _awaitsUserResponse;
 
-    private readonly Dictionary<int, TEnumerable> _lastSessionDisplayButtonContext;
+    private readonly Dictionary<int, TEnum> _lastSessionDisplayButtonContext;
 
     private readonly MessageBuilderOptions _messageBuilderOptions;
 
@@ -23,7 +27,7 @@ public class ListValueSelectionMessageFormatter<TEnumerable>  where TEnumerable 
 
     private readonly string? _noSelectButtonName;
 
-    private readonly IEnumerable<Tuple<string, TEnumerable>> _btnDisplayNameProviders;
+    private readonly IEnumerable<Tuple<string, TEnum>> _btnDisplayNameProviders;
 
 
     private readonly CallbackButtonGenerator _buttonGenerator;
@@ -35,6 +39,7 @@ public class ListValueSelectionMessageFormatter<TEnumerable>  where TEnumerable 
         {
             _lastSessionDisplayButtonContext.Clear();
             _buttonGenerator.StartNewSession();
+
 
             MessageBuilder builder = new(_messageBuilderOptions);
 
@@ -77,13 +82,13 @@ public class ListValueSelectionMessageFormatter<TEnumerable>  where TEnumerable 
     }
 
 
-    public TEnumerable ParseUserResponseCannotBeEmpty(Update args)
+    public TEnum ParseUserResponseCannotBeEmpty(Update args)
     {
         var result = ParseUserResponse(args);
 
         if(result is not null)
         {
-            return result;
+            return result.Item1;
         }
         else
         {
@@ -94,7 +99,7 @@ public class ListValueSelectionMessageFormatter<TEnumerable>  where TEnumerable 
         }
     }
 
-    public TEnumerable? ParseUserResponse(Update args)
+    public Tuple<TEnum>? ParseUserResponse(Update args)
     {
         if(!_awaitsUserResponse)
             throw new InvalidOperationException("That Command does not await user response");
@@ -109,7 +114,7 @@ public class ListValueSelectionMessageFormatter<TEnumerable>  where TEnumerable 
         return result;
     }
 
-    private TEnumerable? ParseCallbackQuery(CallbackQuery query)
+    private Tuple<TEnum>? ParseCallbackQuery(CallbackQuery query)
     {
         if(string.IsNullOrEmpty(query.Data))
             throw new ArgumentException($"No data in {nameof(query)}");
@@ -118,7 +123,6 @@ public class ListValueSelectionMessageFormatter<TEnumerable>  where TEnumerable 
 
         if (!_buttonGenerator.IsFromCurrentSession(btnViewModel))
             throw new InvalidUserInput("The button is not from current session");
-
         
         if(_buttonGenerator.IsSpecialButton(btnViewModel))
             return null;
@@ -128,8 +132,9 @@ public class ListValueSelectionMessageFormatter<TEnumerable>  where TEnumerable 
         if(factory is null)
             throw new ArgumentException("The Button UID was not found");
 
-        return factory;
+        return new(factory);
     }
+
 
 
     private void ToggleUserLock()
@@ -138,7 +143,7 @@ public class ListValueSelectionMessageFormatter<TEnumerable>  where TEnumerable 
     }
 
 
-    public ListValueSelectionMessageFormatter(MessageBuilderOptions messageBuilderOptions, IEnumerable<Tuple<string, TEnumerable>> btnDisplayNameProviders, string onCommandCreatedMessage, string? noSelectButtonName = null)
+    public EnumValueSelectionMessageFormatter(MessageBuilderOptions messageBuilderOptions, IEnumerable<Tuple<string, TEnum>> btnDisplayNameProviders, string onCommandCreatedMessage, string? noSelectButtonName = null)
     {
         _awaitsUserResponse = false;
         _lastSessionDisplayButtonContext = new();
@@ -152,7 +157,7 @@ public class ListValueSelectionMessageFormatter<TEnumerable>  where TEnumerable 
         _buttonGenerator = new();
     }
 
-    public ListValueSelectionMessageFormatter(MessageBuilderOptions messageBuilderOptions, IEnumerable<TEnumerable> values, Func<TEnumerable, string> enumFormatter, string onCommandCreatedMessage, string? noSelectButtonName = null)
+    public EnumValueSelectionMessageFormatter(MessageBuilderOptions messageBuilderOptions, Func<TEnum, string?> enumFormatter, string onCommandCreatedMessage, string? noSelectButtonName = null)
     {
         _awaitsUserResponse = false;
         _lastSessionDisplayButtonContext = new();
@@ -162,11 +167,13 @@ public class ListValueSelectionMessageFormatter<TEnumerable>  where TEnumerable 
         _onCommandCreatedMessage = onCommandCreatedMessage;
         _noSelectButtonName = noSelectButtonName;
 
-        var btnDisplayNameProviders = new List<Tuple<string, TEnumerable>>();
+        var btnDisplayNameProviders = new List<Tuple<string, TEnum>>();
         
-        foreach(var value in values)
+        foreach(var value in EnumValues)
         {
-            btnDisplayNameProviders.Add(new(enumFormatter.Invoke(value), value));
+            var displayName = enumFormatter.Invoke(value);
+            if(displayName is not null)
+                btnDisplayNameProviders.Add(new(displayName, value));
         }
 
         _btnDisplayNameProviders = btnDisplayNameProviders;
