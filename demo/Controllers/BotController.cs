@@ -2,7 +2,9 @@ using System.Diagnostics;
 using LisBot.Common.Telegram;
 using LisBot.Common.Telegram.Factories;
 using Microsoft.AspNetCore.Mvc;
+using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace demo.Controllers;
 
@@ -11,6 +13,16 @@ public class BotController : Controller
     private readonly UpdateDistributorFactory _updateDistributorFactory;
 
     private IHandler<Update> UpdateDistributor => _updateDistributorFactory.Create();
+
+
+    [HttpGet("setWebhook")]
+    public async Task<string> SetWebHook([FromServices] ITelegramBotClient bot, string webhook, CancellationToken ct)
+    {
+        var webhookUrl = webhook;
+        await bot.SetWebhookAsync(webhookUrl, allowedUpdates: [UpdateType.Message, UpdateType.CallbackQuery], cancellationToken: ct);
+    
+        return $"Webhook set to {webhookUrl}";
+    }
 
 
     [HttpPost("/botUpdate")]

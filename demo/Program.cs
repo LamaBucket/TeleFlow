@@ -6,7 +6,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
-const string BOT_TOKEN = "YourBotToken";
+string BOT_TOKEN = System.IO.File.ReadAllText("bot-token.txt");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +22,7 @@ builder.Services.AddSingleton<IReplyMarkupManagerFactory, ReplyMarkupManagerFact
 
 builder.Services.AddSingleton<IAuthenticationServiceFactory, DemoAuthenticationServiceFactory>();
 
-builder.Services.AddSingleton<UpdateDistributorFactory>();
+builder.Services.AddSingleton<UpdateDistributorFactory, DemoUpdateDistributorFactory>();
 
 builder.Services.AddHttpClient("tgwebhook")
                 .RemoveAllLoggers()

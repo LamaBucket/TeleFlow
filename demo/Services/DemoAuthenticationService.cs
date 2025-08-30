@@ -10,7 +10,7 @@ public class DemoAuthenticationService : IAuthenticationService
         {
             var random = new Random();
 
-            return random.Next(0, 1) == 1;
+            return random.Next(0, 2) == 1;
         });
     }
 }

@@ -2,6 +2,7 @@ using System.Text;
 using demo.Models;
 using demo.Services;
 using demo.ViewModels;
+using LisBot.Common.Telegram;
 using LisBot.Common.Telegram.Attributes;
 using LisBot.Common.Telegram.Builders;
 using LisBot.Common.Telegram.Commands;
@@ -26,6 +27,7 @@ public static class AppExtensions
         .WithMultiStep<DemoViewModel>("/what-is-multi-step", options =>
         {
             options
+            .SetDefaultStateValue(new())
             .WithValidation(options =>
             {
                 options
@@ -68,6 +70,18 @@ public static class AppExtensions
                         return listObject.DisplayName;
                     }, next);
                 }, "List Object Selection");
+            })
+            .WithLambdaResult(args =>
+            {
+                return new LambdaHandler<DemoViewModel>(async (vm) =>
+                {
+                    await args.MessageServiceString.SendMessage("You have successfully completed the multi step command. Here is the data you entered:");
+                    await args.MessageServiceString.SendMessage($"Full Name: {vm.UserFullName}");
+                    await args.MessageServiceString.SendMessage($"Library Rating: {vm.LibraryRating}");
+                    await args.MessageServiceString.SendMessage($"List Object: {vm.ListObject.DisplayName} with value {vm.ListObject.Value}");
+
+                    await args.Navigator.Handle("/start");
+                });
             });
         })
 
