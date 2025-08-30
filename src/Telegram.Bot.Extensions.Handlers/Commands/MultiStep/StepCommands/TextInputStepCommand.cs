@@ -1,11 +1,12 @@
 using LisBot.Common.Telegram.Exceptions;
+using Telegram.Bot.Extensions.Handlers.Services.InputValidators;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace LisBot.Common.Telegram.Commands.MultiStep.StepCommands;
 
-public class TextInputStepCommand : StepCommand
+public class TextInputStepCommand : StepCommandWithValidation
 {
     private readonly IMessageService<string> _messageService;
 
@@ -18,7 +19,7 @@ public class TextInputStepCommand : StepCommand
         await _messageService.SendMessage(_onCommandCreatedMessage);
     }
 
-    protected override async Task HandleCurrentStep(Update args)
+    protected override async Task HandleValidInput(Update args)
     {
         if(args.Type != UpdateType.Message || args.Message is null || args.Message.Text is null)
             throw new InvalidUserInput("This command accepts only text messages.");
@@ -32,7 +33,8 @@ public class TextInputStepCommand : StepCommand
     public TextInputStepCommand(IMessageService<string> messageService,
                                 string onCommandCreatedMessage,
                                 Func<string, Task> onHandleUserMessage,
-                                StepCommand? next) : base(next)
+                                IUserInputValidator validator,
+                                StepCommand? next) : base(next, validator)
     {
         _messageService = messageService;
         _onCommandCreatedMessage = onCommandCreatedMessage;

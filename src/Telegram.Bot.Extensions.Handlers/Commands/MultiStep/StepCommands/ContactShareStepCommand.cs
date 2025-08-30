@@ -1,4 +1,5 @@
 using LisBot.Common.Telegram.Exceptions;
+using Telegram.Bot.Extensions.Handlers.Services.InputValidators;
 using Telegram.Bot.Extensions.Handlers.Services.Markup;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 using Telegram.Bot.Types;
@@ -7,7 +8,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace LisBot.Common.Telegram.Commands.MultiStep.StepCommands;
 
-public class ContactShareStepCommand : StepCommand
+public class ContactShareStepCommand : StepCommandWithValidation
 {
     private readonly IMessageService<Tuple<string, KeyboardButton>> _messageService;
 
@@ -26,7 +27,7 @@ public class ContactShareStepCommand : StepCommand
         await _messageService.SendMessage(new(_onCommandCreatedMessage, KeyboardButton.WithRequestContact(_shareContactButtonDisplayName)));
     }
 
-    protected override async Task HandleCurrentStep(Update args)
+    protected override async Task HandleValidInput(Update args)
     {
         if(args.Type != UpdateType.Message || args.Message is null)
             throw new InvalidUserInput("This command accepts only messages.");
@@ -56,7 +57,8 @@ public class ContactShareStepCommand : StepCommand
                                    Action<Contact> onHandleUserMessage,
                                    string onCommandCreatedMessage,
                                    string shareContactButtonDisplayName,
-                                   StepCommand? next) : base(next)
+                                   IUserInputValidator userInputValidator,
+                                   StepCommand? next) : base(next, userInputValidator)
     {
         _messageService = messageService;
         _replyMarkupManager = replyMarkupManager;
