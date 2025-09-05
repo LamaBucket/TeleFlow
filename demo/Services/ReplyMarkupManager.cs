@@ -16,6 +16,11 @@ public class ReplyMarkupManager : IReplyMarkupManager
         await _botClient.DeleteMessageAsync(_chatId, deleteMessage.MessageId);
     }
 
+    public async Task CreateReplyButtonMarkup(string message, ReplyKeyboardMarkup markup)
+    {
+        await _botClient.SendTextMessageAsync(_chatId, message, replyMarkup: markup);
+    }
+
     public ReplyMarkupManager(long chatId, ITelegramBotClient botClient)
     {
         _chatId = chatId;

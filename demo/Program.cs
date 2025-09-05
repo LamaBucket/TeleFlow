@@ -16,9 +16,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSingleton<IMessageServiceFactory<Message>, UniversalMessageServiceFactory>();
+builder.Services.AddSingleton<IMessageServiceFactory<IMessageServiceWithEdit<Message>, Message>, UniversalMessageServiceFactory>();
 builder.Services.AddSingleton<IMessageServiceFactory<string>, UniversalMessageServiceFactory>();
-builder.Services.AddSingleton<IMessageServiceFactory<Tuple<string, KeyboardButton>>, UniversalMessageServiceFactory>();
+
 
 builder.Services.AddSingleton<IReplyMarkupManagerFactory, ReplyMarkupManagerFactory>();
 

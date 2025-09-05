@@ -49,6 +49,38 @@ public class DemoViewModel
     }
 
     private DemoListObject? _listObject;
+
+
+    [ValidateStateProperty("Date")]
+    public DateOnly SelectedDate
+    {
+        get
+        {
+            return _selectedDate ?? throw new ArgumentNullException(nameof(_selectedDate));
+        }
+        set
+        {
+            _selectedDate = value;
+        }
+    }
+
+    private DateOnly? _selectedDate;
+    
+    
+    [ValidateStateProperty("Phone Number")]
+    public string PhoneNumber
+    {
+        get
+        {
+            return _phoneNumber ?? throw new ArgumentNullException(nameof(_phoneNumber));
+        }
+        set
+        {
+            _phoneNumber = value;
+        }
+    }
+
+    private string? _phoneNumber;
 }
 
 public enum DemoEnum

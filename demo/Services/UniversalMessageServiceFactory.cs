@@ -6,9 +6,8 @@ using Telegram.Bot.Types.ReplyMarkups;
 namespace demo.Services;
 
 public class UniversalMessageServiceFactory
-  : IMessageServiceFactory<Message>,
-    IMessageServiceFactory<string>,
-    IMessageServiceFactory<Tuple<string, KeyboardButton>>
+  : IMessageServiceFactory<IMessageServiceWithEdit<Message>, Message>,
+    IMessageServiceFactory<string>
 {
     private readonly ITelegramBotClient _client;
 
@@ -25,22 +24,15 @@ public class UniversalMessageServiceFactory
         return _messageServiceCache[chatId];
     }
 
-
-    public IMessageService<Message> CreateMessageService(long chatId)
+    IMessageServiceWithEdit<Message> IMessageServiceFactory<IMessageServiceWithEdit<Message>, Message>.CreateMessageService(long chatId)
     {
         return Build(chatId);
     }
 
-    IMessageService<string> IMessageServiceFactory<string>.CreateMessageService(long chatId)
+    IMessageService<string> IMessageServiceFactory<IMessageService<string>, string>.CreateMessageService(long chatId)
     {
         return Build(chatId);
     }
-
-    IMessageService<Tuple<string, KeyboardButton>> IMessageServiceFactory<Tuple<string, KeyboardButton>>.CreateMessageService(long chatId)
-    {
-        return Build(chatId);
-    }
-
 
     public UniversalMessageServiceFactory(ITelegramBotClient client)
     {

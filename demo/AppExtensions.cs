@@ -10,6 +10,7 @@ using LisBot.Common.Telegram.Commands.MultiStep.StepCommands;
 using LisBot.Common.Telegram.Factories.CommandFactories;
 using LisBot.Common.Telegram.Models;
 using Telegram.Bot.Extensions.Handlers.Services.InputValidators;
+using Telegram.Bot.Types;
 
 namespace demo;
 
@@ -19,36 +20,22 @@ public static class AppExtensions
     {
         builder
         .WithSendText("/start", "Welcome to the bot!")
-        .WithMultiStep<List<DateOnly>>("/test-calendar", options =>
-        {
-            options
-            .SetDefaultStateValue(new())
-            .WithValidation(options =>
-            {
-                options.WithStepWithValidationLambdaFactory((args, next) =>
-                {
-                    return new DateSelectionStepCommand(next, new NoValidationUserValidator(), args.UpdateListenerBuilderArgs.MessageService, (date) =>
-                    {
-                        args.State.CurrentValue.Add(date);
-                    }, new(DateOnly.FromDateTime(DateTime.Today)));
-                }, "calendar");
-            })
-            .WithLambdaResult((args) =>
-            {
-                return new LambdaHandler<List<DateOnly>>(async (date) =>
-                {
-                    await args.MessageServiceString.SendMessage($"The date is: {date[0].ToShortDateString()}");
-                    await args.Navigator.Handle("/start");
-                });
-            });
-        })
-        .WithMultiStep<DemoViewModel>("/what-is-multi-step", options =>
+        .WithMultiStep<DemoViewModel>("/multistep", options =>
         {
             options
             .SetDefaultStateValue(new())
             .WithValidation(options =>
             {
                 options
+                .WithStepWithValidationLambdaFactory((args, next) =>
+                {
+                    return new ContactShareStepCommand(args.UpdateListenerBuilderArgs.ReplyMarkupManager, (userInput) =>
+                    {
+                        args.State.CurrentValue.PhoneNumber = userInput.PhoneNumber;
+                    }, "Please Share Your Phone. This will NOT go anywhere", "Share My Phone",
+                    new PhoneNumberBelongsToUserValidator(args.UpdateListenerBuilderArgs.MessageServiceString, args.UpdateListenerBuilderArgs.ChatIdProvider),
+                    next);
+                }, "Phone Number")
                 .WithStepWithValidationLambdaFactory((args, next) =>
                 {
                     return new TextInputStepCommand(args.UpdateListenerBuilderArgs.MessageServiceString, "Please enter your full name", async (message) =>
@@ -87,7 +74,14 @@ public static class AppExtensions
                     {
                         return listObject.DisplayName;
                     }, next);
-                }, "List Object Selection");
+                }, "List Object Selection")
+                .WithStepWithValidationLambdaFactory((args, next) =>
+                {
+                    return new DateSelectionStepCommand(next, new NoValidationUserValidator(), args.UpdateListenerBuilderArgs.MessageService, (date) =>
+                    {
+                        args.State.CurrentValue.SelectedDate = date;
+                    }, new(DateOnly.FromDateTime(DateTime.Today)));
+                }, "Date");
             })
             .WithLambdaResult(args =>
             {
@@ -97,6 +91,8 @@ public static class AppExtensions
                     await args.MessageServiceString.SendMessage($"Full Name: {vm.UserFullName}");
                     await args.MessageServiceString.SendMessage($"Library Rating: {vm.LibraryRating}");
                     await args.MessageServiceString.SendMessage($"List Object: {vm.ListObject.DisplayName} with value {vm.ListObject.Value}");
+                    await args.MessageServiceString.SendMessage($"Date: {vm.SelectedDate.ToShortDateString()}");
+                    await args.MessageServiceString.SendMessage($"Phone: {vm.PhoneNumber}");
 
                     await args.Navigator.Handle("/start");
                 });

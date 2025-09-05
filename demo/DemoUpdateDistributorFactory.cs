@@ -27,11 +27,10 @@ public class DemoUpdateDistributorFactory : UpdateDistributorFactory
 
     }
 
-     public DemoUpdateDistributorFactory(IMessageServiceFactory<Message> messageServiceFactory,
-                                       IMessageServiceFactory<string> messageServiceStringFactory,
-                                       IMessageServiceFactory<Tuple<string, KeyboardButton>> messageServiceWithReplyKeyboardFactory,
-                                       IReplyMarkupManagerFactory replyMarkupManagerFactory,
-                                       IAuthenticationServiceFactory authenticationServiceFactory) : base(messageServiceFactory, messageServiceStringFactory, messageServiceWithReplyKeyboardFactory, replyMarkupManagerFactory, authenticationServiceFactory)
+     public DemoUpdateDistributorFactory(IMessageServiceFactory<IMessageServiceWithEdit<Message>, Message> messageServiceFactory,
+                                        IMessageServiceFactory<string> messageServiceStringFactory,
+                                        IReplyMarkupManagerFactory replyMarkupManagerFactory,
+                                        IAuthenticationServiceFactory authenticationServiceFactory) : base(messageServiceFactory, messageServiceStringFactory, replyMarkupManagerFactory, authenticationServiceFactory)
     {
     }
 }
