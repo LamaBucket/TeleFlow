@@ -11,9 +11,11 @@ public class MessageBuilder
 {
     private readonly StringBuilder _sb;
 
-    private readonly MessageBuilderOptions _options;
+    //private readonly MessageBuilderOptions _options;
 
     private readonly Queue<InlineKeyboardButton> _buttons;
+
+    private readonly List<int> _buttonSeparators;
 
     public Message Build()
     {
@@ -30,24 +32,28 @@ public class MessageBuilder
 
     private InlineKeyboardMarkup BuildMarkup()
     {
-        List<List<InlineKeyboardButton>> markup = new();
-
+        List<List<InlineKeyboardButton>> markup = [];
         Queue<InlineKeyboardButton> buttons = new(_buttons);
 
-        while(buttons.Count != 0)
+        List<InlineKeyboardButton> currentLine = [];
+        int count = 0;
+        int sepIndex = 0;
+
+        while (buttons.Count > 0)
         {
-            int buttonColumn = 0;
-            List<InlineKeyboardButton> currentLine = new();
+            currentLine.Add(buttons.Dequeue());
+            count++;
 
-            while(buttonColumn < _options.ButtonInRowCount && buttons.Count != 0)
+            if (sepIndex < _buttonSeparators.Count && count == _buttonSeparators[sepIndex])
             {
-                currentLine.Add(buttons.Dequeue());
-
-                buttonColumn += 1;
+                markup.Add(currentLine);
+                currentLine = new();
+                sepIndex++;
             }
-
-            markup.Add(currentLine);
         }
+
+        if (currentLine.Count > 0)
+            markup.Add(currentLine);
 
         return new(markup);
     }
@@ -65,6 +71,12 @@ public class MessageBuilder
         return this;
     }
 
+
+    public MessageBuilder WithInlineButtonLine<T>(ReplyButtonModel<T> btnModel) where T : CallbackQueryViewModel
+    {
+        return WithInlineButton(btnModel).WithNewButtonLine();
+    }
+
     public MessageBuilder WithInlineButton<T>(ReplyButtonModel<T> btnModel) where T : CallbackQueryViewModel
     {
         var buttonText = btnModel.ButtonTitle;
@@ -78,10 +90,16 @@ public class MessageBuilder
         return this;
     }
 
+    public MessageBuilder WithNewButtonLine()
+    {
+        _buttonSeparators.Add(_buttons.Count);
+        return this;
+    }
+
     public MessageBuilder(MessageBuilderOptions? options = null)
     {
         _sb = new();
         _buttons = new();
-        _options = options ?? new();
+        _buttonSeparators = [];
     }
 }

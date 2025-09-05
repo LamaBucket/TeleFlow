@@ -12,27 +12,49 @@ public abstract class TemplatedMessageService : IMessageService<Message>
         var messageText = message.Text ?? throw new ArgumentNullException(nameof(message.Text));
         var messageReplyMarkup = message.ReplyMarkup;
 
-        RemovePreviousMessageReplyMarkup();
+        await RemovePreviousMessageReplyMarkup();
 
         var sentMessage = await SendMessage(messageText, messageReplyMarkup);
 
-        if(messageReplyMarkup is not null)
+
+        bool messageHasReplyMarkup = messageReplyMarkup?.InlineKeyboard.Any() ?? false;
+
+        if (messageHasReplyMarkup)
             _lastMessageWithInlineMarkup = sentMessage;
 
         return sentMessage;
     }
 
-    private void RemovePreviousMessageReplyMarkup()
+    public async Task<Message> EditMessage(int messageId, Message message)
     {
-        if(_lastMessageWithInlineMarkup is not null)
-        {
-            RemoveReplyMarkup(_lastMessageWithInlineMarkup.MessageId);
-        }
+        var messageText = message.Text ?? throw new ArgumentNullException(nameof(message.Text));
+        var messageReplyMarkup = message.ReplyMarkup;
+
+        await RemovePreviousMessageReplyMarkup();
+
+        var editedMessage = await EditMessage(messageId, messageText, messageReplyMarkup);
+
+        bool messageHasReplyMarkup = messageReplyMarkup?.InlineKeyboard.Any() ?? false;
+
+        if (messageHasReplyMarkup)
+            _lastMessageWithInlineMarkup = editedMessage;
+
+        return editedMessage;
     }
 
-    protected abstract void RemoveReplyMarkup(int messageId);
+    private async Task RemovePreviousMessageReplyMarkup()
+    {
+        if (_lastMessageWithInlineMarkup is not null)
+        {
+            await RemoveReplyMarkup(_lastMessageWithInlineMarkup.MessageId);
+        }
+
+        _lastMessageWithInlineMarkup = null;
+    }
+
+    protected abstract Task RemoveReplyMarkup(int messageId);
 
     protected abstract Task<Message> SendMessage(string messageText, IReplyMarkup? replyMarkup);
 
-
+    protected abstract Task<Message> EditMessage(int messageId, string messageText, IReplyMarkup? replyMarkup);
 }
