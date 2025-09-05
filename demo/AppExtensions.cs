@@ -9,6 +9,7 @@ using LisBot.Common.Telegram.Commands.MultiStep;
 using LisBot.Common.Telegram.Commands.MultiStep.StepCommands;
 using LisBot.Common.Telegram.Factories.CommandFactories;
 using LisBot.Common.Telegram.Models;
+using Telegram.Bot.Extensions.Handlers.Services.InputValidators;
 
 namespace demo;
 
@@ -18,6 +19,29 @@ public static class AppExtensions
     {
         builder
         .WithSendText("/start", "Welcome to the bot!")
+        .WithMultiStep<List<DateOnly>>("/test-calendar", options =>
+        {
+            options
+            .SetDefaultStateValue(new())
+            .WithValidation(options =>
+            {
+                options.WithStepWithValidationLambdaFactory((args, next) =>
+                {
+                    return new DateSelectionStepCommand(next, new NoValidationUserValidator(), args.UpdateListenerBuilderArgs.MessageService, (date) =>
+                    {
+                        args.State.CurrentValue.Add(date);
+                    }, new(DateOnly.FromDateTime(DateTime.Today)));
+                }, "calendar");
+            })
+            .WithLambdaResult((args) =>
+            {
+                return new LambdaHandler<List<DateOnly>>(async (date) =>
+                {
+                    await args.MessageServiceString.SendMessage($"The date is: {date[0].ToShortDateString()}");
+                    await args.Navigator.Handle("/start");
+                });
+            });
+        })
         .WithMultiStep<DemoViewModel>("/what-is-multi-step", options =>
         {
             options
@@ -30,7 +54,7 @@ public static class AppExtensions
                     return new TextInputStepCommand(args.UpdateListenerBuilderArgs.MessageServiceString, "Please enter your full name", async (message) =>
                     {
                         args.State.CurrentValue.UserFullName = message;
-                    }, next);
+                    }, new NoValidationUserValidator(), next);
                 }, "User Full Name")
                 .WithStepWithValidationLambdaFactory((args, next) =>
                 {
