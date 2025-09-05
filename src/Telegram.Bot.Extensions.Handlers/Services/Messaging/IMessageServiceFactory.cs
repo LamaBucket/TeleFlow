@@ -1,6 +1,11 @@
 namespace Telegram.Bot.Extensions.Handlers.Services.Messaging;
 
-public interface IMessageServiceFactory<TMessage>
+
+public interface IMessageServiceFactory<TMessageService, TMessage> where TMessageService : IMessageService<TMessage>
 {
-    IMessageService<TMessage> CreateMessageService(long chatId);
+    TMessageService CreateMessageService(long chatId);
+}
+
+public interface IMessageServiceFactory<TMessage> : IMessageServiceFactory<IMessageService<TMessage>, TMessage>
+{
 }

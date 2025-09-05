@@ -5,6 +5,4 @@ namespace Telegram.Bot.Extensions.Handlers.Services.Messaging;
 public interface IMessageService<TMessage>
 {
     Task<Message> SendMessage(TMessage message);
-
-    Task<Message> EditMessage(int messageId, TMessage message);
 }

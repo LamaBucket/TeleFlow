@@ -14,20 +14,14 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
     protected UpdateDistributor? Instance { get; set; }
 
 
-    private readonly IMessageServiceFactory<Message> _messageServiceFactory;
+    private readonly IMessageServiceFactory<IMessageServiceWithEdit<Message>, Message> _messageServiceFactory;
 
     private readonly IMessageServiceFactory<string> _messageServiceStringFactory;
-
-
-    private readonly IMessageServiceFactory<Tuple<string, KeyboardButton>> _messageServiceWithReplyKeyboardFactory;
 
 
     private readonly IReplyMarkupManagerFactory _replyMarkupManagerFactory;
 
     private readonly IAuthenticationServiceFactory _authenticationServiceFactory;
-
-
-    private Func<UpdateDistributorNextHandlerBuildArgs, IHandler<Update>, IHandler<Update>> _postBuildUpdateListenerSetup;
 
 
     public UpdateDistributor Create()
@@ -55,7 +49,6 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
         {
             UpdateDistributorNextHandlerBuildArgs args = new(_messageServiceStringFactory.CreateMessageService(chatIdProvider.GetChatId()),
                                                              _messageServiceFactory.CreateMessageService(chatIdProvider.GetChatId()),
-                                                             _messageServiceWithReplyKeyboardFactory.CreateMessageService(chatIdProvider.GetChatId()),
                                                              _replyMarkupManagerFactory.CreateReplyMarkupManager(chatIdProvider.GetChatId()),
                                                              _authenticationServiceFactory.CreateAuthenticationService(chatIdProvider.GetChatId()),
                                                              chatIdProvider);
@@ -85,21 +78,14 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
         // if you need the update distributor not to be Singleton - clear the created instance here.
     }
 
-    public UpdateDistributorFactory(IMessageServiceFactory<Message> messageServiceFactory,
+    public UpdateDistributorFactory(IMessageServiceFactory<IMessageServiceWithEdit<Message>, Message> messageServiceFactory,
                                     IMessageServiceFactory<string> messageServiceStringFactory,
-                                    IMessageServiceFactory<Tuple<string, KeyboardButton>> messageServiceWithReplyKeyboardFactory,
                                     IReplyMarkupManagerFactory replyMarkupManagerFactory,
                                     IAuthenticationServiceFactory authenticationServiceFactory)
     {
         _messageServiceFactory = messageServiceFactory;
         _messageServiceStringFactory = messageServiceStringFactory;
-        _messageServiceWithReplyKeyboardFactory = messageServiceWithReplyKeyboardFactory;
         _replyMarkupManagerFactory = replyMarkupManagerFactory;
         _authenticationServiceFactory = authenticationServiceFactory;
-
-        _postBuildUpdateListenerSetup = (args, listener) =>
-        {
-            return listener;
-        };
     }
 }

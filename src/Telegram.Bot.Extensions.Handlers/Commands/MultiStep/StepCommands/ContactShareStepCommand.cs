@@ -10,8 +10,6 @@ namespace LisBot.Common.Telegram.Commands.MultiStep.StepCommands;
 
 public class ContactShareStepCommand : StepCommandWithValidation
 {
-    private readonly IMessageService<Tuple<string, KeyboardButton>> _messageService;
-
     private readonly IReplyMarkupManager _replyMarkupManager;
 
 
@@ -24,7 +22,7 @@ public class ContactShareStepCommand : StepCommandWithValidation
 
     public override async Task OnCommandCreated()
     {
-        await _messageService.SendMessage(new(_onCommandCreatedMessage, KeyboardButton.WithRequestContact(_shareContactButtonDisplayName)));
+        await _replyMarkupManager.CreateReplyButtonMarkup(_onCommandCreatedMessage, new(KeyboardButton.WithRequestContact(_shareContactButtonDisplayName)));
     }
 
     protected override async Task HandleValidInput(Update args)
@@ -52,15 +50,13 @@ public class ContactShareStepCommand : StepCommandWithValidation
         return message.Contact;
     }
 
-    public ContactShareStepCommand(IMessageService<Tuple<string, KeyboardButton>> messageService,
-                                   IReplyMarkupManager replyMarkupManager,
+    public ContactShareStepCommand(IReplyMarkupManager replyMarkupManager,
                                    Action<Contact> onHandleUserMessage,
                                    string onCommandCreatedMessage,
                                    string shareContactButtonDisplayName,
                                    IUserInputValidator userInputValidator,
                                    StepCommand? next) : base(next, userInputValidator)
     {
-        _messageService = messageService;
         _replyMarkupManager = replyMarkupManager;
         _onHandleUserMessage = onHandleUserMessage;
         _onCommandCreatedMessage = onCommandCreatedMessage;

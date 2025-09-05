@@ -12,7 +12,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace LisBot.Common.Telegram.Services;
 
-public class DateSelectionStepCommandViewsManager
+public class DateSelectionMessageFormatter
 {
     private readonly Dictionary<int, Func<Task>> _buttonActions;
 
@@ -280,7 +280,7 @@ public class DateSelectionStepCommandViewsManager
         return weekDay;
     }
 
-    public DateSelectionStepCommandViewsManager()
+    public DateSelectionMessageFormatter()
     {
         _buttonActions = [];
         _buttonGenerator = new();

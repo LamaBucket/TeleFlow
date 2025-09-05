@@ -3,7 +3,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Telegram.Bot.Extensions.Handlers.Services.Messaging;
 
-public abstract class TemplatedMessageService : IMessageService<Message>
+public abstract class TemplatedMessageService : IMessageServiceWithEdit<Message>
 {
     private Message? _lastMessageWithInlineMarkup;
 
@@ -42,6 +42,7 @@ public abstract class TemplatedMessageService : IMessageService<Message>
         return editedMessage;
     }
 
+
     private async Task RemovePreviousMessageReplyMarkup()
     {
         if (_lastMessageWithInlineMarkup is not null)
@@ -52,9 +53,10 @@ public abstract class TemplatedMessageService : IMessageService<Message>
         _lastMessageWithInlineMarkup = null;
     }
 
+
     protected abstract Task RemoveReplyMarkup(int messageId);
 
-    protected abstract Task<Message> SendMessage(string messageText, IReplyMarkup? replyMarkup);
+    protected abstract Task<Message> SendMessage(string messageText, InlineKeyboardMarkup? replyMarkup);
 
-    protected abstract Task<Message> EditMessage(int messageId, string messageText, IReplyMarkup? replyMarkup);
+    protected abstract Task<Message> EditMessage(int messageId, string messageText, InlineKeyboardMarkup? replyMarkup);
 }

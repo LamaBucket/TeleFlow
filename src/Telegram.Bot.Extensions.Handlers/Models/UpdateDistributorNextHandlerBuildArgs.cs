@@ -10,9 +10,7 @@ public class UpdateDistributorNextHandlerBuildArgs
 {
     public IMessageService<string> MessageServiceString { get; init; }
 
-    public IMessageService<Message> MessageService { get; init; }
-
-    public IMessageService<Tuple<string, KeyboardButton>> MessageServiceWithReplyButton { get; init; }
+    public IMessageServiceWithEdit<Message> MessageService { get; init; }
 
     public IReplyMarkupManager ReplyMarkupManager { get; init; }
 
@@ -23,15 +21,13 @@ public class UpdateDistributorNextHandlerBuildArgs
 
 
     public UpdateDistributorNextHandlerBuildArgs(IMessageService<string> messageServiceString,
-                                                 IMessageService<Message> messageService,
-                                                 IMessageService<Tuple<string, KeyboardButton>> messageServiceWithReplyButton,
+                                                 IMessageServiceWithEdit<Message> messageService,
                                                  IReplyMarkupManager replyMarkupManager,
                                                  IAuthenticationService authenticationService,
                                                  IChatIdProvider chatIdProvider)
     {
         MessageServiceString = messageServiceString;
         MessageService = messageService;
-        MessageServiceWithReplyButton = messageServiceWithReplyButton;
 
         ReplyMarkupManager = replyMarkupManager;
 

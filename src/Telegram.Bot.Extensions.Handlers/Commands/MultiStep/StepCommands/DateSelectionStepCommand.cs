@@ -9,12 +9,11 @@ namespace LisBot.Common.Telegram.Commands.MultiStep.StepCommands;
 
 public class DateSelectionStepCommand : StepCommandWithValidation
 {
-    private readonly DateSelectionStepCommandViewsManager _viewsManager;
+    private readonly DateSelectionMessageFormatter _viewsManager;
 
     private readonly DateSelectionStepCommandViewModel _viewModel;
 
-
-    private readonly IMessageService<Message> _messageService;
+    private readonly IMessageServiceWithEdit<Message> _messageService;
 
     private readonly Action<DateOnly> _onDateSelectedHandler;
 
@@ -63,7 +62,7 @@ public class DateSelectionStepCommand : StepCommandWithValidation
 
     public DateSelectionStepCommand(StepCommand? next,
                                     IUserInputValidator userInputValidator,
-                                    IMessageService<Message> messageService,
+                                    IMessageServiceWithEdit<Message> messageService,
                                     Action<DateOnly> onDateSelectedHandler,
                                     DateSelectionStepCommandViewModel viewModel) : base(next, userInputValidator)
     {

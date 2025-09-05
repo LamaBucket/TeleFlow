@@ -13,9 +13,7 @@ public class UpdateListenerCommandExecutionArgs
 
     public IMessageService<string> MessageServiceString => _buildTimeArgs.FromUpdateDistributorArgs.MessageServiceString;
 
-    public IMessageService<Message> MessageService => _buildTimeArgs.FromUpdateDistributorArgs.MessageService;
-
-    public IMessageService<Tuple<string, KeyboardButton>> MessageServiceWithReplyButton => _buildTimeArgs.FromUpdateDistributorArgs.MessageServiceWithReplyButton;
+    public IMessageServiceWithEdit<Message> MessageService => _buildTimeArgs.FromUpdateDistributorArgs.MessageService;
 
     public IReplyMarkupManager ReplyMarkupManager => _buildTimeArgs.FromUpdateDistributorArgs.ReplyMarkupManager;
 
