@@ -53,7 +53,7 @@ public class StepChainBuilder
 
         var stepFactoryChain = StepFactoryChain;
 
-        n = Math.Min(n + 1, _stepFactoryChain.Count);
+        n = Math.Min(n, _stepFactoryChain.Count);
 
         for (int i = 0; i < n; i++)
             list.Add(stepFactoryChain.Pop());
