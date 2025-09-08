@@ -44,7 +44,7 @@ public static class AppExtensions
                     return new TextInputStepCommand(args.UpdateListenerBuilderArgs.MessageServiceString, "Please enter your full name", async (message) =>
                     {
                         args.State.CurrentValue.UserFullName = message;
-                    }, validator, next);
+                    }, next, validator);
                 }, "User Full Name")
                 .WithStepWithValidationLambdaFactory((args, next) =>
                 {
@@ -59,7 +59,7 @@ public static class AppExtensions
                             return null;
 
                         return enumValue.ToString();
-                    }, next, new());
+                    }, new(), next);
                 }, "Library Rating")
                 .WithStepWithValidationLambdaFactory((args, next) =>
                 {
@@ -68,7 +68,7 @@ public static class AppExtensions
                     {
                         args.State.CurrentValue.ListObject = userInput;
                     },
-                    new(),
+                    new(3),
                     async () =>
                     {
                         return new List<DemoListObject>() { new() { DisplayName = "List Object 1", Value = "Value 1" }, new() { DisplayName = "List Object 2", Value = "Value 2" } };
@@ -83,7 +83,7 @@ public static class AppExtensions
                     return new DateSelectionStepCommand(next, validator, args.UpdateListenerBuilderArgs.MessageService, (date) =>
                     {
                         args.State.CurrentValue.SelectedDate = date;
-                    }, new(DateOnly.FromDateTime(DateTime.Today)));
+                    }, "Pick a date", new(DateOnly.FromDateTime(DateTime.Today)));
                 }, "Date");
             })
             .WithLambdaResult(args =>
