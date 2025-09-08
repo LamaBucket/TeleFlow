@@ -9,7 +9,10 @@ using LisBot.Common.Telegram.Commands.MultiStep;
 using LisBot.Common.Telegram.Commands.MultiStep.StepCommands;
 using LisBot.Common.Telegram.Factories.CommandFactories;
 using LisBot.Common.Telegram.Models;
+using LisBot.Common.Telegram.ViewModels.CallbackQuery;
 using Telegram.Bot.Extensions.Handlers.Services.InputValidators;
+using Telegram.Bot.Extensions.Handlers.Services.Markup;
+using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 using Telegram.Bot.Types;
 
 namespace demo;
@@ -20,6 +23,37 @@ public static class AppExtensions
     {
         builder
         .WithSendText("/start", "Welcome to the bot!")
+        .WithMultiStep<List<int>>("/test", options =>
+        {
+            options
+            .SetDefaultStateValue(new List<int>())
+            .WithValidation(options =>
+            {
+                options.WithStepWithValidationLambdaFactory((args, next) =>
+                {
+                    return new TextInputStepCommand(args.UpdateListenerBuilderArgs.MessageServiceString, "Please enter an integer", async (message) =>
+                    {
+                        if (int.TryParse(message, out int intValue))
+                        {
+                            args.State.CurrentValue.Add(intValue);
+                        }
+                        else
+                        {
+                            args.State.CurrentValue.Add(-1);
+                        }
+                    }, new NoValidationUserValidator(), next);
+                }, "Test Step");
+            })
+            .WithLambdaResult((args) =>
+            {
+                return new LambdaHandler<List<int>>(async (vm) =>
+                {
+                    await args.MessageServiceString.SendMessage(string.Join(", ", vm));
+
+                    await args.Navigator.Handle("/start");
+                });
+            });
+        })
         .WithMultiStep<DemoViewModel>("/multistep", options =>
         {
             options
@@ -38,10 +72,20 @@ public static class AppExtensions
                 }, "Phone Number")
                 .WithStepWithValidationLambdaFactory((args, next) =>
                 {
-                    return new TextInputStepCommand(args.UpdateListenerBuilderArgs.MessageServiceString, "Please enter your full name", async (message) =>
+                    CallbackButtonGenerator generator = new();
+                    generator.StartNewSession();
+                    var vm = generator.GenerateVM();
+
+                    var messageServiceWrapper = new MessageServiceWrapper(args.UpdateListenerBuilderArgs.MessageService, (builder) =>
+                    {
+                        builder.WithInlineButtonLine<CallbackQueryViewModel>(new(vm, "Go Back"));
+                    });
+
+
+                    return new TextInputStepCommand(messageServiceWrapper, "Please enter your full name", async (message) =>
                     {
                         args.State.CurrentValue.UserFullName = message;
-                    }, new NoValidationUserValidator(), next);
+                    }, new CallbackQueryInputInterceptor<CallbackQueryViewModel>(new GoToPreviousButtonInputInterceptor(vm, args.StepChainBuilder)) , next);
                 }, "User Full Name")
                 .WithStepWithValidationLambdaFactory((args, next) =>
                 {
