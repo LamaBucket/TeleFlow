@@ -13,6 +13,8 @@ where TButtonViewModel : CallbackQueryViewModel
 
     private readonly IMessageService<string> _messageService;
 
+    private readonly IUserInputValidator<TButtonViewModel>? _vmValidator;
+
 
     public async Task<bool> ValidateUserInput(Update update)
     {
@@ -34,12 +36,18 @@ where TButtonViewModel : CallbackQueryViewModel
             return false;
         }
 
+        if (_vmValidator is not null)
+        {
+            return await _vmValidator.ValidateUserInput(vm);
+        }
+
         return true;
     }
 
-    public CallbackQueryInputValidator(string wrongButtonClickMessage, IMessageService<string> messageService)
+    public CallbackQueryInputValidator(string wrongButtonClickMessage, IMessageService<string> messageService, IUserInputValidator<TButtonViewModel>? vmValidator = null)
     {
         _wrongButtonClickMessage = wrongButtonClickMessage;
         _messageService = messageService;
+        _vmValidator = vmValidator;
     }
 }

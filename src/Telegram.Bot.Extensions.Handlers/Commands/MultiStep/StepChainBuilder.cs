@@ -22,10 +22,52 @@ public class StepChainBuilder
         _stepFactoryChain.Push(factory);
     }
 
+    public StepCommand RebuildWithPreviousStep()
+    {
+        var currentDepth = FindCurrentCommandDepth();
+
+        var stepFactoryChain = CreateStepFactoryChainForNSteps(currentDepth + 1);
+
+        return BuildChain(stepFactoryChain, true);
+    }
+
+
+    private int FindCurrentCommandDepth()
+    {
+        int depth = 0;
+        StepCommand? current = _head;
+
+        while (current != null)
+        {
+            depth++;
+            current = current.Next;
+        }
+
+        return depth;
+    }
+
+    private Stack<IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> CreateStepFactoryChainForNSteps(int n)
+    {
+        List<IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>  list = new();
+        Stack<IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> stack = new();
+
+        var stepFactoryChain = StepFactoryChain;
+
+        n = Math.Min(n + 1, _stepFactoryChain.Count);
+
+        for (int i = 0; i < n; i++)
+            list.Add(stepFactoryChain.Pop());
+
+
+        for (int i = list.Count - 1; i >= 0; i--)
+            stack.Push(list[i]);
+
+        return stack;
+    }
 
     public StepCommand BuildChain(IHandlerFactoryWithArgs<StepCommand, Update, StepCommand> factory, bool overwrite = false)
     {
-        if(!_stepFactoryChain.Contains(factory))
+        if (!_stepFactoryChain.Contains(factory))
             throw new ArgumentException("That Step Factory does not belong to that step factory chain", nameof(factory));
 
         var stack = new Stack<IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>();

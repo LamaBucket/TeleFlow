@@ -6,7 +6,7 @@ public abstract class StepCommand : ICommandHandler
 {
     public event Func<Task>? CommandFinished;
 
-    protected StepCommand? Next => _next;
+    protected internal StepCommand? Next => _next;
 
     private StepCommand? _next;
 
