@@ -4,9 +4,9 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Telegram.Bot.Extensions.Handlers.Services.Messaging;
 
-public class MessageServiceWrapper : IMessageService<Message>, IMessageService<string>
+public class MessageServiceWrapper : IMessageServiceWithEdit<Message>, IMessageService<string>
 {
-    private readonly IMessageService<Message> _messageService;
+    private readonly IMessageServiceWithEdit<Message> _messageService;
 
     private readonly Action<MessageBuilder> _messageFormatter;
 
@@ -20,6 +20,18 @@ public class MessageServiceWrapper : IMessageService<Message>, IMessageService<s
 
         return await _messageService.SendMessage(message);
     }
+
+    public async Task<Message> EditMessage(int messageId, Message message)
+    {
+        var messageBuilder = new MessageBuilder();
+
+        _messageFormatter.Invoke(messageBuilder);
+
+        message = ConcatMessages(message, messageBuilder.Build());
+
+        return await _messageService.EditMessage(messageId, message);
+    }
+
 
     public async Task<Message> SendMessage(string message)
     {
@@ -52,7 +64,8 @@ public class MessageServiceWrapper : IMessageService<Message>, IMessageService<s
         return message1;
     }
 
-    public MessageServiceWrapper(IMessageService<Message> messageService, Action<MessageBuilder> messageFormatter)
+
+    public MessageServiceWrapper(IMessageServiceWithEdit<Message> messageService, Action<MessageBuilder> messageFormatter)
     {
         _messageService = messageService;
         _messageFormatter = messageFormatter;

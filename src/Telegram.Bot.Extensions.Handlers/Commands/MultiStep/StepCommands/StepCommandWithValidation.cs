@@ -19,8 +19,8 @@ public abstract class StepCommandWithValidation : StepCommand
     protected abstract Task HandleValidInput(Update args);
     
 
-    protected StepCommandWithValidation(StepCommand? next, IUserInputValidator userInputValidator) : base(next)
+    protected StepCommandWithValidation(StepCommand? next, IUserInputValidator? userInputValidator = null) : base(next)
     {
-        _userInputValidator = userInputValidator;
+        _userInputValidator = userInputValidator ?? new NoValidationUserValidator();
     }
 }

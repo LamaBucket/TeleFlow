@@ -17,6 +17,8 @@ public class DateSelectionStepCommand : StepCommandWithValidation
 
     private readonly Action<DateOnly> _onDateSelectedHandler;
 
+    private readonly string _messageText;
+
 
     public override async Task OnCommandCreated()
     {
@@ -55,7 +57,7 @@ public class DateSelectionStepCommand : StepCommandWithValidation
 
     private async Task RecreateMesssage()
     {
-        var message = _viewsManager.GenerateMessage(_viewModel.CurrentView, "Select Date:", _viewModel.SelectedDate);
+        var message = _viewsManager.GenerateMessage(_viewModel.CurrentView, _messageText, _viewModel.SelectedDate);
 
         _viewModel.ViewMessageId = (await _messageService.EditMessage(_viewModel.ViewMessageId, message)).MessageId;
     }
@@ -64,6 +66,7 @@ public class DateSelectionStepCommand : StepCommandWithValidation
                                     IUserInputValidator userInputValidator,
                                     IMessageServiceWithEdit<Message> messageService,
                                     Action<DateOnly> onDateSelectedHandler,
+                                    string messageText,
                                     DateSelectionStepCommandViewModel viewModel) : base(next, userInputValidator)
     {
         _viewsManager = new();
@@ -76,5 +79,6 @@ public class DateSelectionStepCommand : StepCommandWithValidation
 
         _messageService = messageService;
         _onDateSelectedHandler = onDateSelectedHandler;
+        _messageText = messageText;
     }
 }

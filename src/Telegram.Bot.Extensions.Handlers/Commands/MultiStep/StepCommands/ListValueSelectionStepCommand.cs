@@ -1,9 +1,10 @@
+using Telegram.Bot.Extensions.Handlers.Services.InputValidators;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Commands.MultiStep.StepCommands;
 
-public class ListValueSelectionStepCommand<TEnumerable> : StepCommand where TEnumerable : class
+public class ListValueSelectionStepCommand<TEnumerable> : StepCommandWithValidation where TEnumerable : class
 {
     private readonly IMessageService<Message> _messageService;
 
@@ -43,11 +44,11 @@ public class ListValueSelectionStepCommand<TEnumerable> : StepCommand where TEnu
         _formatter = new(_options, values, _displayNameProvider, _onCommandCreatedMessage);
     }
 
-    protected override async Task HandleCurrentStep(Update args)
+    protected override async Task HandleValidInput(Update args)
     {
-        if(_noSelectButtonName is null)
+        if (_noSelectButtonName is null)
         {
-            if(_onHandleUserSelectCannotBeNull is not null)
+            if (_onHandleUserSelectCannotBeNull is not null)
             {
                 var enumValue = Formatter.ParseUserResponseCannotBeEmpty(args);
                 await _onHandleUserSelectCannotBeNull.Invoke(enumValue);
@@ -55,7 +56,7 @@ public class ListValueSelectionStepCommand<TEnumerable> : StepCommand where TEnu
         }
         else
         {
-            if(_onHandleUserSelect is not null)
+            if (_onHandleUserSelect is not null)
             {
                 var enumValue = Formatter.ParseUserResponse(args);
                 await _onHandleUserSelect.Invoke(enumValue);
@@ -71,7 +72,8 @@ public class ListValueSelectionStepCommand<TEnumerable> : StepCommand where TEnu
                                          MessageBuilderOptions options,
                                          IEnumerable<TEnumerable> values,
                                          Func<TEnumerable, string> displayNameFormatter,
-                                         StepCommand? next) : base(next)
+                                         StepCommand? next,
+                                         IUserInputValidator? userInputValidator = null) : base(next, userInputValidator)
     {
         _messageService = messageService;
 
@@ -89,7 +91,8 @@ public class ListValueSelectionStepCommand<TEnumerable> : StepCommand where TEnu
                                          MessageBuilderOptions options,
                                          Func<Task<IEnumerable<TEnumerable>>> values,
                                          Func<TEnumerable, string> displayNameFormatter,
-                                         StepCommand? next) : base(next)
+                                         StepCommand? next,
+                                         IUserInputValidator? userInputValidator = null) : base(next, userInputValidator)
     {
         _messageService = messageService;
 

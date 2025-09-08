@@ -11,11 +11,15 @@ public class MessageBuilder
 {
     private readonly StringBuilder _sb;
 
-    //private readonly MessageBuilderOptions _options;
+    private readonly MessageBuilderOptions _options;
 
     private readonly Queue<InlineKeyboardButton> _buttons;
 
     private readonly List<int> _buttonSeparators;
+
+
+    private int _currentRowButtonCount;
+
 
     public Message Build()
     {
@@ -79,6 +83,11 @@ public class MessageBuilder
 
     public MessageBuilder WithInlineButton<T>(ReplyButtonModel<T> btnModel) where T : CallbackQueryViewModel
     {
+        if(_currentRowButtonCount >= _options.ButtonInRowCount)
+        {
+            WithNewButtonLine();
+        }
+
         var buttonText = btnModel.ButtonTitle;
         var buttonData = JsonConvert.SerializeObject(btnModel.InnerArgs);
 
@@ -86,6 +95,7 @@ public class MessageBuilder
         button.CallbackData = buttonData;
 
         _buttons.Enqueue(button);
+        _currentRowButtonCount += 1;
 
         return this;
     }
@@ -93,6 +103,7 @@ public class MessageBuilder
     public MessageBuilder WithNewButtonLine()
     {
         _buttonSeparators.Add(_buttons.Count);
+        _currentRowButtonCount = 0;
         return this;
     }
 
@@ -101,5 +112,8 @@ public class MessageBuilder
         _sb = new();
         _buttons = new();
         _buttonSeparators = [];
+        _currentRowButtonCount = 0;
+
+        _options = options ?? new MessageBuilderOptions();
     }
 }

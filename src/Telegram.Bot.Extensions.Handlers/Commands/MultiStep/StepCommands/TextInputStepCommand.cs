@@ -33,8 +33,8 @@ public class TextInputStepCommand : StepCommandWithValidation
     public TextInputStepCommand(IMessageService<string> messageService,
                                 string onCommandCreatedMessage,
                                 Func<string, Task> onHandleUserMessage,
-                                IUserInputValidator validator,
-                                StepCommand? next) : base(next, validator)
+                                StepCommand? next,
+                                IUserInputValidator? validator = null) : base(next, validator)
     {
         _messageService = messageService;
         _onCommandCreatedMessage = onCommandCreatedMessage;
