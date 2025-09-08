@@ -23,37 +23,6 @@ public static class AppExtensions
     {
         builder
         .WithSendText("/start", "Welcome to the bot!")
-        .WithMultiStep<List<int>>("/test", options =>
-        {
-            options
-            .SetDefaultStateValue(new List<int>())
-            .WithValidation(options =>
-            {
-                options.WithStepWithValidationLambdaFactory((args, next) =>
-                {
-                    return new TextInputStepCommand(args.UpdateListenerBuilderArgs.MessageServiceString, "Please enter an integer", async (message) =>
-                    {
-                        if (int.TryParse(message, out int intValue))
-                        {
-                            args.State.CurrentValue.Add(intValue);
-                        }
-                        else
-                        {
-                            args.State.CurrentValue.Add(-1);
-                        }
-                    }, new NoValidationUserValidator(), next);
-                }, "Test Step");
-            })
-            .WithLambdaResult((args) =>
-            {
-                return new LambdaHandler<List<int>>(async (vm) =>
-                {
-                    await args.MessageServiceString.SendMessage(string.Join(", ", vm));
-
-                    await args.Navigator.Handle("/start");
-                });
-            });
-        })
         .WithMultiStep<DemoViewModel>("/multistep", options =>
         {
             options
@@ -70,22 +39,12 @@ public static class AppExtensions
                     new PhoneNumberBelongsToUserValidator(args.UpdateListenerBuilderArgs.MessageServiceString, args.UpdateListenerBuilderArgs.ChatIdProvider),
                     next);
                 }, "Phone Number")
-                .WithStepWithValidationLambdaFactory((args, next) =>
+                .WithStepWithValidationLambdaFactoryGoBackButton((args, next, validator) =>
                 {
-                    CallbackButtonGenerator generator = new();
-                    generator.StartNewSession();
-                    var vm = generator.GenerateVM();
-
-                    var messageServiceWrapper = new MessageServiceWrapper(args.UpdateListenerBuilderArgs.MessageService, (builder) =>
-                    {
-                        builder.WithInlineButtonLine<CallbackQueryViewModel>(new(vm, "Go Back"));
-                    });
-
-
-                    return new TextInputStepCommand(messageServiceWrapper, "Please enter your full name", async (message) =>
+                    return new TextInputStepCommand(args.UpdateListenerBuilderArgs.MessageServiceString, "Please enter your full name", async (message) =>
                     {
                         args.State.CurrentValue.UserFullName = message;
-                    }, new CallbackQueryInputInterceptor<CallbackQueryViewModel>(new GoToPreviousButtonInputInterceptor(vm, args.StepChainBuilder)) , next);
+                    }, validator, next);
                 }, "User Full Name")
                 .WithStepWithValidationLambdaFactory((args, next) =>
                 {
@@ -119,9 +78,9 @@ public static class AppExtensions
                         return listObject.DisplayName;
                     }, next);
                 }, "List Object Selection")
-                .WithStepWithValidationLambdaFactory((args, next) =>
+                .WithStepWithValidationLambdaFactoryGoBackButton((args, next, validator) =>
                 {
-                    return new DateSelectionStepCommand(next, new NoValidationUserValidator(), args.UpdateListenerBuilderArgs.MessageService, (date) =>
+                    return new DateSelectionStepCommand(next, validator, args.UpdateListenerBuilderArgs.MessageService, (date) =>
                     {
                         args.State.CurrentValue.SelectedDate = date;
                     }, new(DateOnly.FromDateTime(DateTime.Today)));
@@ -224,6 +183,31 @@ public static class AppExtensions
         }
 
         return result;
+    }
+
+    public static StepManagerWithValidationCommandBuilder<TState> WithStepWithValidationLambdaFactoryGoBackButton<TState>(this StepManagerWithValidationCommandBuilder<TState> smwvcb, Func<MultiStepCommandBuilderArgs<TState>, StepCommand?, IUserInputValidator, StepCommand> lambdaFactory, string validationDisplayName) where TState : notnull
+    {
+        return smwvcb.WithStepWithValidationLambdaFactory<TState>((args, next) =>
+        {
+            CallbackButtonGenerator generator = new();
+            generator.StartNewSession();
+            var vm = generator.GenerateVM();
+
+            var messageServiceWrapper = new MessageServiceWrapper(args.UpdateListenerBuilderArgs.MessageService, (builder) =>
+            {
+                builder.WithInlineButtonLine<CallbackQueryViewModel>(new(vm, "Go Back"));
+            });
+
+
+            var oldUpdateListenerArgs = args.UpdateListenerBuilderArgs;
+
+            var updateListenerWithInjectionArgs = new UpdateDistributorNextHandlerBuildArgs(messageServiceWrapper, oldUpdateListenerArgs.MessageService, oldUpdateListenerArgs.ReplyMarkupManager, oldUpdateListenerArgs.AuthenticationService, oldUpdateListenerArgs.ChatIdProvider);
+
+            var newArgs = new MultiStepCommandBuilderArgs<TState>(new(args.UpdateListenerBuilderArgs.NavigatorArgs, new(updateListenerWithInjectionArgs, args.UpdateListenerBuilderArgs.Navigator)), args.State, args.StepChainBuilder);
+
+            return lambdaFactory.Invoke(newArgs, next, new CallbackQueryInputInterceptor<CallbackQueryViewModel>(new GoToPreviousButtonInputInterceptor(vm, args.StepChainBuilder)));
+
+        }, validationDisplayName);
     }
 
     public static StepManagerWithValidationCommandBuilder<TState> WithStepWithValidationLambdaFactory<TState>(this StepManagerWithValidationCommandBuilder<TState> smwvcb, Func<MultiStepCommandBuilderArgs<TState>, StepCommand?, StepCommand> lambdaFactory, string validationDisplayName)
