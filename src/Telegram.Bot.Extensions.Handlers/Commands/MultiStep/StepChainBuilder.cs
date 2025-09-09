@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using LisBot.Common.Telegram.Factories.CommandFactories;
 using Telegram.Bot.Types;
 
@@ -48,19 +49,20 @@ public class StepChainBuilder
 
     private Stack<IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> CreateStepFactoryChainForNSteps(int n)
     {
-        List<IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>  list = new();
         Stack<IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> stack = new();
 
-        var stepFactoryChain = StepFactoryChain;
+        var stepFactoryChain = StepFactoryChain.ToArray();
 
         n = Math.Min(n, _stepFactoryChain.Count);
 
-        for (int i = 0; i < n; i++)
-            list.Add(stepFactoryChain.Pop());
+        var toSkip = _stepFactoryChain.Count - n;
 
+        Range range = new(toSkip, _stepFactoryChain.Count);
 
-        for (int i = list.Count - 1; i >= 0; i--)
-            stack.Push(list[i]);
+        var selectedFactories = stepFactoryChain.Take(range).Reverse();
+
+        foreach (var factory in selectedFactories)
+            stack.Push(factory);
 
         return stack;
     }
