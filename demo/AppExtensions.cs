@@ -201,7 +201,7 @@ public static class AppExtensions
 
             var oldUpdateListenerArgs = args.UpdateListenerBuilderArgs;
 
-            var updateListenerWithInjectionArgs = new UpdateDistributorNextHandlerBuildArgs(messageServiceWrapper, oldUpdateListenerArgs.MessageService, oldUpdateListenerArgs.ReplyMarkupManager, oldUpdateListenerArgs.AuthenticationService, oldUpdateListenerArgs.ChatIdProvider);
+            var updateListenerWithInjectionArgs = new UpdateDistributorNextHandlerBuildArgs(messageServiceWrapper, messageServiceWrapper, oldUpdateListenerArgs.ReplyMarkupManager, oldUpdateListenerArgs.AuthenticationService, oldUpdateListenerArgs.ChatIdProvider);
 
             var newArgs = new MultiStepCommandBuilderArgs<TState>(new(args.UpdateListenerBuilderArgs.NavigatorArgs, new(updateListenerWithInjectionArgs, args.UpdateListenerBuilderArgs.Navigator)), args.State, args.StepChainBuilder);
 
