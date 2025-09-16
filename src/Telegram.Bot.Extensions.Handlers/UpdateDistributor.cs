@@ -13,6 +13,17 @@ public class UpdateDistributor : IHandler<Update>
 
     public async Task Handle(Update args)
     {
+#if DEBUG
+        var commandName = args.GetCommandName();
+        if (commandName is not null && commandName == "/restart")
+        {
+            var chatId = args.GetChatId();
+            _chatHandlers.Remove(chatId);
+            return;
+        }
+
+#endif
+
         await GetNextHandler(args).Handle(args);
     }
 
