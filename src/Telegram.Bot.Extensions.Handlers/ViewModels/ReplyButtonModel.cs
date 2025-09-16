@@ -2,7 +2,7 @@ using LisBot.Common.Telegram.ViewModels.CallbackQuery;
 
 namespace LisBot.Common.Telegram.ViewModels;
 
-public class ReplyButtonModel<T> where T : CallbackQueryViewModel
+public class ReplyButtonModel<T> where T : class
 {
     public T InnerArgs { get; init; } 
 
