@@ -36,7 +36,7 @@ public static class AppExtensions
                     {
                         args.State.CurrentValue.PhoneNumber = userInput.PhoneNumber;
                     }, "Please Share Your Phone. This will NOT go anywhere", "Share My Phone",
-                    new PhoneNumberBelongsToUserValidator(args.UpdateListenerBuilderArgs.MessageServiceString, args.UpdateListenerBuilderArgs.ChatIdProvider),
+                    new PhoneNumberBelongsToUserValidator(args.UpdateListenerBuilderArgs.MessageServiceString, args.UpdateListenerBuilderArgs.ChatIdProvider, "The input was invalid", "The phone number does not belong to you."),
                     next);
                 }, "Phone Number")
                 .WithStepWithValidationLambdaFactoryGoBackButton((args, next, validator) =>
@@ -83,7 +83,7 @@ public static class AppExtensions
                     return new DateSelectionStepCommand(next, validator, args.UpdateListenerBuilderArgs.MessageService, (date) =>
                     {
                         args.State.CurrentValue.SelectedDate = date;
-                    }, "Pick a date", new(DateOnly.FromDateTime(DateTime.Today)));
+                    }, "Pick a date", new(DateOnly.FromDateTime(DateTime.Today).AddYears(-18), LisBot.Common.Telegram.Services.DateSelectionView.YearSelection), null, new(DateOnly.FromDateTime(DateTime.Today).AddYears(-14), "You are too young!"));
                 }, "Date");
             })
             .WithLambdaResult(args =>
@@ -133,7 +133,7 @@ public static class AppExtensions
 
     public static MultiStepCommandBuilder<TState> WithValidation<TState>(this MultiStepCommandBuilder<TState> mscb, Action<StepManagerWithValidationCommandBuilder<TState>> options) where TState : notnull
     {
-        return mscb.WithValidation(new(1), DefaultValidationMessageFormatter, "All good", options);
+        return mscb.WithValidation(new MessageBuilderOptions(1), DefaultValidationMessageFormatter, "All good", "Edit", options);
     }
 
     public static string DefaultValidationMessageFormatter<TState>(TState state) where TState : notnull
@@ -205,7 +205,7 @@ public static class AppExtensions
 
             var newArgs = new MultiStepCommandBuilderArgs<TState>(new(args.UpdateListenerBuilderArgs.NavigatorArgs, new(updateListenerWithInjectionArgs, args.UpdateListenerBuilderArgs.Navigator)), args.State, args.StepChainBuilder);
 
-            return lambdaFactory.Invoke(newArgs, next, new CallbackQueryInputInterceptor<CallbackQueryViewModel>(new GoToPreviousButtonInputInterceptor(vm, args.StepChainBuilder)));
+            return lambdaFactory.Invoke(newArgs, next, new CallbackQueryInputInterceptor<CallbackQueryViewModel>(new ExecutePreviousCommandInterceptor(vm, args.StepChainBuilder)));
 
         }, validationDisplayName);
     }
