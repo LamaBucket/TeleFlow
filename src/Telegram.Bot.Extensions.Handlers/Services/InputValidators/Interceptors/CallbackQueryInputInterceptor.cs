@@ -6,7 +6,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace Telegram.Bot.Extensions.Handlers.Services.InputValidators;
 
-public class CallbackQueryInputInterceptor<TButtonViewModel> : IUserInputValidator<Update>
+public class CallbackQueryInputInterceptor<TButtonViewModel> : IUserInputValidator
 {
     private readonly IUserInputValidator<TButtonViewModel> _vmInterceptor;
 
