@@ -12,28 +12,40 @@ public class PhoneNumberBelongsToUserValidator : IUserInputValidator
 
     private readonly IChatIdProvider _chatIdProvider;
 
+    private readonly string _invalidInputMessage;
+
+    private readonly string _phoneDoesNotBelongToUserMessage;
+
     public async Task<bool> ValidateUserInput(Update update)
     {
         if (update.Type != UpdateType.Message || update.Message is null)
-            throw new InvalidUserInput("This command accepts only messages.");
+        {
+            await _messageService.SendMessage(_invalidInputMessage);
+            return false;
+        }
 
         var message = update.Message;
 
         if (message.Type != MessageType.Contact || message.Contact is null)
-            throw new InvalidUserInput("This command accepts only contacts.");
+        {
+            await _messageService.SendMessage(_invalidInputMessage);
+            return false;
+        }
 
         bool validationResult = message.Contact.UserId == _chatIdProvider.GetChatId();
 
         if (!validationResult)
-            await _messageService.SendMessage("This phone number does not belong to you.");
-    
+            await _messageService.SendMessage(_phoneDoesNotBelongToUserMessage);
+
         return validationResult;
     }
 
 
-    public PhoneNumberBelongsToUserValidator(IMessageService<string> messageService, IChatIdProvider chatIdProvider)
+    public PhoneNumberBelongsToUserValidator(IMessageService<string> messageService, IChatIdProvider chatIdProvider, string invalidInputMessage, string phoneDoesNotBelongToUserMessage)
     {
         _messageService = messageService;
         _chatIdProvider = chatIdProvider;
+        _invalidInputMessage = invalidInputMessage;
+        _phoneDoesNotBelongToUserMessage = phoneDoesNotBelongToUserMessage;
     }
 }

@@ -15,7 +15,9 @@ public class StateValidatorCommandFactory<TState> : IHandlerFactoryWithArgs<ICom
 
     private readonly StateValidationMessageFormatter<TState> _messageFormatter;
 
-    private readonly IMessageService<Message> _messageService;
+    private readonly StateValidationMessageFormatterWithNoButtons<TState> _messageFormatterWithNoButtons;
+
+    private readonly IMessageServiceWithEdit<Message> _messageService;
 
     private readonly State<TState> _state;
 
@@ -25,7 +27,7 @@ public class StateValidatorCommandFactory<TState> : IHandlerFactoryWithArgs<ICom
         if(_next is null)
             throw new ArgumentNullException(nameof(_next));
 
-        return new StateValidatorCommand<TState>(_next, _stepChainBuilder, _messageFormatter, _messageService, _state);
+        return new StateValidatorCommand<TState>(_next, _stepChainBuilder, _messageFormatter, _messageFormatterWithNoButtons, _messageService, _state);
     }
 
     public void SetContext(ICommandHandler args)
@@ -33,11 +35,16 @@ public class StateValidatorCommandFactory<TState> : IHandlerFactoryWithArgs<ICom
         _next = args;
     }
 
-    public StateValidatorCommandFactory(StepChainBuilder stepChainBuilder, StateValidationMessageFormatter<TState> messageFormatter, IMessageService<Message> messageService, State<TState> state)
+    public StateValidatorCommandFactory(StepChainBuilder stepChainBuilder,
+                                        StateValidationMessageFormatter<TState> messageFormatter,
+                                        StateValidationMessageFormatterWithNoButtons<TState> messageFormatterWithNoButtons,
+                                        IMessageServiceWithEdit<Message> messageService,
+                                        State<TState> state)
     {
         _stepChainBuilder = stepChainBuilder;
         _messageFormatter = messageFormatter;
         _messageService = messageService;
         _state = state;
+        _messageFormatterWithNoButtons = messageFormatterWithNoButtons;
     }
 }

@@ -31,7 +31,7 @@ public class MultiStepCommandBuilder<TState>
     }
 
 
-    public MultiStepCommandBuilder<TState> WithValidation(MessageBuilderOptions messageBuilderConfig, Func<TState, string> confirmMessageFormatter, string allGoodButtonDisplayName, Action<StepManagerWithValidationCommandBuilder<TState>> options)
+    public MultiStepCommandBuilder<TState> WithValidation(MessageBuilderOptions messageBuilderConfig, Func<TState, string> confirmMessageFormatter, string allGoodButtonDisplayName, string editButtonDisplayName, Action<StepManagerWithValidationCommandBuilder<TState>> options)
     {
         if(_nextFactory is not null)
             throw new InvalidOperationException($"The {nameof(_nextFactory)} is already set!");
@@ -47,7 +47,8 @@ public class MultiStepCommandBuilder<TState>
             
 
             StateValidationMessageFormatter<TState> formatter = new(messageBuilderConfig, confirmMessageFormatter, stepsWithValidation, allGoodButtonDisplayName);
-            StateValidatorCommandFactory<TState> validatorFactory = new(args.StepChainBuilder, formatter, args.UpdateListenerBuilderArgs.MessageService, args.State);
+            StateValidationMessageFormatterWithNoButtons<TState> formatterWithNoButtons = new(messageBuilderConfig, confirmMessageFormatter, allGoodButtonDisplayName, editButtonDisplayName);
+            StateValidatorCommandFactory<TState> validatorFactory = new(args.StepChainBuilder, formatter, formatterWithNoButtons, args.UpdateListenerBuilderArgs.MessageService, args.State);
             
             validatorFactory.SetContext(stepManager);
 

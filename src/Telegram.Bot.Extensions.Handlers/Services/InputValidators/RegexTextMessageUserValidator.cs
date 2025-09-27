@@ -23,6 +23,11 @@ public class RegexTextMessageUserValidator : IUserInputValidator
         return new RegexTextMessageUserValidator(@"^\d+(\.\d+)?$", regexNotMatchMessage, messageService);
     }
 
+    public static RegexTextMessageUserValidator GetRegexForAnyTextValidator(string notTextMessage, IMessageService<string> messageService)
+    {
+        return new RegexTextMessageUserValidator(@"*", notTextMessage, messageService);
+    }
+
 
     private readonly string _pattern;
 

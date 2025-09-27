@@ -19,7 +19,7 @@ public class DateSelectionMessageFormatter
     private readonly CallbackButtonGenerator _buttonGenerator;
 
 
-    public event Func<DateOnly, Task>? DateSelected;
+    public event Func<DateOnly, Task<bool>>? DateSelected;
 
     public event Func<DateSelectionView, Task>? ViewChanged;
 
@@ -65,36 +65,39 @@ public class DateSelectionMessageFormatter
         {
             for (int col = 0; col < columns; col++)
             {
-                string markedAsCurrent = currentYear == currentDate.Year ? "*" : "";
-
-                var dateInButton = GenerateDaySafeDateOnly(currentYear, currentDate.Month, currentDate.Day);
-
-                var button = GenerateActionButton(async () =>
+                if (row == 0 && col == 0)
                 {
-                    if(DateSelected is not null)
-                        await DateSelected.Invoke(dateInButton);
-                }, markedAsCurrent + currentYear.ToString() + markedAsCurrent);
+                    builder.WithInlineButton(GenerateActionButton(async () =>
+                    {
+                        if (DateSelected is not null)
+                            await DateSelected.Invoke(currentDate.AddYears(-9));
+                    }, "<<"));
+                }
+                else if (row == rows - 1 && col == columns - 1)
+                {
+                    builder.WithInlineButton(GenerateActionButton(async () => {
+                        if(DateSelected is not null)
+                            await DateSelected.Invoke(currentDate.AddYears(9));
+                    }, ">>"));
+                }
+                else
+                {
+                    string markedAsCurrent = currentYear == currentDate.Year ? "*" : "";
 
-                builder.WithInlineButton(button);
+                    var dateInButton = GenerateDaySafeDateOnly(currentYear, currentDate.Month, currentDate.Day);
 
-                currentYear += 1;
+                    var button = GenerateActionButton(async () =>
+                    {
+                        await SelectDateAndNavigateToView(dateInButton, DateSelectionView.MonthSelection);
+                    }, markedAsCurrent + currentYear.ToString() + markedAsCurrent);
+
+                    builder.WithInlineButton(button);
+
+                    currentYear += 1;   
+                }
             }
             builder.WithNewButtonLine();
         }
-
-        builder.WithInlineButton(GenerateActionButton(async () => {
-            if(DateSelected is not null)
-                await DateSelected.Invoke(currentDate.AddYears(-9));
-        }, "<<"));
-        builder.WithInlineButton(GenerateActionButton(async () =>
-        {
-            if(ViewChanged is not null)
-                await ViewChanged.Invoke(DateSelectionView.MonthSelection);
-        }, "OK"));
-        builder.WithInlineButton(GenerateActionButton(async () => {
-            if(DateSelected is not null)
-                await DateSelected.Invoke(currentDate.AddYears(9));
-        }, ">>"));
     }
 
     private void GenerateMessageForMonthSelection(MessageBuilder builder, DateOnly currentDate)
@@ -133,8 +136,7 @@ public class DateSelectionMessageFormatter
 
                 var button = GenerateActionButton(async () =>
                 {
-                    if (DateSelected is not null)
-                        await DateSelected.Invoke(dateInButton);
+                    await SelectDateAndNavigateToView(dateInButton, DateSelectionView.DaySelection);
                 }, markedAsCurrent + culture.DateTimeFormat.MonthNames[currentMonth - 1] + markedAsCurrent);
                 builder.WithInlineButton(button);
 
@@ -142,11 +144,6 @@ public class DateSelectionMessageFormatter
             }
             builder.WithNewButtonLine();
         }
-
-        builder.WithInlineButton(GenerateActionButton(async () => {
-            if(ViewChanged is not null)
-                await ViewChanged.Invoke(DateSelectionView.DaySelection);
-        }, "OK"));
     }
 
     private void GenerateMessageForDaySelection(MessageBuilder builder, DateOnly currentDate)
@@ -200,7 +197,15 @@ public class DateSelectionMessageFormatter
                     var button = GenerateActionButton(
                         async () => {
                             if (DateSelected is not null)
-                                await DateSelected.Invoke(dateInButton);
+                            {
+                                bool ok = await DateSelected.Invoke(dateInButton);
+
+                                if (ok)
+                                {
+                                    if(DateConfirmed is not null)
+                                        await DateConfirmed.Invoke();
+                                }
+                            }
                         },
                         markedAsCurrent + day.ToString() + markedAsCurrent
                     );
@@ -217,13 +222,21 @@ public class DateSelectionMessageFormatter
                 await DateSelected.Invoke(currentDate.AddMonths(-1));
         }, "<"));
         builder.WithInlineButton(GenerateActionButton(async () => {
-            if(DateConfirmed is not null)
-                await DateConfirmed.Invoke();
-        }, "OK"));
-        builder.WithInlineButton(GenerateActionButton(async () => {
             if(DateSelected is not null)
                 await DateSelected.Invoke(currentDate.AddMonths(1));
         }, ">"));
+    }
+
+
+    private async Task SelectDateAndNavigateToView(DateOnly dateToSelect, DateSelectionView viewToNavigate)
+    {
+        if (DateSelected is not null)
+        {
+            bool ok = await DateSelected.Invoke(dateToSelect);
+
+            if (ok && ViewChanged is not null)
+                await ViewChanged.Invoke(viewToNavigate);
+        }
     }
 
 

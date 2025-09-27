@@ -2,20 +2,9 @@ using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 
 namespace LisBot.Common.Telegram.Commands;
 
-public class SendTextCommand : OutputCommand
+public class SendTextCommand : SendMessageCommand<string>
 {
-    private readonly IMessageService<string> _messageService;
-
-    private readonly string _message;
-
-    protected override async Task Handle()
+    public SendTextCommand(IMessageService<string> messageService, string message) : base(messageService, message)
     {
-        await _messageService.SendMessage(_message);
-    }
-
-    public SendTextCommand(IMessageService<string> messageService, string message)
-    {
-        _messageService = messageService;
-        _message = message;
     }
 }

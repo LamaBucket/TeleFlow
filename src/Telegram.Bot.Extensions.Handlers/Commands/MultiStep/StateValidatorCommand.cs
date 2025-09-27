@@ -19,25 +19,51 @@ public class StateValidatorCommand<TState> : ICommandHandler
 
     private readonly StateValidationMessageFormatter<TState> _messageFormatter;
 
-    private readonly IMessageService<Message> _messageService;
+    private readonly StateValidationMessageFormatterWithNoButtons<TState> _messageFormatterWithNoButtons;
+
+    private readonly IMessageServiceWithEdit<Message> _messageService;
 
 
     private readonly State<TState> _state;
 
     private bool _awaitsUserInput;
 
+    private bool _useAllButtons = false;
+
+    private int? _confirmMessageId;
+
     public async Task Handle(Update args)
     {
-        if(_awaitsUserInput)
+        if (_awaitsUserInput)
         {
-            var commandToRestart = _messageFormatter.ParseUserResponse(args);
-            
-            _awaitsUserInput = false;
+            if (_useAllButtons)
+            {
+                var commandToRestart = _messageFormatter.ParseUserResponse(args);
 
-            if(commandToRestart is null)
-                await FinalizeCommand();
+                _awaitsUserInput = false;
+                _useAllButtons = false;
+
+                if (commandToRestart is null)
+                    await FinalizeCommand();
+                else
+                    await RestartStep(commandToRestart);
+            }
             else
-                await RestartStep(commandToRestart);
+            {
+                bool isOk = _messageFormatterWithNoButtons.ParseUserResponse(args);
+
+                if (isOk)
+                    await FinalizeCommand();
+                else
+                {
+                    _useAllButtons = true;
+
+                    if (_confirmMessageId is null)
+                        throw new NullReferenceException(nameof(_confirmMessageId));
+
+                    await _messageService.EditMessage(_confirmMessageId.Value, _messageFormatter.GenerateMessage(_state.CurrentValue));
+                }
+            }
         }
         else
         {
@@ -73,20 +99,23 @@ public class StateValidatorCommand<TState> : ICommandHandler
 
     public async Task OnNextFinished()
     {
-        var msg = _messageFormatter.GenerateMessage(_state.CurrentValue);
+        var msg = _messageFormatterWithNoButtons.GenerateMessage(_state.CurrentValue);
 
-        await _messageService.SendMessage(msg);
+        var message = await _messageService.SendMessage(msg);
+
+        _confirmMessageId = message.MessageId;
 
         _awaitsUserInput = true;
     }
 
 
-    public StateValidatorCommand(ICommandHandler next, StepChainBuilder stepChainBuilder, StateValidationMessageFormatter<TState> messageFormatter, IMessageService<Message> messageService, State<TState> state)
+    public StateValidatorCommand(ICommandHandler next, StepChainBuilder stepChainBuilder, StateValidationMessageFormatter<TState> messageFormatter, StateValidationMessageFormatterWithNoButtons<TState> messageFormatterWithNoButtons, IMessageServiceWithEdit<Message> messageService, State<TState> state)
     {
         _next = next;
         _stepChainBuilder = stepChainBuilder;
 
         _messageFormatter = messageFormatter;
+        _messageFormatterWithNoButtons = messageFormatterWithNoButtons;
         _messageService = messageService;
 
 

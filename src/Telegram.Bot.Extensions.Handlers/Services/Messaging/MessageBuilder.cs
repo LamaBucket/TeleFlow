@@ -76,12 +76,12 @@ public class MessageBuilder
     }
 
 
-    public MessageBuilder WithInlineButtonLine<T>(ReplyButtonModel<T> btnModel) where T : CallbackQueryViewModel
+    public MessageBuilder WithInlineButtonLine<T>(ReplyButtonModel<T> btnModel) where T : class
     {
         return WithInlineButton(btnModel).WithNewButtonLine();
     }
 
-    public MessageBuilder WithInlineButton<T>(ReplyButtonModel<T> btnModel) where T : CallbackQueryViewModel
+    public MessageBuilder WithInlineButton<T>(ReplyButtonModel<T> btnModel) where T : class
     {
         if(_currentRowButtonCount >= _options.ButtonInRowCount)
         {
