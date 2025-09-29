@@ -23,6 +23,8 @@ public class DateSelectionStepCommand : StepCommandWithValidation
 
     private readonly DateConstraint? _maxDateConstraint;
 
+    private readonly Func<DateOnly, string>? _onDateSelectedUserMessage;
+
 
     public override async Task OnCommandCreated()
     {
@@ -76,10 +78,17 @@ public class DateSelectionStepCommand : StepCommandWithValidation
 
     private async Task OnDateConfirmed()
     {
+        var messageToSend = _onDateSelectedUserMessage?.Invoke(_viewModel.SelectedDate);
+
+        if (messageToSend is not null)
+            await FinalizeDateSelection(messageToSend);
+
+
         _onDateSelectedHandler.Invoke(_viewModel.SelectedDate);
 
         await FinalizeCommand();
     }
+
 
     private async Task RecreateMesssage()
     {
@@ -88,6 +97,15 @@ public class DateSelectionStepCommand : StepCommandWithValidation
         _viewModel.ViewMessageId = (await _messageService.EditMessage(_viewModel.ViewMessageId, message)).MessageId;
     }
 
+    private async Task FinalizeDateSelection(string finalizeUserMessage)
+    {
+        MessageBuilder builder = new();
+        builder.WithText(finalizeUserMessage);
+
+        await _messageService.SendMessage(builder.Build());
+    }
+
+
     public DateSelectionStepCommand(StepCommand? next,
                                     IUserInputValidator userInputValidator,
                                     IMessageServiceWithEdit<Message> messageService,
@@ -95,7 +113,8 @@ public class DateSelectionStepCommand : StepCommandWithValidation
                                     string messageText,
                                     DateSelectionStepCommandViewModel viewModel,
                                     DateConstraint? minDateConstraint = null,
-                                    DateConstraint? maxDateConstraint = null) : base(next, userInputValidator)
+                                    DateConstraint? maxDateConstraint = null,
+                                    Func<DateOnly, string>? onDateSelectedUserMessage = null) : base(next, userInputValidator)
     {
         _viewsManager = new();
         _viewModel = viewModel;
@@ -110,6 +129,7 @@ public class DateSelectionStepCommand : StepCommandWithValidation
         _messageText = messageText;
         _minDateConstraint = minDateConstraint;
         _maxDateConstraint = maxDateConstraint;
+        _onDateSelectedUserMessage = onDateSelectedUserMessage;
     }
 }
 
