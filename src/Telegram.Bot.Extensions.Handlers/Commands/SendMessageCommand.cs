@@ -6,14 +6,21 @@ public class SendMessageCommand<TMessage> : OutputCommand
 {
     private readonly IMessageService<TMessage> _messageService;
 
-    private readonly TMessage _message;
+    private readonly Func<Task<TMessage>> _message;
 
     protected override async Task Handle()
     {
-        await _messageService.SendMessage(_message);
+        var message = await _message.Invoke();
+        await _messageService.SendMessage(message);
     }
 
     public SendMessageCommand(IMessageService<TMessage> messageService, TMessage message)
+    {
+        _messageService = messageService;
+        _message = async () => { return message; };
+    }
+
+    public SendMessageCommand(IMessageService<TMessage> messageService, Func<Task<TMessage>> message)
     {
         _messageService = messageService;
         _message = message;
