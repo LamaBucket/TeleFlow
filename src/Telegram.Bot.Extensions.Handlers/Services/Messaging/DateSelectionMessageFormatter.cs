@@ -55,11 +55,16 @@ public class DateSelectionMessageFormatter
         int columns = 3;
         int rows = 3;
 
-        int buttonCount = columns * rows;
+        int buttonCount = columns * rows - 2; //-2 cause << and >>
 
         int centerYear = currentDate.Year;
 
         int currentYear = centerYear - (buttonCount - 1) / 2;
+
+
+        int lastYearInGrid = centerYear + (buttonCount - 1) / 2;
+
+        int yearsForNextGrid = lastYearInGrid - centerYear + 1;
 
         for (int row = 0; row < rows; row++)
         {
@@ -75,9 +80,10 @@ public class DateSelectionMessageFormatter
                 }
                 else if (row == rows - 1 && col == columns - 1)
                 {
-                    builder.WithInlineButton(GenerateActionButton(async () => {
-                        if(DateSelected is not null)
-                            await DateSelected.Invoke(currentDate.AddYears(9));
+                    builder.WithInlineButton(GenerateActionButton(async () =>
+                    {
+                        if (DateSelected is not null)
+                            await DateSelected.Invoke(currentDate.AddYears(yearsForNextGrid));
                     }, ">>"));
                 }
                 else
@@ -93,7 +99,7 @@ public class DateSelectionMessageFormatter
 
                     builder.WithInlineButton(button);
 
-                    currentYear += 1;   
+                    currentYear += 1;
                 }
             }
             builder.WithNewButtonLine();
