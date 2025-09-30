@@ -1,4 +1,5 @@
 using LisBot.Common.Telegram.Services;
+using Telegram.Bot.Extensions.Handlers.Services;
 using Telegram.Bot.Extensions.Handlers.Services.Markup;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 using Telegram.Bot.Types;
@@ -10,9 +11,15 @@ public class UpdateDistributorNextHandlerBuildArgs
 {
     public IMessageService<string> MessageServiceString { get; init; }
 
+    public IMessageService<ImageMessageServiceMessage> MessageServiceImages { get; init; }
+
     public IMessageServiceWithEdit<Message> MessageService { get; init; }
 
+
     public IReplyMarkupManager ReplyMarkupManager { get; init; }
+
+
+    public IMediaDownloaderService MediaDownloaderService { get; init; }
 
 
     public IAuthenticationService AuthenticationService { get; init; }
@@ -21,15 +28,19 @@ public class UpdateDistributorNextHandlerBuildArgs
 
 
     public UpdateDistributorNextHandlerBuildArgs(IMessageService<string> messageServiceString,
+                                                 IMessageService<ImageMessageServiceMessage> messageServiceImages,
                                                  IMessageServiceWithEdit<Message> messageService,
                                                  IReplyMarkupManager replyMarkupManager,
+                                                 IMediaDownloaderService mediaDownloaderService,
                                                  IAuthenticationService authenticationService,
                                                  IChatIdProvider chatIdProvider)
     {
         MessageServiceString = messageServiceString;
+        MessageServiceImages = messageServiceImages;
         MessageService = messageService;
 
         ReplyMarkupManager = replyMarkupManager;
+        MediaDownloaderService = mediaDownloaderService;
 
         AuthenticationService = authenticationService;
         ChatIdProvider = chatIdProvider;

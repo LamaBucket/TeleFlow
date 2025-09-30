@@ -11,28 +11,28 @@ public class UpdateListenerCommandExecutionArgs
     public NavigatorFactoryArgs NavigatorArgs { get; init; }
 
 
-    public IMessageService<string> MessageServiceString => _buildTimeArgs.FromUpdateDistributorArgs.MessageServiceString;
+    public IMessageService<string> MessageServiceString => BuildTimeArgs.FromUpdateDistributorArgs.MessageServiceString;
 
-    public IMessageServiceWithEdit<Message> MessageService => _buildTimeArgs.FromUpdateDistributorArgs.MessageService;
+    public IMessageServiceWithEdit<Message> MessageService => BuildTimeArgs.FromUpdateDistributorArgs.MessageService;
 
-    public IReplyMarkupManager ReplyMarkupManager => _buildTimeArgs.FromUpdateDistributorArgs.ReplyMarkupManager;
-
-
-    public IChatIdProvider ChatIdProvider => _buildTimeArgs.FromUpdateDistributorArgs.ChatIdProvider;
-
-    public IAuthenticationService AuthenticationService => _buildTimeArgs.FromUpdateDistributorArgs.AuthenticationService;
+    public IReplyMarkupManager ReplyMarkupManager => BuildTimeArgs.FromUpdateDistributorArgs.ReplyMarkupManager;
 
 
-    public INavigatorHandler Navigator => _buildTimeArgs.Navigator;
+    public IChatIdProvider ChatIdProvider => BuildTimeArgs.FromUpdateDistributorArgs.ChatIdProvider;
+
+    public IAuthenticationService AuthenticationService => BuildTimeArgs.FromUpdateDistributorArgs.AuthenticationService;
 
 
-    private readonly UpdateListenerCommandBuildArgs _buildTimeArgs;
+    public INavigatorHandler Navigator => BuildTimeArgs.Navigator;
+
+
+    public UpdateListenerCommandBuildArgs BuildTimeArgs { get; init; }
 
 
     public UpdateListenerCommandExecutionArgs(NavigatorFactoryArgs navigatorArgs,
                                               UpdateListenerCommandBuildArgs buildTimeArgs)
     {
         NavigatorArgs = navigatorArgs;
-        _buildTimeArgs = buildTimeArgs;
+        BuildTimeArgs = buildTimeArgs;
     }
 }

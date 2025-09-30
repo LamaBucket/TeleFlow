@@ -2,6 +2,7 @@ using LisBot.Common.Telegram.Builders;
 using LisBot.Common.Telegram.Factories.CommandFactories;
 using LisBot.Common.Telegram.Models;
 using LisBot.Common.Telegram.Services;
+using Telegram.Bot.Extensions.Handlers.Services;
 using Telegram.Bot.Extensions.Handlers.Services.Markup;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 using Telegram.Bot.Types;
@@ -18,10 +19,15 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
 
     private readonly IMessageServiceFactory<string> _messageServiceStringFactory;
 
+    private readonly IMessageServiceFactory<ImageMessageServiceMessage> _messageServiceImageFactory;
+
 
     private readonly IReplyMarkupManagerFactory _replyMarkupManagerFactory;
 
     private readonly IAuthenticationServiceFactory _authenticationServiceFactory;
+
+
+    private readonly IMediaDownloaderServiceFactory _mediaDownloaderServiceFactory;
 
 
     public UpdateDistributor Create()
@@ -48,8 +54,10 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
         return new LambdaHandlerFactoryWithArgs<IHandler<Update>, Update, IChatIdProvider>((chatIdProvider) =>
         {
             UpdateDistributorNextHandlerBuildArgs args = new(_messageServiceStringFactory.CreateMessageService(chatIdProvider.GetChatId()),
+                                                             _messageServiceImageFactory.CreateMessageService(chatIdProvider.GetChatId()),
                                                              _messageServiceFactory.CreateMessageService(chatIdProvider.GetChatId()),
                                                              _replyMarkupManagerFactory.CreateReplyMarkupManager(chatIdProvider.GetChatId()),
+                                                             _mediaDownloaderServiceFactory.CreateMediaDownloaderService(),
                                                              _authenticationServiceFactory.CreateAuthenticationService(chatIdProvider.GetChatId()),
                                                              chatIdProvider);
 
