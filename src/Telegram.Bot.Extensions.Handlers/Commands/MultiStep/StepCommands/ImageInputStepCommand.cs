@@ -34,6 +34,8 @@ public class ImageInputStepCommand : StepCommandWithValidation
         var file = await _mediaDownloaderService.DownloadFileAsync(photo.FileId);
 
         await _onHandleUserImage.Invoke(file);
+
+        await FinalizeCommand();
     }
 
 

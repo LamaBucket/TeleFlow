@@ -25,7 +25,7 @@ public class RegexTextMessageUserValidator : IUserInputValidator
 
     public static RegexTextMessageUserValidator GetRegexForAnyTextValidator(string notTextMessage, IMessageService<string> messageService)
     {
-        return new RegexTextMessageUserValidator(@"*", notTextMessage, messageService);
+        return new RegexTextMessageUserValidator(@".*", notTextMessage, messageService);
     }
 
 

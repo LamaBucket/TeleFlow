@@ -10,36 +10,58 @@ public class MessageServiceWrapper : IMessageServiceWithEdit<Message>, IMessageS
 
     private readonly Action<MessageBuilder> _messageFormatter;
 
+
+    private readonly InlineMarkupManager _inlineMarkupManager;
+
+
     public async Task<Message> SendMessage(Message message)
     {
+        await _inlineMarkupManager.RemovePreviousMessageReplyMarkup();
+
         var messageBuilder = new MessageBuilder();
 
         _messageFormatter.Invoke(messageBuilder);
 
         message = ConcatMessages(message, messageBuilder.Build());
 
-        return await _messageService.SendMessage(message);
+        var sentMessage = await _messageService.SendMessage(message);
+
+        _inlineMarkupManager.CheckMessage(sentMessage);
+
+        return sentMessage;
     }
 
     public async Task<Message> EditMessage(int messageId, Message message)
     {
+        await _inlineMarkupManager.RemovePreviousMessageReplyMarkup();
+
         var messageBuilder = new MessageBuilder();
 
         _messageFormatter.Invoke(messageBuilder);
 
         message = ConcatMessages(message, messageBuilder.Build());
 
-        return await _messageService.EditMessage(messageId, message);
+        var editedMessage = await _messageService.EditMessage(messageId, message);
+
+        _inlineMarkupManager.CheckMessage(editedMessage);
+
+        return editedMessage;
     }
 
 
     public async Task<Message> SendMessage(string message)
     {
+        await _inlineMarkupManager.RemovePreviousMessageReplyMarkup();
+
         var messageBuilder = new MessageBuilder();
 
         messageBuilder.WithText(message);
 
-        return await SendMessage(messageBuilder.Build());
+        var sentMessage = await SendMessage(messageBuilder.Build());
+
+        _inlineMarkupManager.CheckMessage(sentMessage);
+
+        return sentMessage;
     }
 
 
@@ -65,9 +87,10 @@ public class MessageServiceWrapper : IMessageServiceWithEdit<Message>, IMessageS
     }
 
 
-    public MessageServiceWrapper(IMessageServiceWithEdit<Message> messageService, Action<MessageBuilder> messageFormatter)
+    public MessageServiceWrapper(IMessageServiceWithEdit<Message> messageService, Action<MessageBuilder> messageFormatter, InlineMarkupManager inlineMarkupManager)
     {
         _messageService = messageService;
         _messageFormatter = messageFormatter;
+        _inlineMarkupManager = inlineMarkupManager;
     }
 }

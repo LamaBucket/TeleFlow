@@ -24,6 +24,9 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
 
     private readonly IReplyMarkupManagerFactory _replyMarkupManagerFactory;
 
+    private readonly InlineMarkupManagerFactory _inlineMarkupManagerFactory;
+
+
     private readonly IAuthenticationServiceFactory _authenticationServiceFactory;
 
 
@@ -57,6 +60,7 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
                                                              _messageServiceImageFactory.CreateMessageService(chatIdProvider.GetChatId()),
                                                              _messageServiceFactory.CreateMessageService(chatIdProvider.GetChatId()),
                                                              _replyMarkupManagerFactory.CreateReplyMarkupManager(chatIdProvider.GetChatId()),
+                                                             _inlineMarkupManagerFactory.Create(chatIdProvider.GetChatId()),
                                                              _mediaDownloaderServiceFactory.CreateMediaDownloaderService(),
                                                              _authenticationServiceFactory.CreateAuthenticationService(chatIdProvider.GetChatId()),
                                                              chatIdProvider);
@@ -88,12 +92,21 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
 
     public UpdateDistributorFactory(IMessageServiceFactory<IMessageServiceWithEdit<Message>, Message> messageServiceFactory,
                                     IMessageServiceFactory<string> messageServiceStringFactory,
+                                    IMessageServiceFactory<ImageMessageServiceMessage> messageServiceImageFactory,
                                     IReplyMarkupManagerFactory replyMarkupManagerFactory,
+                                    InlineMarkupManagerFactory inlineMarkupManagerFactory,
+                                    IMediaDownloaderServiceFactory mediaDownloaderServiceFactory,
                                     IAuthenticationServiceFactory authenticationServiceFactory)
     {
         _messageServiceFactory = messageServiceFactory;
         _messageServiceStringFactory = messageServiceStringFactory;
+        _messageServiceImageFactory = messageServiceImageFactory;
+
         _replyMarkupManagerFactory = replyMarkupManagerFactory;
+        _inlineMarkupManagerFactory = inlineMarkupManagerFactory;
+
+        _mediaDownloaderServiceFactory = mediaDownloaderServiceFactory;
+
         _authenticationServiceFactory = authenticationServiceFactory;
     }
 }

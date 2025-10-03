@@ -18,6 +18,8 @@ public class UpdateDistributorNextHandlerBuildArgs
 
     public IReplyMarkupManager ReplyMarkupManager { get; init; }
 
+    public InlineMarkupManager InlineMarkupManager { get; init; }
+
 
     public IMediaDownloaderService MediaDownloaderService { get; init; }
 
@@ -31,6 +33,7 @@ public class UpdateDistributorNextHandlerBuildArgs
                                                  IMessageService<ImageMessageServiceMessage> messageServiceImages,
                                                  IMessageServiceWithEdit<Message> messageService,
                                                  IReplyMarkupManager replyMarkupManager,
+                                                 InlineMarkupManager inlineMarkupManager,
                                                  IMediaDownloaderService mediaDownloaderService,
                                                  IAuthenticationService authenticationService,
                                                  IChatIdProvider chatIdProvider)
@@ -40,6 +43,7 @@ public class UpdateDistributorNextHandlerBuildArgs
         MessageService = messageService;
 
         ReplyMarkupManager = replyMarkupManager;
+        InlineMarkupManager = inlineMarkupManager;
         MediaDownloaderService = mediaDownloaderService;
 
         AuthenticationService = authenticationService;
