@@ -27,9 +27,6 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
     private readonly InlineMarkupManagerFactory _inlineMarkupManagerFactory;
 
 
-    private readonly IAuthenticationServiceFactory _authenticationServiceFactory;
-
-
     private readonly IMediaDownloaderServiceFactory _mediaDownloaderServiceFactory;
 
 
@@ -62,7 +59,6 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
                                                              _replyMarkupManagerFactory.CreateReplyMarkupManager(chatIdProvider.GetChatId()),
                                                              _inlineMarkupManagerFactory.Create(chatIdProvider.GetChatId()),
                                                              _mediaDownloaderServiceFactory.CreateMediaDownloaderService(),
-                                                             _authenticationServiceFactory.CreateAuthenticationService(chatIdProvider.GetChatId()),
                                                              chatIdProvider);
 
             UpdateDistributorNextHandlerFactoryBuilder nextHandlerBuilder = new(SetupUpdateListenerFactoryBuilder);
@@ -95,8 +91,7 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
                                     IMessageServiceFactory<ImageMessageServiceMessage> messageServiceImageFactory,
                                     IReplyMarkupManagerFactory replyMarkupManagerFactory,
                                     InlineMarkupManagerFactory inlineMarkupManagerFactory,
-                                    IMediaDownloaderServiceFactory mediaDownloaderServiceFactory,
-                                    IAuthenticationServiceFactory authenticationServiceFactory)
+                                    IMediaDownloaderServiceFactory mediaDownloaderServiceFactory)
     {
         _messageServiceFactory = messageServiceFactory;
         _messageServiceStringFactory = messageServiceStringFactory;
@@ -107,6 +102,5 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
 
         _mediaDownloaderServiceFactory = mediaDownloaderServiceFactory;
 
-        _authenticationServiceFactory = authenticationServiceFactory;
     }
 }

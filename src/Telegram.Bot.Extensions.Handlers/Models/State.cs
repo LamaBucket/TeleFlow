@@ -2,7 +2,7 @@ namespace LisBot.Common.Telegram.Models;
 
 public class State<T>
 {
-    public T CurrentValue { get; init; }
+    public T CurrentValue { get; set; }
 
 
     public State(T defaultValue)

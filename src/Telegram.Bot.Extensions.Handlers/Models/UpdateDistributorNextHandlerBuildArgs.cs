@@ -24,8 +24,6 @@ public class UpdateDistributorNextHandlerBuildArgs
     public IMediaDownloaderService MediaDownloaderService { get; init; }
 
 
-    public IAuthenticationService AuthenticationService { get; init; }
-
     public IChatIdProvider ChatIdProvider { get; init; }
 
 
@@ -35,7 +33,6 @@ public class UpdateDistributorNextHandlerBuildArgs
                                                  IReplyMarkupManager replyMarkupManager,
                                                  InlineMarkupManager inlineMarkupManager,
                                                  IMediaDownloaderService mediaDownloaderService,
-                                                 IAuthenticationService authenticationService,
                                                  IChatIdProvider chatIdProvider)
     {
         MessageServiceString = messageServiceString;
@@ -46,7 +43,6 @@ public class UpdateDistributorNextHandlerBuildArgs
         InlineMarkupManager = inlineMarkupManager;
         MediaDownloaderService = mediaDownloaderService;
 
-        AuthenticationService = authenticationService;
         ChatIdProvider = chatIdProvider;
     }
 }

@@ -19,7 +19,7 @@ public class UpdateListenerCommandFactoryBuilder
     private readonly Queue<Action<UpdateListenerCommandBuildArgs>> _setupQueue;
 
 
-    public UpdateListenerCommandFactoryBuilder WithAuthentication(Action<UpdateListenerCommandFactoryBuilder> options, Func<UpdateListenerCommandExecutionArgs, ICommandHandler> handlerIfNotAuthenticated)
+    public UpdateListenerCommandFactoryBuilder WithCondition(Func<UpdateListenerCommandExecutionArgs, Task<bool>> condition, Func<UpdateListenerCommandExecutionArgs, ICommandHandler> handlerIfNotAuthenticated, Action<UpdateListenerCommandFactoryBuilder> options)
     {
         UpdateListenerCommandFactoryBuilder builder = new();
 
@@ -34,15 +34,16 @@ public class UpdateListenerCommandFactoryBuilder
                 var commandName = kvp.Key;
                 var commandFactory = kvp.Value;
 
-                WithAuthentication(commandName, options =>
+                WithCondition(commandName, options =>
                 {
                     options
-                    .WithLambdaIfAuthenticated((args) =>
+                    .WithCondition(condition)
+                    .WithLambdaIfTrue((args) =>
                     {
                         commandFactory.SetContext(args.NavigatorArgs);
                         return commandFactory.Create();
                     })
-                    .WithLambdaIfNotAuthenticated(handlerIfNotAuthenticated);
+                    .WithLambdaIfFalse(handlerIfNotAuthenticated);
                 });
             }
 
@@ -50,24 +51,6 @@ public class UpdateListenerCommandFactoryBuilder
         });
 
         return this;
-    }
-
-    public UpdateListenerCommandFactoryBuilder WithAuthentication(string command, Action<AuthenticationCommandBuilder> options)
-    {
-        AuthenticationCommandBuilder builder = new();
-
-        options.Invoke(builder);
-
-        return WithCondition(command, options =>
-        {
-            options
-            .WithCondition(async (args) =>
-            {
-                return await args.AuthenticationService.IsAuthenticated();
-            })
-            .WithLambdaIfTrue(builder.HandlerIfAuthenticated)
-            .WithLambdaIfFalse(builder.HandlerIfNotAuthenticated);
-        });
     }
 
     public UpdateListenerCommandFactoryBuilder WithCondition(string command, Action<ConditionalCommandBuilder> options)
@@ -79,12 +62,6 @@ public class UpdateListenerCommandFactoryBuilder
         return WithLambda(command, builder.Build);
     }
 
-    public UpdateListenerCommandFactoryBuilder WithSendText(string command, string text)
-    {
-        return WithLambda(command, (UpdateListenerCommandExecutionArgs args) => {
-            return new SendTextCommand(args.MessageServiceString, text);
-        });
-    }
 
     public UpdateListenerCommandFactoryBuilder WithMultiStep<TState>(string command, Action<MultiStepCommandBuilder<TState>> options)
     {
@@ -95,15 +72,26 @@ public class UpdateListenerCommandFactoryBuilder
         return WithLambda(command, builder.Build);
     }
 
+
+    public UpdateListenerCommandFactoryBuilder WithSendText(string command, string text)
+    {
+        return WithLambda(command, (UpdateListenerCommandExecutionArgs args) =>
+        {
+            return new SendTextCommand(args.MessageServiceString, text);
+        });
+    }
+    
     
     public UpdateListenerCommandFactoryBuilder WithLambda(string command, Func<UpdateListenerCommandExecutionArgs, ICommandHandler> factory)
     {
-        _setupQueue.Enqueue((UpdateListenerCommandBuildArgs args) => {
-            _factories.Add(command, new LambdaCommandFactoryWithArgs<NavigatorFactoryArgs>((navigatorArgs) => {
+        _setupQueue.Enqueue((UpdateListenerCommandBuildArgs args) =>
+        {
+            _factories.Add(command, new LambdaCommandFactoryWithArgs<NavigatorFactoryArgs>((navigatorArgs) =>
+            {
 
                 var listenerCommandTimeArgs = new UpdateListenerCommandExecutionArgs(navigatorArgs, args);
                 var listenerArgsFactory = new LambdaCommandFactory<UpdateListenerCommandExecutionArgs>(factory, listenerCommandTimeArgs);
-                
+
                 return listenerArgsFactory.Create();
             }));
         });
@@ -111,13 +99,14 @@ public class UpdateListenerCommandFactoryBuilder
         return this;
     }
 
+
     public UniversalCommandFactory Build(UpdateListenerCommandBuildArgs args)
     {
         UniversalCommandFactory result = new();
 
         SetupFactory(args);
 
-        foreach(var factoryKvp in _factories)
+        foreach (var factoryKvp in _factories)
         {
             result.AddCommandFactory(factoryKvp.Key, factoryKvp.Value);
         }

@@ -7,7 +7,6 @@ namespace LisBot.Common.Telegram.Builders;
 
 public class ConditionalCommandBuilder
 {
-
     private Func<UpdateListenerCommandExecutionArgs, Task<bool>>? _condition;
 
     private Func<UpdateListenerCommandExecutionArgs, IHandlerFactory<ICommandHandler, Update>>? _ifOkHandler;

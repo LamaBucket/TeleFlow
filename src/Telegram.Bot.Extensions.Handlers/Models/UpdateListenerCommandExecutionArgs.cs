@@ -20,8 +20,6 @@ public class UpdateListenerCommandExecutionArgs
 
     public IChatIdProvider ChatIdProvider => BuildTimeArgs.FromUpdateDistributorArgs.ChatIdProvider;
 
-    public IAuthenticationService AuthenticationService => BuildTimeArgs.FromUpdateDistributorArgs.AuthenticationService;
-
 
     public INavigatorHandler Navigator => BuildTimeArgs.Navigator;
 
