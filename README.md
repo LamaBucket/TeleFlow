@@ -11,7 +11,9 @@ This library helps you organize your bot's command and update handling logic usi
 - **Multi-step commands** and state management
 - **Builder-based configuration**
 - **Per-chat update routing**
-- **Easy integration with Telegram.Bot**
+- **Authentication and conditional logic**
+- **Easy integration with [Telegram.Bot](https://www.nuget.org/packages/Telegram.Bot)**
+- **Extensible and testable**
 
 ---
 
@@ -24,58 +26,126 @@ Add the following NuGet packages to your project:
 - [Telegram.Bot](https://www.nuget.org/packages/Telegram.Bot)
 - [Newtonsoft.Json](https://www.nuget.org/packages/Newtonsoft.Json)
 
-### 2. Setup Update Handling
+---
 
-You can set up the entire update handling process in just a few lines:
+### 2. Register Services and Configure Dependency Injection
+
+Register the required services in your DI container (example for ASP.NET Core):
 
 ```csharp
-using LisBot.Common.Telegram;
-using LisBot.Common.Telegram.Factories;
-using LisBot.Common.Telegram.Builders;
-using LisBot.Common.Telegram.Services;
+// Program.cs
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 
-// 1. Configure your message services, authentication, etc.
-IMessageService<string> messageServiceString = ...;
-IMessageService<Message> messageService = ...;
-IMessageService<Tuple<string, KeyboardButton>> messageServiceWithReplyButton = ...;
-IReplyMarkupManager replyMarkupManager = ...;
-IAuthenticationService authenticationService = ...;
+// Register message services
+builder.Services.AddSingleton<IMessageServiceFactory<IMessageServiceWithEdit<Message>, Message>, UniversalMessageServiceFactory>();
+builder.Services.AddSingleton<IMessageServiceFactory<string>, UniversalMessageServiceFactory>();
 
-// 2. Build your command factory
-var commandFactoryBuilder = new UpdateListenerCommandFactoryBuilder()
-    .WithSendText("/start", "Welcome to the bot!")
-    .WithSendText("/help", "Here is how to use the bot...");
+// Register reply markup manager and authentication
+builder.Services.AddSingleton<IReplyMarkupManagerFactory, ReplyMarkupManagerFactory>();
+builder.Services.AddSingleton<IAuthenticationServiceFactory, DemoAuthenticationServiceFactory>();
 
-// 3. Create the update distributor factory
-var updateDistributorFactory = new UpdateDistributorFactory(
-    chatIdProvider => messageService,
-    chatIdProvider => messageServiceString,
-    chatIdProvider => messageServiceWithReplyButton,
-    chatIdProvider => replyMarkupManager,
-    chatIdProvider => authenticationService,
-    builder => builder // configure your commands here
-);
+// Register the update distributor factory
+builder.Services.AddSingleton<UpdateDistributorFactory, DemoUpdateDistributorFactory>();
 
-// 4. Create the update distributor (singleton)
-var updateDistributor = updateDistributorFactory.Create();
+// Register Telegram.Bot client
+builder.Services.AddHttpClient("tgwebhook")
+    .RemoveAllLoggers()
+    .AddTypedClient<ITelegramBotClient>(httpClient => new TelegramBotClient(BOT_TOKEN, httpClient));
 
-// 5. Handle incoming updates
-await updateDistributor.Handle(update);
+// Register MVC integration
+builder.Services.ConfigureTelegramBotMvc();
 ```
 
-### 3. Add Your Own Commands
+---
 
-You can easily add multi-step commands, authentication, and conditional logic using the builder pattern:
+### 3. Configure Update Handling and Command Routing
+
+Define your command routing and multi-step flows using the builder pattern.  
+You can add multi-step commands, authentication, and conditional logic:
 
 ```csharp
-commandFactoryBuilder
-    .WithMultiStep<MyStateType>("/wizard", builder => {
-        builder
-            .SetDefaultStateValue(new MyStateType())
-            .WithoutValidation(stepBuilder => {
-                // Add steps here
-            });
-    });
+// AppExtensions.cs
+public static void ConfigureUpdateListenerForDemo(this UpdateListenerCommandFactoryBuilder builder)
+{
+    builder
+        .WithSendText("/start", "Welcome to the bot!")
+        .WithMultiStep<DemoViewModel>("/multistep", options =>
+        {
+            options
+                .SetDefaultStateValue(new DemoViewModel())
+                .WithValidation(stepBuilder =>
+                {
+                    stepBuilder
+                        .WithStepWithValidationLambdaFactory((args, next) =>
+                        {
+                            return new ContactShareStepCommand(
+                                args.UpdateListenerBuilderArgs.ReplyMarkupManager,
+                                userInput => args.State.CurrentValue.PhoneNumber = userInput.PhoneNumber,
+                                "Please Share Your Phone.",
+                                "Share My Phone",
+                                new PhoneNumberBelongsToUserValidator(
+                                    args.UpdateListenerBuilderArgs.MessageServiceString,
+                                    args.UpdateListenerBuilderArgs.ChatIdProvider,
+                                    "The input was invalid",
+                                    "The phone number does not belong to you."
+                                ),
+                                next
+                            );
+                        }, "Phone Number")
+                        // Add more steps as needed...
+                        .WithStepWithValidationLambdaFactoryGoBackButton((args, next, validator) =>
+                        {
+                            return new DateSelectionStepCommand(
+                                next,
+                                validator,
+                                args.UpdateListenerBuilderArgs.MessageService,
+                                date => args.State.CurrentValue.SelectedDate = date,
+                                "Pick a date"
+                            );
+                        }, "Date");
+                })
+                .WithLambdaResult(args =>
+                {
+                    return new LambdaHandler<DemoViewModel>(async vm =>
+                    {
+                        await args.MessageServiceString.SendMessage("You have successfully completed the multi-step command. Here is the data you entered:");
+                        await args.MessageServiceString.SendMessage($"Full Name: {vm.UserFullName}");
+                        await args.MessageServiceString.SendMessage($"Library Rating: {vm.LibraryRating}");
+                        await args.MessageServiceString.SendMessage($"List Object: {vm.ListObject.DisplayName} with value {vm.ListObject.Value}");
+                        await args.MessageServiceString.SendMessage($"Date: {vm.SelectedDate.ToShortDateString()}");
+                    });
+                });
+        });
+}
+```
+
+---
+
+### 4. Create the Update Distributor and Handle Updates
+
+Instantiate the update distributor and handle incoming updates in your controller:
+
+```csharp
+// BotController.cs
+[ApiController]
+public class BotController : Controller
+{
+    private readonly UpdateDistributorFactory _updateDistributorFactory;
+    private IHandler<Update> UpdateDistributor => _updateDistributorFactory.Create();
+
+    [HttpPost("/botUpdate")]
+    public async Task<ActionResult> HandleBotUpdate([FromBody] Update update)
+    {
+        await UpdateDistributor.Handle(update);
+        return Ok();
+    }
+
+    public BotController(UpdateDistributorFactory updateDistributorFactory)
+    {
+        _updateDistributorFactory = updateDistributorFactory;
+    }
+}
 ```
 
 ---
@@ -85,6 +155,7 @@ commandFactoryBuilder
 - **Minimal boilerplate**: Focus on your bot logic, not on plumbing.
 - **Extensible**: Add new command types, steps, and handlers easily.
 - **Per-chat isolation**: Each chat gets its own handler chain.
+- **Authentication and conditional flows**: Easily add authentication and conditional logic to your commands.
 - **Testable**: Decouple your logic for easier testing.
 
 ---
@@ -94,6 +165,8 @@ commandFactoryBuilder
 - [`src/Telegram.Bot.Extensions.Handlers/`](src/Telegram.Bot.Extensions.Handlers/)
     - Core interfaces and classes for update handling
     - Builders, factories, and services for composing your bot logic
+- [`demo/`](demo/)
+    - Example usage and demo implementation
 
 ---
 
