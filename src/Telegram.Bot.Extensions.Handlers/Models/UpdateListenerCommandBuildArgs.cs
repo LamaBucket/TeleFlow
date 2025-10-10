@@ -1,13 +1,13 @@
 namespace LisBot.Common.Telegram.Models;
 
-public class UpdateListenerCommandBuildArgs
+public class UpdateListenerCommandBuildArgs<TBuildArgs>
 {
-    public UpdateDistributorNextHandlerBuildArgs FromUpdateDistributorArgs { get; init; }
+    public TBuildArgs FromUpdateDistributorArgs { get; init; }
 
     public INavigatorHandler Navigator { get; init; }
 
 
-    public UpdateListenerCommandBuildArgs(UpdateDistributorNextHandlerBuildArgs fromUpdateDistributorArgs,
+    public UpdateListenerCommandBuildArgs(TBuildArgs fromUpdateDistributorArgs,
                                           INavigatorHandler navigator)
     {
         FromUpdateDistributorArgs = fromUpdateDistributorArgs;

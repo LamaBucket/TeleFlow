@@ -6,22 +6,22 @@ using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Builders;
 
-public class UpdateListenerCommandFactoryBuilder
+public class UpdateListenerCommandFactoryBuilder<TBuildArgs> where TBuildArgs : class
 {
     private readonly Dictionary<string, IHandlerFactoryWithArgs<ICommandHandler, Update, NavigatorFactoryArgs>> _factories;
 
 
-    private readonly Queue<Action<UpdateListenerCommandBuildArgs>> _oneTimeSetupActionQueue;
+    private readonly Queue<Action<UpdateListenerCommandBuildArgs<TBuildArgs>>> _oneTimeSetupActionQueue;
 
     private bool _oneTimeSetupComplete;
 
 
-    private readonly Queue<Action<UpdateListenerCommandBuildArgs>> _setupQueue;
+    private readonly Queue<Action<UpdateListenerCommandBuildArgs<TBuildArgs>>> _setupQueue;
 
 
-    public UpdateListenerCommandFactoryBuilder WithCondition(Func<UpdateListenerCommandExecutionArgs, Task<bool>> condition, Func<UpdateListenerCommandExecutionArgs, ICommandHandler> handlerIfNotAuthenticated, Action<UpdateListenerCommandFactoryBuilder> options)
+    public UpdateListenerCommandFactoryBuilder<TBuildArgs> WithCondition(Func<UpdateListenerCommandExecutionArgs<TBuildArgs>, Task<bool>> condition, Func<UpdateListenerCommandExecutionArgs<TBuildArgs>, ICommandHandler> handlerIfNotAuthenticated, Action<UpdateListenerCommandFactoryBuilder<TBuildArgs>> options)
     {
-        UpdateListenerCommandFactoryBuilder builder = new();
+        UpdateListenerCommandFactoryBuilder<TBuildArgs> builder = new();
 
         options.Invoke(builder);
 
@@ -53,9 +53,9 @@ public class UpdateListenerCommandFactoryBuilder
         return this;
     }
 
-    public UpdateListenerCommandFactoryBuilder WithCondition(string command, Action<ConditionalCommandBuilder> options)
+    public UpdateListenerCommandFactoryBuilder<TBuildArgs> WithCondition(string command, Action<ConditionalCommandBuilder<TBuildArgs>> options)
     {
-        ConditionalCommandBuilder builder = new();
+        ConditionalCommandBuilder<TBuildArgs> builder = new();
 
         options.Invoke(builder);
 
@@ -63,34 +63,25 @@ public class UpdateListenerCommandFactoryBuilder
     }
 
 
-    public UpdateListenerCommandFactoryBuilder WithMultiStep<TState>(string command, Action<MultiStepCommandBuilder<TState>> options)
+    public UpdateListenerCommandFactoryBuilder<TBuildArgs> WithMultiStep<TState>(string command, Action<MultiStepCommandBuilder<TState, TBuildArgs>> options)
     {
-        MultiStepCommandBuilder<TState> builder = new();
+        MultiStepCommandBuilder<TState, TBuildArgs> builder = new();
 
         options.Invoke(builder);
 
         return WithLambda(command, builder.Build);
     }
-
-
-    public UpdateListenerCommandFactoryBuilder WithSendText(string command, string text)
-    {
-        return WithLambda(command, (UpdateListenerCommandExecutionArgs args) =>
-        {
-            return new SendTextCommand(args.MessageServiceString, text);
-        });
-    }
     
     
-    public UpdateListenerCommandFactoryBuilder WithLambda(string command, Func<UpdateListenerCommandExecutionArgs, ICommandHandler> factory)
+    public UpdateListenerCommandFactoryBuilder<TBuildArgs> WithLambda(string command, Func<UpdateListenerCommandExecutionArgs<TBuildArgs>, ICommandHandler> factory)
     {
-        _setupQueue.Enqueue((UpdateListenerCommandBuildArgs args) =>
+        _setupQueue.Enqueue((UpdateListenerCommandBuildArgs<TBuildArgs> args) =>
         {
             _factories.Add(command, new LambdaCommandFactoryWithArgs<NavigatorFactoryArgs>((navigatorArgs) =>
             {
 
-                var listenerCommandTimeArgs = new UpdateListenerCommandExecutionArgs(navigatorArgs, args);
-                var listenerArgsFactory = new LambdaCommandFactory<UpdateListenerCommandExecutionArgs>(factory, listenerCommandTimeArgs);
+                var listenerCommandTimeArgs = new UpdateListenerCommandExecutionArgs<TBuildArgs>(navigatorArgs, args);
+                var listenerArgsFactory = new LambdaCommandFactory<UpdateListenerCommandExecutionArgs<TBuildArgs>>(factory, listenerCommandTimeArgs);
 
                 return listenerArgsFactory.Create();
             }));
@@ -100,7 +91,7 @@ public class UpdateListenerCommandFactoryBuilder
     }
 
 
-    public UniversalCommandFactory Build(UpdateListenerCommandBuildArgs args)
+    public UniversalCommandFactory Build(UpdateListenerCommandBuildArgs<TBuildArgs> args)
     {
         UniversalCommandFactory result = new();
 
@@ -116,7 +107,7 @@ public class UpdateListenerCommandFactoryBuilder
         return result;
     }
 
-    private void SetupFactory(UpdateListenerCommandBuildArgs args)
+    private void SetupFactory(UpdateListenerCommandBuildArgs<TBuildArgs> args)
     {
         if (!_oneTimeSetupComplete)
         {

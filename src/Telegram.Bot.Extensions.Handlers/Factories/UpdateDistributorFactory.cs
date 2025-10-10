@@ -10,24 +10,13 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace LisBot.Common.Telegram.Factories;
 
-public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Update>
+public class UpdateDistributorFactory<TBuildArgs> : IHandlerFactory<UpdateDistributor, Update>
+    where TBuildArgs : class
 {
     protected UpdateDistributor? Instance { get; set; }
 
 
-    private readonly IMessageServiceFactory<IMessageServiceWithEdit<Message>, Message> _messageServiceFactory;
-
-    private readonly IMessageServiceFactory<string> _messageServiceStringFactory;
-
-    private readonly IMessageServiceFactory<ImageMessageServiceMessage> _messageServiceImageFactory;
-
-
-    private readonly IReplyMarkupManagerFactory _replyMarkupManagerFactory;
-
-    private readonly InlineMarkupManagerFactory _inlineMarkupManagerFactory;
-
-
-    private readonly IMediaDownloaderServiceFactory _mediaDownloaderServiceFactory;
+    private readonly IUpdateDistributorArgsBuilder<TBuildArgs> _updateDistributorArgsBuilder;
 
 
     public UpdateDistributor Create()
@@ -53,15 +42,9 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
     {
         return new LambdaHandlerFactoryWithArgs<IHandler<Update>, Update, IChatIdProvider>((chatIdProvider) =>
         {
-            UpdateDistributorNextHandlerBuildArgs args = new(_messageServiceStringFactory.CreateMessageService(chatIdProvider.GetChatId()),
-                                                             _messageServiceImageFactory.CreateMessageService(chatIdProvider.GetChatId()),
-                                                             _messageServiceFactory.CreateMessageService(chatIdProvider.GetChatId()),
-                                                             _replyMarkupManagerFactory.CreateReplyMarkupManager(chatIdProvider.GetChatId()),
-                                                             _inlineMarkupManagerFactory.Create(chatIdProvider.GetChatId()),
-                                                             _mediaDownloaderServiceFactory.CreateMediaDownloaderService(),
-                                                             chatIdProvider);
+            var args = _updateDistributorArgsBuilder.Build(chatIdProvider);
 
-            UpdateDistributorNextHandlerFactoryBuilder nextHandlerBuilder = new(SetupUpdateListenerFactoryBuilder);
+            UpdateDistributorNextHandlerFactoryBuilder<TBuildArgs> nextHandlerBuilder = new(SetupUpdateListenerFactoryBuilder);
 
             ConfigureBeforeUpdateListenerHandler(nextHandlerBuilder);
 
@@ -69,12 +52,12 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
         });
     }
 
-    protected virtual void SetupUpdateListenerFactoryBuilder(UpdateListenerCommandFactoryBuilder builder)
+    protected virtual void SetupUpdateListenerFactoryBuilder(UpdateListenerCommandFactoryBuilder<TBuildArgs> builder)
     {
 
     }
 
-    protected virtual void ConfigureBeforeUpdateListenerHandler(UpdateDistributorNextHandlerFactoryBuilder options)
+    protected virtual void ConfigureBeforeUpdateListenerHandler(UpdateDistributorNextHandlerFactoryBuilder<TBuildArgs> options)
     {
         
     }
@@ -86,21 +69,8 @@ public class UpdateDistributorFactory : IHandlerFactory<UpdateDistributor, Updat
         // if you need the update distributor not to be Singleton - clear the created instance here.
     }
 
-    public UpdateDistributorFactory(IMessageServiceFactory<IMessageServiceWithEdit<Message>, Message> messageServiceFactory,
-                                    IMessageServiceFactory<string> messageServiceStringFactory,
-                                    IMessageServiceFactory<ImageMessageServiceMessage> messageServiceImageFactory,
-                                    IReplyMarkupManagerFactory replyMarkupManagerFactory,
-                                    InlineMarkupManagerFactory inlineMarkupManagerFactory,
-                                    IMediaDownloaderServiceFactory mediaDownloaderServiceFactory)
+    public UpdateDistributorFactory(IUpdateDistributorArgsBuilder<TBuildArgs> updateDistributorArgsBuilder)
     {
-        _messageServiceFactory = messageServiceFactory;
-        _messageServiceStringFactory = messageServiceStringFactory;
-        _messageServiceImageFactory = messageServiceImageFactory;
-
-        _replyMarkupManagerFactory = replyMarkupManagerFactory;
-        _inlineMarkupManagerFactory = inlineMarkupManagerFactory;
-
-        _mediaDownloaderServiceFactory = mediaDownloaderServiceFactory;
-
+        _updateDistributorArgsBuilder = updateDistributorArgsBuilder;
     }
 }

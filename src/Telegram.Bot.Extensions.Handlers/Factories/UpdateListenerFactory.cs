@@ -4,13 +4,13 @@ using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Factories;
 
-public class UpdateListenerFactory : IHandlerFactoryWithArgs<UpdateListener, Update, UpdateDistributorNextHandlerBuildArgs>
+public class UpdateListenerFactory<TBuildArgs> : IHandlerFactoryWithArgs<UpdateListener, Update, TBuildArgs> where TBuildArgs : class
 {
-    private readonly Func<UpdateDistributorNextHandlerBuildArgs, INavigatorHandler, IHandlerFactoryWithArgs> _handlerFactory;
+    private readonly Func<TBuildArgs, INavigatorHandler, IHandlerFactoryWithArgs> _handlerFactory;
 
-    private readonly Func<UpdateDistributorNextHandlerBuildArgs, INavigatorHandler, IHandlerFactoryWithArgs<ICommandHandler, Update, string>> _navigatorFactory;
+    private readonly Func<TBuildArgs, INavigatorHandler, IHandlerFactoryWithArgs<ICommandHandler, Update, string>> _navigatorFactory;
 
-    private UpdateDistributorNextHandlerBuildArgs? _args;
+    private TBuildArgs? _args;
 
     public UpdateListener Create()
     {
@@ -36,18 +36,18 @@ public class UpdateListenerFactory : IHandlerFactoryWithArgs<UpdateListener, Upd
         return listener;
     }
 
-    public void SetContext(UpdateDistributorNextHandlerBuildArgs args)
+    public void SetContext(TBuildArgs args)
     {
         _args = args;
     }
 
-    public UpdateListenerFactory(Func<UpdateDistributorNextHandlerBuildArgs, INavigatorHandler, IHandlerFactoryWithArgs> commandFactory, Func<UpdateDistributorNextHandlerBuildArgs, INavigatorHandler, IHandlerFactoryWithArgs<ICommandHandler, Update, string>> navigatorFactory)
+    public UpdateListenerFactory(Func<TBuildArgs, INavigatorHandler, IHandlerFactoryWithArgs> commandFactory, Func<TBuildArgs, INavigatorHandler, IHandlerFactoryWithArgs<ICommandHandler, Update, string>> navigatorFactory)
     {
         _handlerFactory = commandFactory;
         _navigatorFactory = navigatorFactory;
     }
 
-    public UpdateListenerFactory(Func<UpdateDistributorNextHandlerBuildArgs, INavigatorHandler, UniversalCommandFactory> universalCommandFactory) : this(universalCommandFactory, universalCommandFactory)
+    public UpdateListenerFactory(Func<TBuildArgs, INavigatorHandler, UniversalCommandFactory> universalCommandFactory) : this(universalCommandFactory, universalCommandFactory)
     {
         
     }

@@ -4,23 +4,23 @@ using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Builders;
 
-public class UpdateDistributorNextHandlerFactoryBuilder
+public class UpdateDistributorNextHandlerFactoryBuilder<TBuildArgs> where TBuildArgs : class
 {
-    private readonly Action<UpdateListenerCommandFactoryBuilder> _updateListenerOptions;
+    private readonly Action<UpdateListenerCommandFactoryBuilder<TBuildArgs>> _updateListenerOptions;
 
-    protected Queue<Func<IHandler<Update>, UpdateListenerCommandBuildArgs, IHandler<Update>>> BeforeUpdateListenerCommandFactories => new(_beforeUpdateListenerCommandFactories);
+    protected Queue<Func<IHandler<Update>, UpdateListenerCommandBuildArgs<TBuildArgs>, IHandler<Update>>> BeforeUpdateListenerCommandFactories => new(_beforeUpdateListenerCommandFactories);
 
-    private readonly Queue<Func<IHandler<Update>, UpdateListenerCommandBuildArgs, IHandler<Update>>> _beforeUpdateListenerCommandFactories;
+    private readonly Queue<Func<IHandler<Update>, UpdateListenerCommandBuildArgs<TBuildArgs>, IHandler<Update>>> _beforeUpdateListenerCommandFactories;
 
 
-    public IHandler<Update> Build(UpdateDistributorNextHandlerBuildArgs args)
+    public IHandler<Update> Build(TBuildArgs args)
     {
         var updateListener = BuildUpdateListener(args);
 
         return BuildHandlersBeforeUpdateListener(new(args, updateListener), updateListener);
     }
 
-    private UpdateListener BuildUpdateListener(UpdateDistributorNextHandlerBuildArgs args)
+    private UpdateListener BuildUpdateListener(TBuildArgs args)
     {
         var listenerFactory = BuildUpdateListenerFactory();
 
@@ -28,15 +28,15 @@ public class UpdateDistributorNextHandlerFactoryBuilder
         return listenerFactory.Create();
     }
 
-    private UpdateListenerFactory BuildUpdateListenerFactory()
+    private UpdateListenerFactory<TBuildArgs> BuildUpdateListenerFactory()
     {
-        var listenerFactory = new UpdateListenerFactory((updateDistributorArgs, navHandler) =>
+        var listenerFactory = new UpdateListenerFactory<TBuildArgs>((updateDistributorArgs, navHandler) =>
         {
-            var updateListenerFactoryBuilder = new UpdateListenerCommandFactoryBuilder();
+            var updateListenerFactoryBuilder = new UpdateListenerCommandFactoryBuilder<TBuildArgs>();
 
             _updateListenerOptions.Invoke(updateListenerFactoryBuilder);
 
-            UpdateListenerCommandBuildArgs args = new(updateDistributorArgs, navHandler);
+            UpdateListenerCommandBuildArgs<TBuildArgs> args = new(updateDistributorArgs, navHandler);
 
             return updateListenerFactoryBuilder.Build(args);
         });
@@ -44,7 +44,7 @@ public class UpdateDistributorNextHandlerFactoryBuilder
         return listenerFactory;
     }
 
-    private IHandler<Update> BuildHandlersBeforeUpdateListener(UpdateListenerCommandBuildArgs args, UpdateListener updateListener)
+    private IHandler<Update> BuildHandlersBeforeUpdateListener(UpdateListenerCommandBuildArgs<TBuildArgs> args, UpdateListener updateListener)
     {
         var beforeUpdateListenerCommandFactories = BeforeUpdateListenerCommandFactories;
 
@@ -61,7 +61,7 @@ public class UpdateDistributorNextHandlerFactoryBuilder
     }
 
 
-    public UpdateDistributorNextHandlerFactoryBuilder WithExceptionHandler(Func<Exception, UpdateListenerCommandBuildArgs, Task> handlerAction)
+    public UpdateDistributorNextHandlerFactoryBuilder<TBuildArgs> WithExceptionHandler(Func<Exception, UpdateListenerCommandBuildArgs<TBuildArgs>, Task> handlerAction)
     {
         return WithCustomWrapUpdateListenerFunction((handler, args) =>
         {
@@ -74,7 +74,7 @@ public class UpdateDistributorNextHandlerFactoryBuilder
         });
     }
 
-    public UpdateDistributorNextHandlerFactoryBuilder WithInterceptor(string[] commandsToIntercept)
+    public UpdateDistributorNextHandlerFactoryBuilder<TBuildArgs> WithInterceptor(string[] commandsToIntercept)
     {
         return WithCustomWrapUpdateListenerFunction<UpdateListener>((listener, args) =>
         {
@@ -85,7 +85,7 @@ public class UpdateDistributorNextHandlerFactoryBuilder
     }
 
 
-    public UpdateDistributorNextHandlerFactoryBuilder WithCustomWrapUpdateListenerFunction<THandler>(Func<THandler, UpdateListenerCommandBuildArgs, IHandler<Update>> action)
+    public UpdateDistributorNextHandlerFactoryBuilder<TBuildArgs> WithCustomWrapUpdateListenerFunction<THandler>(Func<THandler, UpdateListenerCommandBuildArgs<TBuildArgs>, IHandler<Update>> action)
         where THandler : IHandler<Update>
     {
         return WithCustomWrapUpdateListenerFunction((handler, args) =>
@@ -99,7 +99,7 @@ public class UpdateDistributorNextHandlerFactoryBuilder
         });
     } 
 
-    public UpdateDistributorNextHandlerFactoryBuilder WithCustomWrapUpdateListenerFunction(Func<IHandler<Update>, UpdateListenerCommandBuildArgs, IHandler<Update>> action)
+    public UpdateDistributorNextHandlerFactoryBuilder<TBuildArgs> WithCustomWrapUpdateListenerFunction(Func<IHandler<Update>, UpdateListenerCommandBuildArgs<TBuildArgs>, IHandler<Update>> action)
     {
         _beforeUpdateListenerCommandFactories.Enqueue(action);
         
@@ -107,7 +107,7 @@ public class UpdateDistributorNextHandlerFactoryBuilder
     }
 
 
-    internal UpdateDistributorNextHandlerFactoryBuilder(Action<UpdateListenerCommandFactoryBuilder> updateListenerOptions)
+    internal UpdateDistributorNextHandlerFactoryBuilder(Action<UpdateListenerCommandFactoryBuilder<TBuildArgs>> updateListenerOptions)
     {
         _updateListenerOptions = updateListenerOptions;
         _beforeUpdateListenerCommandFactories = [];

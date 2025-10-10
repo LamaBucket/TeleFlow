@@ -5,28 +5,28 @@ using Telegram.Bot.Types;
 
 namespace LisBot.Common.Telegram.Builders;
 
-public class StepManagerCommandBuilder<TState>
+public class StepManagerCommandBuilder<TState, TBuildArgs> where TBuildArgs : class
 {
-    private readonly Queue<Func<MultiStepCommandBuilderArgs<TState>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> _factoryBuildQueue;
+    private readonly Queue<Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> _factoryBuildQueue;
 
 
-    public virtual StepManagerCommandBuilder<TState> WithStep(Func<MultiStepCommandBuilderArgs<TState>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> stepFactory)
+    public virtual StepManagerCommandBuilder<TState, TBuildArgs> WithStep(Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> stepFactory)
     {
         _factoryBuildQueue.Enqueue(stepFactory);
 
         return this;
     }
 
-    public StepManagerCommand Build(MultiStepCommandBuilderArgs<TState> args)
+    public StepManagerCommand Build(MultiStepCommandBuilderArgs<TState, TBuildArgs> args)
     {
         SetupStepChainBuilder(args);
 
         return new StepManagerCommand(args.StepChainBuilder);
     }
 
-    private void SetupStepChainBuilder(MultiStepCommandBuilderArgs<TState> args)
+    private void SetupStepChainBuilder(MultiStepCommandBuilderArgs<TState, TBuildArgs> args)
     {
-        Queue<Func<MultiStepCommandBuilderArgs<TState>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> factoryBuildQueueClone = new(_factoryBuildQueue);
+        Queue<Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> factoryBuildQueueClone = new(_factoryBuildQueue);
 
         while(factoryBuildQueueClone.Count != 0)
         {
