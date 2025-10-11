@@ -1,8 +1,10 @@
 using demo;
 using demo.Services;
 using LisBot.Common.Telegram.Factories;
+using LisBot.Common.Telegram.Models;
 using LisBot.Common.Telegram.Services;
 using Telegram.Bot;
+using Telegram.Bot.Extensions.Handlers.Services;
 using Telegram.Bot.Extensions.Handlers.Services.Markup;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 using Telegram.Bot.Types;
@@ -18,13 +20,18 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSingleton<IMessageServiceFactory<IMessageServiceWithEdit<Message>, Message>, UniversalMessageServiceFactory>();
 builder.Services.AddSingleton<IMessageServiceFactory<string>, UniversalMessageServiceFactory>();
+builder.Services.AddSingleton<IMessageServiceFactory<ImageMessageServiceMessage>, UniversalMessageServiceFactory>();
+
 
 
 builder.Services.AddSingleton<IReplyMarkupManagerFactory, ReplyMarkupManagerFactory>();
+builder.Services.AddSingleton<InlineMarkupManagerFactory, DemoInlineMarkupManagerFactory>();
 
-builder.Services.AddSingleton<IAuthenticationServiceFactory, DemoAuthenticationServiceFactory>();
+builder.Services.AddSingleton<IMediaDownloaderServiceFactory, MediaDownloaderServiceFactory>();
 
-builder.Services.AddSingleton<UpdateDistributorFactory, DemoUpdateDistributorFactory>();
+builder.Services.AddSingleton<IUpdateDistributorArgsBuilder<UpdateDistributorNextHandlerBuildArgs>, UpdateDistributorArgsBuilder>();
+
+builder.Services.AddSingleton<UpdateDistributorFactory<UpdateDistributorNextHandlerBuildArgs>, DemoUpdateDistributorFactory>();
 
 builder.Services.AddHttpClient("tgwebhook")
                 .RemoveAllLoggers()

@@ -19,10 +19,13 @@ namespace demo;
 
 public static class AppExtensions
 {
-    public static void ConfigureUpdateListenerForDemo(this UpdateListenerCommandFactoryBuilder builder)
+    public static void ConfigureUpdateListenerForDemo(this UpdateListenerCommandFactoryBuilder<UpdateDistributorNextHandlerBuildArgs> builder)
     {
         builder
-        .WithSendText("/start", "Welcome to the bot!")
+        .WithLambda("/start", (args) =>
+        {
+            return new SendTextCommand(args.BuildTimeArgs.FromUpdateDistributorArgs.MessageServiceString, "Welcome to the bot!");
+        })
         .WithMultiStep<DemoViewModel>("/multistep", options =>
         {
             options
@@ -32,23 +35,23 @@ public static class AppExtensions
                 options
                 .WithStepWithValidationLambdaFactory((args, next) =>
                 {
-                    return new ContactShareStepCommand(args.UpdateListenerBuilderArgs.ReplyMarkupManager, (userInput) =>
+                    return new ContactShareStepCommand(args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.ReplyMarkupManager, (userInput) =>
                     {
                         args.State.CurrentValue.PhoneNumber = userInput.PhoneNumber;
                     }, "Please Share Your Phone. This will NOT go anywhere", "Share My Phone",
-                    new PhoneNumberBelongsToUserValidator(args.UpdateListenerBuilderArgs.MessageServiceString, args.UpdateListenerBuilderArgs.ChatIdProvider, "The input was invalid", "The phone number does not belong to you."),
+                    new PhoneNumberBelongsToUserValidator(args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.MessageServiceString, args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.ChatIdProvider, "The input was invalid", "The phone number does not belong to you."),
                     next);
                 }, "Phone Number")
                 .WithStepWithValidationLambdaFactoryGoBackButton((args, next, validator) =>
                 {
-                    return new TextInputStepCommand(args.UpdateListenerBuilderArgs.MessageServiceString, "Please enter your full name", async (message) =>
+                    return new TextInputStepCommand(args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.MessageServiceString, "Please enter your full name", async (message) =>
                     {
                         args.State.CurrentValue.UserFullName = message;
                     }, next, validator);
                 }, "User Full Name")
                 .WithStepWithValidationLambdaFactory((args, next) =>
                 {
-                    return new EnumValueSelectionStepCommand<DemoEnum>(args.UpdateListenerBuilderArgs.MessageService, "Please select one of the values",
+                    return new EnumValueSelectionStepCommand<DemoEnum>(args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.MessageService, "Please select one of the values",
                     async (userInput) =>
                     {
                         args.State.CurrentValue.LibraryRating = userInput;
@@ -63,7 +66,7 @@ public static class AppExtensions
                 }, "Library Rating")
                 .WithStepWithValidationLambdaFactory((args, next) =>
                 {
-                    return new ListValueSelectionStepCommand<DemoListObject>(args.UpdateListenerBuilderArgs.MessageService, "Please select the value.",
+                    return new ListValueSelectionStepCommand<DemoListObject>(args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.MessageService, "Please select the value.",
                     async (userInput) =>
                     {
                         args.State.CurrentValue.ListObject = userInput;
@@ -80,7 +83,7 @@ public static class AppExtensions
                 }, "List Object Selection")
                 .WithStepWithValidationLambdaFactoryGoBackButton((args, next, validator) =>
                 {
-                    return new DateSelectionStepCommand(next, validator, args.UpdateListenerBuilderArgs.MessageService, (date) =>
+                    return new DateSelectionStepCommand(next, validator, args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.MessageService, (date) =>
                     {
                         args.State.CurrentValue.SelectedDate = date;
                     }, "Pick a date", new(DateOnly.FromDateTime(DateTime.Today).AddYears(-18), LisBot.Common.Telegram.Services.DateSelectionView.YearSelection), null, new(DateOnly.FromDateTime(DateTime.Today).AddYears(-14), "You are too young!"));
@@ -90,14 +93,17 @@ public static class AppExtensions
             {
                 return new LambdaHandler<DemoViewModel>(async (vm) =>
                 {
-                    await args.MessageServiceString.SendMessage("You have successfully completed the multi step command. Here is the data you entered:");
-                    await args.MessageServiceString.SendMessage($"Full Name: {vm.UserFullName}");
-                    await args.MessageServiceString.SendMessage($"Library Rating: {vm.LibraryRating}");
-                    await args.MessageServiceString.SendMessage($"List Object: {vm.ListObject.DisplayName} with value {vm.ListObject.Value}");
-                    await args.MessageServiceString.SendMessage($"Date: {vm.SelectedDate.ToShortDateString()}");
-                    await args.MessageServiceString.SendMessage($"Phone: {vm.PhoneNumber}");
+                    StringBuilder sb = new();
 
-                    await args.Navigator.Handle("/start");
+                    sb.AppendLine("You have successfully completed the multi step command. Here is the data you entered:");
+                    sb.AppendLine($"Full Name: {vm.UserFullName}");
+                    sb.AppendLine($"Library Rating: {vm.LibraryRating}");
+                    sb.AppendLine($"List Object: {vm.ListObject.DisplayName} with value {vm.ListObject.Value}");
+                    sb.AppendLine($"Date: {vm.SelectedDate.ToShortDateString()}");
+                    sb.AppendLine($"Phone: {vm.PhoneNumber}");
+
+                    await args.BuildTimeArgs.FromUpdateDistributorArgs.MessageServiceString.SendMessage(sb.ToString());
+                    await args.BuildTimeArgs.Navigator.Handle("/start");
                 });
             });
         })
@@ -105,35 +111,44 @@ public static class AppExtensions
         .WithAuthenticationWithDefaultIfNotAuthenticated(options =>
         {
             options
-            .WithCondition("/what-is-conditional-command", options =>
+            .WithCondition("/what-is-conditional-command", (ConditionalCommandBuilder<UpdateDistributorNextHandlerBuildArgs> options) =>
             {
                 options.WithCondition(async (args) =>
                 {
-                    return args.ChatIdProvider.GetChatId() == 0;
+                    return args.BuildTimeArgs.FromUpdateDistributorArgs.ChatIdProvider.GetChatId() == 0;
                 })
                 .WithLambdaIfTrue((args) =>
                 {
-                    return new NavigateWithTextCommand(args.Navigator, "/start", args.MessageServiceString, "This is a text before a redirect!");
+                    return new NavigateWithTextCommand(args.BuildTimeArgs.Navigator, "/start", args.BuildTimeArgs.FromUpdateDistributorArgs.MessageServiceString, "This is a text before a redirect!");
                 })
-                .WithSendTextIfFalse("You Did not pass the conditions!");
+                .WithLambdaIfFalse((args) =>
+                {
+                    return new SendTextCommand(args.BuildTimeArgs.FromUpdateDistributorArgs.MessageServiceString, "You Did not pass the conditions!");
+                });
             });
         });
     }
 
-    public static UpdateListenerCommandFactoryBuilder WithAuthenticationWithDefaultIfNotAuthenticated(this UpdateListenerCommandFactoryBuilder builder, Action<UpdateListenerCommandFactoryBuilder> options)
+    public static UpdateListenerCommandFactoryBuilder<UpdateDistributorNextHandlerBuildArgs> WithAuthenticationWithDefaultIfNotAuthenticated(this UpdateListenerCommandFactoryBuilder<UpdateDistributorNextHandlerBuildArgs> builder, Action<UpdateListenerCommandFactoryBuilder<UpdateDistributorNextHandlerBuildArgs>> options)
     {
         return builder
 
-        .WithAuthentication(options, (args) =>
+        .WithCondition(
+        async (args) =>
         {
-            return new NavigateWithTextCommand(args.Navigator, "/start", args.MessageServiceString, "You are not authenticated. Redirecting");
-        });
+            return true;
+        },
+        (UpdateListenerCommandExecutionArgs<UpdateDistributorNextHandlerBuildArgs> args) =>
+        {
+            return new NavigateWithTextCommand(args.BuildTimeArgs.Navigator, "/start", args.BuildTimeArgs.FromUpdateDistributorArgs.MessageServiceString, "You did not pass the condition");
+        },
+        options);
     }
 
 
-    public static MultiStepCommandBuilder<TState> WithValidation<TState>(this MultiStepCommandBuilder<TState> mscb, Action<StepManagerWithValidationCommandBuilder<TState>> options) where TState : notnull
+    public static MultiStepCommandBuilder<TState, TBuildArgs> WithValidation<TState, TBuildArgs>(this MultiStepCommandBuilder<TState, TBuildArgs> mscb, Action<StepManagerWithValidationCommandBuilder<TState, TBuildArgs>> options) where TState : notnull where TBuildArgs : class
     {
-        return mscb.WithValidation(new MessageBuilderOptions(1), DefaultValidationMessageFormatter, "All good", "Edit", options);
+        return mscb.WithValidation(new MessageBuilderOptions(1), "All good", "Edit", DefaultValidationMessageFormatter, options);
     }
 
     public static string DefaultValidationMessageFormatter<TState>(TState state) where TState : notnull
@@ -185,32 +200,39 @@ public static class AppExtensions
         return result;
     }
 
-    public static StepManagerWithValidationCommandBuilder<TState> WithStepWithValidationLambdaFactoryGoBackButton<TState>(this StepManagerWithValidationCommandBuilder<TState> smwvcb, Func<MultiStepCommandBuilderArgs<TState>, StepCommand?, IUserInputValidator, StepCommand> lambdaFactory, string validationDisplayName) where TState : notnull
+    public static StepManagerWithValidationCommandBuilder<TState, UpdateDistributorNextHandlerBuildArgs> WithStepWithValidationLambdaFactoryGoBackButton<TState>(this StepManagerWithValidationCommandBuilder<TState, UpdateDistributorNextHandlerBuildArgs> smwvcb, Func<MultiStepCommandBuilderArgs<TState, UpdateDistributorNextHandlerBuildArgs>, StepCommand?, IUserInputValidator, StepCommand> lambdaFactory, string validationDisplayName) where TState : notnull
     {
-        return smwvcb.WithStepWithValidationLambdaFactory<TState>((args, next) =>
+        return smwvcb.WithStepWithValidationLambdaFactory<TState, UpdateDistributorNextHandlerBuildArgs>((args, next) =>
         {
             CallbackButtonGenerator generator = new();
             generator.StartNewSession();
             var vm = generator.GenerateVM();
 
-            var messageServiceWrapper = new MessageServiceWrapper(args.UpdateListenerBuilderArgs.MessageService, (builder) =>
+            var messageServiceWrapper = new MessageServiceWrapper(args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.MessageService, (builder) =>
             {
                 builder.WithInlineButtonLine<CallbackQueryViewModel>(new(vm, "Go Back"));
-            });
+            }, args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.InlineMarkupManager);
 
 
             var oldUpdateListenerArgs = args.UpdateListenerBuilderArgs;
 
-            var updateListenerWithInjectionArgs = new UpdateDistributorNextHandlerBuildArgs(messageServiceWrapper, messageServiceWrapper, oldUpdateListenerArgs.ReplyMarkupManager, oldUpdateListenerArgs.AuthenticationService, oldUpdateListenerArgs.ChatIdProvider);
+            var updateListenerWithInjectionArgs = new UpdateDistributorNextHandlerBuildArgs(messageServiceWrapper,
+                                                                                            oldUpdateListenerArgs.BuildTimeArgs.FromUpdateDistributorArgs.MessageServiceImages,
+                                                                                            messageServiceWrapper,
+                                                                                            oldUpdateListenerArgs.BuildTimeArgs.FromUpdateDistributorArgs.ReplyMarkupManager,
+                                                                                            oldUpdateListenerArgs.BuildTimeArgs.FromUpdateDistributorArgs.InlineMarkupManager,
+                                                                                            oldUpdateListenerArgs.BuildTimeArgs.FromUpdateDistributorArgs.MediaDownloaderService,
+                                                                                            oldUpdateListenerArgs.BuildTimeArgs.FromUpdateDistributorArgs.ChatIdProvider);
 
-            var newArgs = new MultiStepCommandBuilderArgs<TState>(new(args.UpdateListenerBuilderArgs.NavigatorArgs, new(updateListenerWithInjectionArgs, args.UpdateListenerBuilderArgs.Navigator)), args.State, args.StepChainBuilder);
+            var newArgs = new MultiStepCommandBuilderArgs<TState, UpdateDistributorNextHandlerBuildArgs>(new(args.UpdateListenerBuilderArgs.NavigatorArgs, new(updateListenerWithInjectionArgs, args.UpdateListenerBuilderArgs.BuildTimeArgs.Navigator)), args.State, args.StepChainBuilder);
 
             return lambdaFactory.Invoke(newArgs, next, new CallbackQueryInputInterceptor<CallbackQueryViewModel>(new ExecutePreviousCommandInterceptor(vm, args.StepChainBuilder)));
 
         }, validationDisplayName);
     }
 
-    public static StepManagerWithValidationCommandBuilder<TState> WithStepWithValidationLambdaFactory<TState>(this StepManagerWithValidationCommandBuilder<TState> smwvcb, Func<MultiStepCommandBuilderArgs<TState>, StepCommand?, StepCommand> lambdaFactory, string validationDisplayName)
+    public static StepManagerWithValidationCommandBuilder<TState, TBuildArgs> WithStepWithValidationLambdaFactory<TState, TBuildArgs>(this StepManagerWithValidationCommandBuilder<TState, TBuildArgs> smwvcb, Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, StepCommand?, StepCommand> lambdaFactory, string validationDisplayName)
+    where TBuildArgs : class
     {
         return smwvcb.WithStepWithValidation((args) =>
         {

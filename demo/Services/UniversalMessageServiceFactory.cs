@@ -1,3 +1,4 @@
+using LisBot.Common.Telegram.Models;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 using Telegram.Bot.Types;
@@ -7,9 +8,12 @@ namespace demo.Services;
 
 public class UniversalMessageServiceFactory
   : IMessageServiceFactory<IMessageServiceWithEdit<Message>, Message>,
-    IMessageServiceFactory<string>
+    IMessageServiceFactory<string>,
+    IMessageServiceFactory<ImageMessageServiceMessage>
 {
     private readonly ITelegramBotClient _client;
+
+    private readonly InlineMarkupManagerFactory _markupManager;
 
     private readonly Dictionary<long, UniversalMessageService> _messageServiceCache;
 
@@ -17,7 +21,7 @@ public class UniversalMessageServiceFactory
     {
         if (!_messageServiceCache.ContainsKey(chatId))
         {
-            var messageService = new UniversalMessageService(_client, chatId);
+            var messageService = new UniversalMessageService(_client, chatId, _markupManager.Create(chatId));
             _messageServiceCache.Add(chatId, messageService);
         }
 
@@ -34,9 +38,15 @@ public class UniversalMessageServiceFactory
         return Build(chatId);
     }
 
-    public UniversalMessageServiceFactory(ITelegramBotClient client)
+    public IMessageService<ImageMessageServiceMessage> CreateMessageService(long chatId)
+    {
+        return Build(chatId);
+    }
+
+    public UniversalMessageServiceFactory(ITelegramBotClient client, InlineMarkupManagerFactory markupManager)
     {
         _client = client;
         _messageServiceCache = new();
+        _markupManager = markupManager;
     }
 }

@@ -1,5 +1,6 @@
 using LisBot.Common.Telegram;
 using LisBot.Common.Telegram.Factories;
+using LisBot.Common.Telegram.Models;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -9,7 +10,7 @@ namespace demo.Controllers;
 
 public class BotController : Controller
 {
-    private readonly UpdateDistributorFactory _updateDistributorFactory;
+    private readonly UpdateDistributorFactory<UpdateDistributorNextHandlerBuildArgs> _updateDistributorFactory;
 
     private IHandler<Update> UpdateDistributor => _updateDistributorFactory.Create();
 
@@ -32,7 +33,7 @@ public class BotController : Controller
         return Ok();
     }
 
-    public BotController(UpdateDistributorFactory updateDistributorFactory)
+    public BotController(UpdateDistributorFactory<UpdateDistributorNextHandlerBuildArgs> updateDistributorFactory)
     {
         _updateDistributorFactory = updateDistributorFactory;
     }
