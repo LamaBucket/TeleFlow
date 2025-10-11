@@ -1,6 +1,6 @@
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram.Factories.CommandFactories;
+namespace Telegram.Bot.Extensions.Handlers.Factories.CommandFactories;
 
 public interface IHandlerFactoryWithArgs<THandler, TArgs, TFactoryArgs> : IHandlerFactory<THandler, TArgs> where THandler : IHandler<TArgs>
 {

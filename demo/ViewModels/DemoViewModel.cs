@@ -1,5 +1,5 @@
 using demo.Models;
-using LisBot.Common.Telegram.Attributes;
+using Telegram.Bot.Extensions.Handlers.Attributes;
 
 namespace demo.ViewModels;
 

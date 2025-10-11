@@ -1,15 +1,15 @@
 using System.Text;
 using demo.Models;
 using demo.ViewModels;
-using LisBot.Common.Telegram;
-using LisBot.Common.Telegram.Attributes;
-using LisBot.Common.Telegram.Builders;
-using LisBot.Common.Telegram.Commands;
-using LisBot.Common.Telegram.Commands.MultiStep;
-using LisBot.Common.Telegram.Commands.MultiStep.StepCommands;
-using LisBot.Common.Telegram.Factories.CommandFactories;
-using LisBot.Common.Telegram.Models;
-using LisBot.Common.Telegram.ViewModels.CallbackQuery;
+using Telegram.Bot.Extensions.Handlers;
+using Telegram.Bot.Extensions.Handlers.Attributes;
+using Telegram.Bot.Extensions.Handlers.Builders;
+using Telegram.Bot.Extensions.Handlers.Commands;
+using Telegram.Bot.Extensions.Handlers.Commands.MultiStep;
+using Telegram.Bot.Extensions.Handlers.Commands.MultiStep.StepCommands;
+using Telegram.Bot.Extensions.Handlers.Factories.CommandFactories;
+using Telegram.Bot.Extensions.Handlers.Models;
+using Telegram.Bot.Extensions.Handlers.ViewModels.CallbackQuery;
 using Telegram.Bot.Extensions.Handlers.Services.InputValidators;
 using Telegram.Bot.Extensions.Handlers.Services.Markup;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
@@ -86,7 +86,7 @@ public static class AppExtensions
                     return new DateSelectionStepCommand(next, validator, args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.MessageService, (date) =>
                     {
                         args.State.CurrentValue.SelectedDate = date;
-                    }, "Pick a date", new(DateOnly.FromDateTime(DateTime.Today).AddYears(-18), LisBot.Common.Telegram.Services.DateSelectionView.YearSelection), null, new(DateOnly.FromDateTime(DateTime.Today).AddYears(-14), "You are too young!"));
+                    }, "Pick a date", new(DateOnly.FromDateTime(DateTime.Today).AddYears(-18), Telegram.Bot.Extensions.Handlers.Services.DateSelectionView.YearSelection), null, new(DateOnly.FromDateTime(DateTime.Today).AddYears(-14), "You are too young!"));
                 }, "Date");
             })
             .WithLambdaResult(args =>

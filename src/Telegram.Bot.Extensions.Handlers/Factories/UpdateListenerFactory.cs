@@ -1,8 +1,8 @@
-using LisBot.Common.Telegram.Factories.CommandFactories;
-using LisBot.Common.Telegram.Models;
+using Telegram.Bot.Extensions.Handlers.Factories.CommandFactories;
+using Telegram.Bot.Extensions.Handlers.Models;
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram.Factories;
+namespace Telegram.Bot.Extensions.Handlers.Factories;
 
 public class UpdateListenerFactory<TBuildArgs> : IHandlerFactoryWithArgs<UpdateListener, Update, TBuildArgs> where TBuildArgs : class
 {

@@ -5,7 +5,7 @@ using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace LisBot.Common.Telegram.Commands.MultiStep.StepCommands;
+namespace Telegram.Bot.Extensions.Handlers.Commands.MultiStep.StepCommands;
 
 public class ImageInputStepCommand : StepCommandWithValidation
 {

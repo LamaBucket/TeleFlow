@@ -1,4 +1,4 @@
-namespace LisBot.Common.Telegram.Attributes;
+namespace Telegram.Bot.Extensions.Handlers.Attributes;
 
 [AttributeUsage(AttributeTargets.Property)]
 public sealed class ValidateStatePropertyAttribute : Attribute

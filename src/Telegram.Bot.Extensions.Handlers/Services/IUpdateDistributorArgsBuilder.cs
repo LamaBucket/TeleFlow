@@ -1,4 +1,4 @@
-using LisBot.Common.Telegram.Services;
+using Telegram.Bot.Extensions.Handlers.Services;
 
 namespace Telegram.Bot.Extensions.Handlers.Services;
 

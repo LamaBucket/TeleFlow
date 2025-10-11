@@ -1,12 +1,12 @@
-using LisBot.Common.Telegram.Commands;
-using LisBot.Common.Telegram.Commands.MultiStep;
-using LisBot.Common.Telegram.Factories;
-using LisBot.Common.Telegram.Models;
+using Telegram.Bot.Extensions.Handlers.Commands;
+using Telegram.Bot.Extensions.Handlers.Commands.MultiStep;
+using Telegram.Bot.Extensions.Handlers.Factories;
+using Telegram.Bot.Extensions.Handlers.Models;
 using Telegram.Bot.Extensions.Handlers.Models;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram.Builders;
+namespace Telegram.Bot.Extensions.Handlers.Builders;
 
 public class MultiStepCommandBuilder<TState, TBuildArgs> where TBuildArgs : class
 {

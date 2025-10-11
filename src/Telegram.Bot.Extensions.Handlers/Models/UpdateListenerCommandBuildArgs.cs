@@ -1,4 +1,4 @@
-namespace LisBot.Common.Telegram.Models;
+namespace Telegram.Bot.Extensions.Handlers.Models;
 
 public class UpdateListenerCommandBuildArgs<TBuildArgs>
 {

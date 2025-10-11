@@ -1,8 +1,8 @@
-using LisBot.Common.Telegram.Commands.MultiStep;
-using LisBot.Common.Telegram.Factories.CommandFactories;
+using Telegram.Bot.Extensions.Handlers.Commands.MultiStep;
+using Telegram.Bot.Extensions.Handlers.Factories.CommandFactories;
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram.Services;
+namespace Telegram.Bot.Extensions.Handlers.Services;
 
 public interface IStateValidationDisplayNameProvider
 {

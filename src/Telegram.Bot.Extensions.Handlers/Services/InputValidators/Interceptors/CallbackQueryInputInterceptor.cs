@@ -1,4 +1,4 @@
-using LisBot.Common.Telegram.ViewModels.CallbackQuery;
+using Telegram.Bot.Extensions.Handlers.ViewModels.CallbackQuery;
 using Microsoft.AspNetCore.Server.Kestrel.Transport.NamedPipes;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;

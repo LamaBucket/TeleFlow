@@ -1,6 +1,6 @@
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram.Commands.MultiStep;
+namespace Telegram.Bot.Extensions.Handlers.Commands.MultiStep;
 
 public abstract class StepCommand : ICommandHandler
 {

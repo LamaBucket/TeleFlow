@@ -1,4 +1,4 @@
-namespace LisBot.Common.Telegram.Exceptions;
+namespace Telegram.Bot.Extensions.Handlers.Exceptions;
 
 public class UserException : Exception
 {

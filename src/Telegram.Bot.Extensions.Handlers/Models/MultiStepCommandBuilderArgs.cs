@@ -1,6 +1,6 @@
-using LisBot.Common.Telegram.Commands.MultiStep;
+using Telegram.Bot.Extensions.Handlers.Commands.MultiStep;
 
-namespace LisBot.Common.Telegram.Models;
+namespace Telegram.Bot.Extensions.Handlers.Models;
 
 public class MultiStepCommandBuilderArgs<TState, TBuildArgs> where TBuildArgs : class
 {

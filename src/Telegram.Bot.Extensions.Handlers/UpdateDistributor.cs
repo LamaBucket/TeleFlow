@@ -1,8 +1,8 @@
-using LisBot.Common.Telegram.Factories.CommandFactories;
-using LisBot.Common.Telegram.Services;
+using Telegram.Bot.Extensions.Handlers.Factories.CommandFactories;
+using Telegram.Bot.Extensions.Handlers.Services;
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram;
+namespace Telegram.Bot.Extensions.Handlers;
 
 public class UpdateDistributor : IHandler<Update>
 {

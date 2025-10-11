@@ -1,6 +1,6 @@
-using LisBot.Common.Telegram.ViewModels.CallbackQuery;
+using Telegram.Bot.Extensions.Handlers.ViewModels.CallbackQuery;
 
-namespace LisBot.Common.Telegram.ViewModels;
+namespace Telegram.Bot.Extensions.Handlers.ViewModels;
 
 public class ReplyButtonModel<T> where T : class
 {

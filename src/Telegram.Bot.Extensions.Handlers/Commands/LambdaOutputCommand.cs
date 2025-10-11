@@ -1,4 +1,4 @@
-using LisBot.Common.Telegram.Commands;
+using Telegram.Bot.Extensions.Handlers.Commands;
 
 namespace Telegram.Bot.Extensions.Handlers.Commands;
 

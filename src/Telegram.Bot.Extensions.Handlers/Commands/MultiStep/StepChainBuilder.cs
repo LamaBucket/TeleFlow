@@ -1,8 +1,8 @@
 using System.Runtime.InteropServices;
-using LisBot.Common.Telegram.Factories.CommandFactories;
+using Telegram.Bot.Extensions.Handlers.Factories.CommandFactories;
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram.Commands.MultiStep;
+namespace Telegram.Bot.Extensions.Handlers.Commands.MultiStep;
 
 public class StepChainBuilder
 {

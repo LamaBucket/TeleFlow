@@ -1,10 +1,10 @@
-using LisBot.Common.Telegram.Commands.MultiStep;
-using LisBot.Common.Telegram.Factories.CommandFactories;
-using LisBot.Common.Telegram.Models;
-using LisBot.Common.Telegram.Services;
+using Telegram.Bot.Extensions.Handlers.Commands.MultiStep;
+using Telegram.Bot.Extensions.Handlers.Factories.CommandFactories;
+using Telegram.Bot.Extensions.Handlers.Models;
+using Telegram.Bot.Extensions.Handlers.Services;
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram.Builders;
+namespace Telegram.Bot.Extensions.Handlers.Builders;
 
 public class StepManagerWithValidationCommandBuilder<TState, TBuildArgs> where TBuildArgs : class
 {

@@ -1,7 +1,7 @@
 using Telegram.Bot.Extensions.Handlers.Services.InputValidators;
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram.Commands.MultiStep.StepCommands;
+namespace Telegram.Bot.Extensions.Handlers.Commands.MultiStep.StepCommands;
 
 public abstract class StepCommandWithValidation : StepCommand
 {

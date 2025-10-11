@@ -1,7 +1,7 @@
-using LisBot.Common.Telegram.Models;
+using Telegram.Bot.Extensions.Handlers.Models;
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram.Commands;
+namespace Telegram.Bot.Extensions.Handlers.Commands;
 
 public class StateCommand<TState> : ICommandHandler
 {

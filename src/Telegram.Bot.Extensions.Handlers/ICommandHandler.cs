@@ -1,6 +1,6 @@
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram;
+namespace Telegram.Bot.Extensions.Handlers;
 
 public interface ICommandHandler : IHandler<Update>
 {

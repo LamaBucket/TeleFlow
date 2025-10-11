@@ -1,4 +1,4 @@
-using LisBot.Common.Telegram.ViewModels.CallbackQuery;
+using Telegram.Bot.Extensions.Handlers.ViewModels.CallbackQuery;
 
 namespace Telegram.Bot.Extensions.Handlers.Services.Markup;
 

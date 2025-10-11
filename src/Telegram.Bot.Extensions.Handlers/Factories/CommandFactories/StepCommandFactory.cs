@@ -1,7 +1,7 @@
-using LisBot.Common.Telegram.Commands.MultiStep;
+using Telegram.Bot.Extensions.Handlers.Commands.MultiStep;
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram.Factories.CommandFactories;
+namespace Telegram.Bot.Extensions.Handlers.Factories.CommandFactories;
 
 public class StepCommandFactory : IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>
 {

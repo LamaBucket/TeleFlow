@@ -1,6 +1,6 @@
-using LisBot.Common.Telegram.Exceptions;
-using LisBot.Common.Telegram.ViewModels;
-using LisBot.Common.Telegram.ViewModels.CallbackQuery;
+using Telegram.Bot.Extensions.Handlers.Exceptions;
+using Telegram.Bot.Extensions.Handlers.ViewModels;
+using Telegram.Bot.Extensions.Handlers.ViewModels.CallbackQuery;
 using Newtonsoft.Json;
 using Telegram.Bot.Extensions.Handlers.Services.Markup;
 using Telegram.Bot.Types;

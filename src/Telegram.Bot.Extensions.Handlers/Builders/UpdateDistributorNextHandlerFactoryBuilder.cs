@@ -1,8 +1,8 @@
-using LisBot.Common.Telegram.Factories;
-using LisBot.Common.Telegram.Models;
+using Telegram.Bot.Extensions.Handlers.Factories;
+using Telegram.Bot.Extensions.Handlers.Models;
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram.Builders;
+namespace Telegram.Bot.Extensions.Handlers.Builders;
 
 public class UpdateDistributorNextHandlerFactoryBuilder<TBuildArgs> where TBuildArgs : class
 {

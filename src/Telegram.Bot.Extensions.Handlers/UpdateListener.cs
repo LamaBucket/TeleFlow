@@ -1,7 +1,7 @@
-using LisBot.Common.Telegram.Factories.CommandFactories;
+using Telegram.Bot.Extensions.Handlers.Factories.CommandFactories;
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram;
+namespace Telegram.Bot.Extensions.Handlers;
 
 public class UpdateListener : IHandler<Update>, INavigatorHandler
 {

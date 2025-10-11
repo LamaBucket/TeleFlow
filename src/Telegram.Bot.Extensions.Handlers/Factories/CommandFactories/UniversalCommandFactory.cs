@@ -1,8 +1,8 @@
-using LisBot.Common.Telegram.Exceptions;
-using LisBot.Common.Telegram.Models;
+using Telegram.Bot.Extensions.Handlers.Exceptions;
+using Telegram.Bot.Extensions.Handlers.Models;
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram.Factories.CommandFactories;
+namespace Telegram.Bot.Extensions.Handlers.Factories.CommandFactories;
 
 public class UniversalCommandFactory : HandlerFactoryWithArgsBase<string>, IHandlerFactoryWithArgs
 {

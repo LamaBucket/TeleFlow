@@ -1,4 +1,4 @@
-using LisBot.Common.Telegram.Models;
+using Telegram.Bot.Extensions.Handlers.Models;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 using Telegram.Bot.Types;

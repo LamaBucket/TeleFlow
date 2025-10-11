@@ -1,14 +1,14 @@
-using LisBot.Common.Telegram.Builders;
-using LisBot.Common.Telegram.Factories.CommandFactories;
-using LisBot.Common.Telegram.Models;
-using LisBot.Common.Telegram.Services;
+using Telegram.Bot.Extensions.Handlers.Builders;
+using Telegram.Bot.Extensions.Handlers.Factories.CommandFactories;
+using Telegram.Bot.Extensions.Handlers.Models;
+using Telegram.Bot.Extensions.Handlers.Services;
 using Telegram.Bot.Extensions.Handlers.Services;
 using Telegram.Bot.Extensions.Handlers.Services.Markup;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace LisBot.Common.Telegram.Factories;
+namespace Telegram.Bot.Extensions.Handlers.Factories;
 
 public class UpdateDistributorFactory<TBuildArgs> : IHandlerFactory<UpdateDistributor, Update>
     where TBuildArgs : class

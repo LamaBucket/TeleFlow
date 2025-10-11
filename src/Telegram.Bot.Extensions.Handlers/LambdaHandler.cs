@@ -1,4 +1,4 @@
-namespace LisBot.Common.Telegram;
+namespace Telegram.Bot.Extensions.Handlers;
 
 public class LambdaHandler<T> : IHandler<T>
 {

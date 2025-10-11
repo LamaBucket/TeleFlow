@@ -1,4 +1,4 @@
-using LisBot.Common.Telegram.ViewModels.CallbackQuery;
+using Telegram.Bot.Extensions.Handlers.ViewModels.CallbackQuery;
 using Newtonsoft.Json;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 using Telegram.Bot.Types;

@@ -1,6 +1,6 @@
 using System.Text;
-using LisBot.Common.Telegram.ViewModels;
-using LisBot.Common.Telegram.ViewModels.CallbackQuery;
+using Telegram.Bot.Extensions.Handlers.ViewModels;
+using Telegram.Bot.Extensions.Handlers.ViewModels.CallbackQuery;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;

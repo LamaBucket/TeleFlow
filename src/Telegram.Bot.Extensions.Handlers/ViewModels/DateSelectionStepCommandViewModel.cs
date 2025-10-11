@@ -1,6 +1,6 @@
-using LisBot.Common.Telegram.Services;
+using Telegram.Bot.Extensions.Handlers.Services;
 
-namespace LisBot.Common.Telegram.ViewModels;
+namespace Telegram.Bot.Extensions.Handlers.ViewModels;
 
 public class DateSelectionStepCommandViewModel
 {

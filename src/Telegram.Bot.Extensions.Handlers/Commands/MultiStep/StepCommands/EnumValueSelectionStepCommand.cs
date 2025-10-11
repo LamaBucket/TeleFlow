@@ -2,7 +2,7 @@ using Telegram.Bot.Extensions.Handlers.Services.InputValidators;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram.Commands.MultiStep.StepCommands;
+namespace Telegram.Bot.Extensions.Handlers.Commands.MultiStep.StepCommands;
 
 public class EnumValueSelectionStepCommand<TEnum> : ListValueSelectionStepCommand<Tuple<TEnum>>
     where TEnum : Enum

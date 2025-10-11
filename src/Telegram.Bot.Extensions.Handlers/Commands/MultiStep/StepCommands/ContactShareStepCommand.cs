@@ -1,4 +1,4 @@
-using LisBot.Common.Telegram.Exceptions;
+using Telegram.Bot.Extensions.Handlers.Exceptions;
 using Telegram.Bot.Extensions.Handlers.Services.InputValidators;
 using Telegram.Bot.Extensions.Handlers.Services.Markup;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
@@ -6,7 +6,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace LisBot.Common.Telegram.Commands.MultiStep.StepCommands;
+namespace Telegram.Bot.Extensions.Handlers.Commands.MultiStep.StepCommands;
 
 public class ContactShareStepCommand : StepCommandWithValidation
 {

@@ -1,10 +1,10 @@
-using LisBot.Common.Telegram.Exceptions;
-using LisBot.Common.Telegram.Factories.CommandFactories;
-using LisBot.Common.Telegram.Models;
+using Telegram.Bot.Extensions.Handlers.Exceptions;
+using Telegram.Bot.Extensions.Handlers.Factories.CommandFactories;
+using Telegram.Bot.Extensions.Handlers.Models;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram.Commands.MultiStep;
+namespace Telegram.Bot.Extensions.Handlers.Commands.MultiStep;
 
 public class StateValidatorCommand<TState> : ICommandHandler
 {

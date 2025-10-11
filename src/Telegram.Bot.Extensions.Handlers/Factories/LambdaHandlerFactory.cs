@@ -1,4 +1,4 @@
-namespace LisBot.Common.Telegram.Factories;
+namespace Telegram.Bot.Extensions.Handlers.Factories;
 
 public class LambdaHandlerFactory<THandler, TArgs> : IHandlerFactory<THandler, TArgs> where THandler : IHandler<TArgs>
 {

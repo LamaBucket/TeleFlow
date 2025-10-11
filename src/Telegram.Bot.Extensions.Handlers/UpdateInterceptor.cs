@@ -1,7 +1,7 @@
 
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram;
+namespace Telegram.Bot.Extensions.Handlers;
 
 public class UpdateInterceptor : IHandler<Update>
 {

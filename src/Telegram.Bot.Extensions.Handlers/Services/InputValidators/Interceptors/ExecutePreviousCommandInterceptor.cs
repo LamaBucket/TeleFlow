@@ -1,5 +1,5 @@
-using LisBot.Common.Telegram.Commands.MultiStep;
-using LisBot.Common.Telegram.ViewModels.CallbackQuery;
+using Telegram.Bot.Extensions.Handlers.Commands.MultiStep;
+using Telegram.Bot.Extensions.Handlers.ViewModels.CallbackQuery;
 
 namespace Telegram.Bot.Extensions.Handlers.Services.InputValidators;
 

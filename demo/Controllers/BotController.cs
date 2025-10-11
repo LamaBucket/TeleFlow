@@ -1,6 +1,6 @@
-using LisBot.Common.Telegram;
-using LisBot.Common.Telegram.Factories;
-using LisBot.Common.Telegram.Models;
+using Telegram.Bot.Extensions.Handlers;
+using Telegram.Bot.Extensions.Handlers.Factories;
+using Telegram.Bot.Extensions.Handlers.Models;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 using Telegram.Bot.Types;

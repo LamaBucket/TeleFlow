@@ -1,6 +1,6 @@
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;
 
-namespace LisBot.Common.Telegram.Commands;
+namespace Telegram.Bot.Extensions.Handlers.Commands;
 
 public class NavigateWithTextCommand : NavigateCommand
 {

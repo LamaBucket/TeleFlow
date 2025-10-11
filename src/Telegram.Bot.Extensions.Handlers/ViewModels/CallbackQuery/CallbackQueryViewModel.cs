@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace LisBot.Common.Telegram.ViewModels.CallbackQuery;
+namespace Telegram.Bot.Extensions.Handlers.ViewModels.CallbackQuery;
 
 public class CallbackQueryViewModel
 {

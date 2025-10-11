@@ -1,6 +1,6 @@
-using LisBot.Common.Telegram.Factories.CommandFactories;
+using Telegram.Bot.Extensions.Handlers.Factories.CommandFactories;
 
-namespace LisBot.Common.Telegram.Factories;
+namespace Telegram.Bot.Extensions.Handlers.Factories;
 
 public class LambdaHandlerFactoryWithArgs<THandler, TUpdate, TArgs> : IHandlerFactoryWithArgs<THandler, TUpdate, TArgs> where THandler: IHandler<TUpdate> where TArgs: class
 {

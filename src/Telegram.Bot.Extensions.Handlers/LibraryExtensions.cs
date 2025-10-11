@@ -1,9 +1,9 @@
-using LisBot.Common.Telegram.ViewModels.CallbackQuery;
+using Telegram.Bot.Extensions.Handlers.ViewModels.CallbackQuery;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace LisBot.Common.Telegram;
+namespace Telegram.Bot.Extensions.Handlers;
 
 public static class LibraryExtensions
 {

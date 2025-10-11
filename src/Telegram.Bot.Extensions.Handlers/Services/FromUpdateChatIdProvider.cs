@@ -1,6 +1,6 @@
 using Telegram.Bot.Types;
 
-namespace LisBot.Common.Telegram.Services;
+namespace Telegram.Bot.Extensions.Handlers.Services;
 
 public class FromUpdateChatIdProvider : IChatIdProvider
 {

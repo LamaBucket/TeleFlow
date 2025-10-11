@@ -1,7 +1,7 @@
-using LisBot.Common.Telegram.Builders;
-using LisBot.Common.Telegram.Factories;
-using LisBot.Common.Telegram.Models;
-using LisBot.Common.Telegram.Services;
+using Telegram.Bot.Extensions.Handlers.Builders;
+using Telegram.Bot.Extensions.Handlers.Factories;
+using Telegram.Bot.Extensions.Handlers.Models;
+using Telegram.Bot.Extensions.Handlers.Services;
 using Telegram.Bot.Extensions.Handlers.Services;
 using Telegram.Bot.Extensions.Handlers.Services.Markup;
 using Telegram.Bot.Extensions.Handlers.Services.Messaging;

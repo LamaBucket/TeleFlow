@@ -1,4 +1,4 @@
-namespace LisBot.Common.Telegram.Commands;
+namespace Telegram.Bot.Extensions.Handlers.Commands;
 
 public class NavigateCommand : OutputCommand
 {
