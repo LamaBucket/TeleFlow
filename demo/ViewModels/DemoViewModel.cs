@@ -1,5 +1,5 @@
 using demo.Models;
-using Telegram.Bot.Extensions.Handlers.Attributes;
+using TeleFlow.Attributes;
 
 namespace demo.ViewModels;
 

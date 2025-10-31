@@ -1,6 +1,6 @@
-using Telegram.Bot.Extensions.Handlers.Models;
+using TeleFlow.Models;
 using Telegram.Bot;
-using Telegram.Bot.Extensions.Handlers.Services.Messaging;
+using TeleFlow.Services.Messaging;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 

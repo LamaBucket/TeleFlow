@@ -1,12 +1,11 @@
 using demo;
 using demo.Services;
-using Telegram.Bot.Extensions.Handlers.Factories;
-using Telegram.Bot.Extensions.Handlers.Models;
-using Telegram.Bot.Extensions.Handlers.Services;
+using TeleFlow.Factories;
+using TeleFlow.Models;
+using TeleFlow.Services;
 using Telegram.Bot;
-using Telegram.Bot.Extensions.Handlers.Services;
-using Telegram.Bot.Extensions.Handlers.Services.Markup;
-using Telegram.Bot.Extensions.Handlers.Services.Messaging;
+using TeleFlow.Services.Markup;
+using TeleFlow.Services.Messaging;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 

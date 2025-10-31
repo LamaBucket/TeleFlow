@@ -1,11 +1,11 @@
-using Telegram.Bot.Extensions.Handlers.Services;
-using Telegram.Bot.Extensions.Handlers.Services;
-using Telegram.Bot.Extensions.Handlers.Services.Markup;
-using Telegram.Bot.Extensions.Handlers.Services.Messaging;
+using TeleFlow.Services;
+using TeleFlow.Services;
+using TeleFlow.Services.Markup;
+using TeleFlow.Services.Messaging;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace Telegram.Bot.Extensions.Handlers.Models;
+namespace TeleFlow.Models;
 
 public class UpdateDistributorNextHandlerBuildArgs
 {

@@ -1,5 +1,5 @@
 using Telegram.Bot;
-using Telegram.Bot.Extensions.Handlers.Services.Messaging;
+using TeleFlow.Services.Messaging;
 
 namespace demo.Services;
 

@@ -1,4 +1,4 @@
-# Telegram.Bot.Extensions.Handlers
+# TeleFlow
 
 A modular, extensible, and easy-to-use framework for handling Telegram bot updates in C#.  
 This library helps you organize your bot's command and update handling logic using a clean, composable architecture.
@@ -162,7 +162,7 @@ public class BotController : Controller
 
 ## Project Structure
 
-- [`src/Telegram.Bot.Extensions.Handlers/`](src/Telegram.Bot.Extensions.Handlers/)
+- [`src/TeleFlow/`](src/TeleFlow/)
     - Core interfaces and classes for update handling
     - Builders, factories, and services for composing your bot logic
 - [`demo/`](demo/)
