@@ -275,42 +275,7 @@ Interceptors run **before** your handler executes — useful for auth, validatio
 | **DatePicker**                | Inline UI component for dates.                         |
 | **Factory Builder**           | Internal system creating command handlers dynamically. |
 
-
-┌──────────────────────────┐
-│ Telegram Update (Message)│
-└────────────┬─────────────┘
-             │
-             ▼
-      ┌────────────┐
-      │ Interceptors│  ← pre-processing (logging, throttling, custom logic)
-      └────────────┘
-             │
-             ▼
-      ┌───────────────┐
-      │ Validators     │  ← checks user input, authentication, etc.
-      └───────────────┘
-             │
-             ▼
-  ┌────────────────────────────┐
-  │ CommandFactory Resolution  │  ← decides which command to execute
-  │  (registered via builder)  │
-  └────────────────────────────┘
-             │
-             ▼
-     ┌──────────────────┐
-     │ ICommandHandler   │  ← your business logic executes here
-     └──────────────────┘
-             │
-             ▼
-   ┌─────────────────────────┐
-   │ Navigator (optional)    │  ← moves between steps / flows
-   └─────────────────────────┘
-             │
-             ▼
-  ┌───────────────────────────┐
-  │ Bot sends response/update │
-  └───────────────────────────┘
-
+<pre> ```mermaid flowchart TD A[Telegram Update] --> B[Interceptors<br>(logging, throttling...)] B --> C[Validators<br>(auth checks, input validation)] C --> D[CommandFactory Resolution<br>(via builder)] D --> E[ICommandHandler<br>(executes business logic)] E --> F[Navigator (optional)<br>moves between steps] F --> G[Bot sends response/update] ``` </pre>
 
 ---
 
