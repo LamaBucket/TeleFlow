@@ -1,4 +1,4 @@
-# 🧠 **TeleFlow**
+# 🧠 **TeleFlow (Telegram.Bot.Extensions.Handlers)**
 
 *A modern, extensible Telegram bot framework for .NET — built for structured conversations, FSM-driven flows, and developer joy.*
 ---
@@ -275,8 +275,7 @@ Interceptors run **before** your handler executes — useful for auth, validatio
 | **DatePicker**                | Inline UI component for dates.                         |
 | **Factory Builder**           | Internal system creating command handlers dynamically. |
 
-<pre> **Update Flow Overview** ``` [Telegram Update] │ ▼ [ Interceptors ] └─ pre-processing (logging, throttling, etc.) │ ▼ [ Validators ] └─ check input, authentication, etc. │ ▼ [ CommandFactory Resolution ] └─ decides which command to execute (via builder) │ ▼ [ ICommandHandler ] └─ your business logic executes here │ ▼ [ Navigator (optional) ] └─ moves between steps / flows │ ▼ [ Bot sends response/update ] ``` </pre>
-
+![alt text](diag.png)
 ---
 
 
