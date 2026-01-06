@@ -8,7 +8,7 @@ namespace TeleFlow.Builders;
 
 public class UpdateListenerCommandFactoryBuilder<TBuildArgs> where TBuildArgs : class
 {
-    private readonly Dictionary<string, IHandlerFactoryWithArgs<ICommandHandler, Update, NavigatorFactoryArgs>> _factories;
+    private readonly Dictionary<string, IHandlerFactoryWithContext<ICommandHandler, Update, NavigatorFactoryArgs>> _factories;
 
 
     private readonly Queue<Action<UpdateListenerCommandBuildArgs<TBuildArgs>>> _oneTimeSetupActionQueue;

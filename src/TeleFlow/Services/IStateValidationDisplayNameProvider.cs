@@ -6,7 +6,7 @@ namespace TeleFlow.Services;
 
 public interface IStateValidationDisplayNameProvider
 {
-    IHandlerFactoryWithArgs<StepCommand, Update, StepCommand> StepToRestartCommandFactory { get; }
+    IHandlerFactoryWithContext<StepCommand, Update, StepCommand> StepToRestartCommandFactory { get; }
     
     string GetDisplayName();
 }

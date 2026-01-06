@@ -8,30 +8,30 @@ namespace TeleFlow.Builders;
 
 public class StepManagerWithValidationCommandBuilder<TState, TBuildArgs> where TBuildArgs : class
 {
-    private readonly Queue<Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> _factoryBuildQueue;
+    private readonly Queue<Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithContext<StepCommand, Update, StepCommand>>> _factoryBuildQueue;
 
 
-    public StepManagerWithValidationCommandBuilder<TState, TBuildArgs> WithStepWithValidation(Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> stepFactory, string stepValidationDisplayName)
+    public StepManagerWithValidationCommandBuilder<TState, TBuildArgs> WithStepWithValidation(Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithContext<StepCommand, Update, StepCommand>> stepFactory, string stepValidationDisplayName)
     {
         return WithStep((args) => {
             return new StepCommandWithValidationFactory(stepFactory.Invoke(args), () => { return stepValidationDisplayName;});
         });
     }
 
-    public StepManagerWithValidationCommandBuilder<TState, TBuildArgs> WithStep(Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> stepFactory)
+    public StepManagerWithValidationCommandBuilder<TState, TBuildArgs> WithStep(Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithContext<StepCommand, Update, StepCommand>> stepFactory)
     {
         _factoryBuildQueue.Enqueue(stepFactory);
 
         return this;
     }
 
-    public Tuple<StepManagerCommand, IEnumerable<Tuple<IStateValidationDisplayNameProvider, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>>> Build(MultiStepCommandBuilderArgs<TState, TBuildArgs> args)
+    public Tuple<StepManagerCommand, IEnumerable<Tuple<IStateValidationDisplayNameProvider, IHandlerFactoryWithContext<StepCommand, Update, StepCommand>>>> Build(MultiStepCommandBuilderArgs<TState, TBuildArgs> args)
     {
         var stepChainBuilder = args.StepChainBuilder;
 
-        Queue<Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> factoryBuildQueueClone = new(_factoryBuildQueue);
+        Queue<Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithContext<StepCommand, Update, StepCommand>>> factoryBuildQueueClone = new(_factoryBuildQueue);
     
-        List<Tuple<IStateValidationDisplayNameProvider, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> factoriesWithValidation = new();
+        List<Tuple<IStateValidationDisplayNameProvider, IHandlerFactoryWithContext<StepCommand, Update, StepCommand>>> factoriesWithValidation = new();
 
         while(factoryBuildQueueClone.Count != 0)
         {

@@ -20,12 +20,12 @@ public class StateValidationMessageFormatter<TState>
 
     private readonly Func<TState, string> _confirmMessageFormatter;
 
-    private readonly IEnumerable<Tuple<IStateValidationDisplayNameProvider, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> _btnDisplayNameProviders;
+    private readonly IEnumerable<Tuple<IStateValidationDisplayNameProvider, IHandlerFactoryWithContext<StepCommand, Update, StepCommand>>> _btnDisplayNameProviders;
 
     private readonly string _allGoodButtonDisplayName;
      
 
-    private readonly Dictionary<int, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> _lastSessionDisplayButtonContext;
+    private readonly Dictionary<int, IHandlerFactoryWithContext<StepCommand, Update, StepCommand>> _lastSessionDisplayButtonContext;
 
 
     private readonly CallbackButtonGenerator _buttonGenerator;
@@ -78,7 +78,7 @@ public class StateValidationMessageFormatter<TState>
     }
 
 
-    public IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>? ParseUserResponse(Update args)
+    public IHandlerFactoryWithContext<StepCommand, Update, StepCommand>? ParseUserResponse(Update args)
     {
         if(!_awaitsUserResponse)
             throw new InvalidOperationException("That Command does not await user response");
@@ -93,7 +93,7 @@ public class StateValidationMessageFormatter<TState>
         return result;
     }
 
-    private IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>? ParseCallbackQuery(CallbackQuery query)
+    private IHandlerFactoryWithContext<StepCommand, Update, StepCommand>? ParseCallbackQuery(CallbackQuery query)
     {
         if(string.IsNullOrEmpty(query.Data))
             throw new ArgumentNullException($"the data in {nameof(query)} was null.");
@@ -126,7 +126,7 @@ public class StateValidationMessageFormatter<TState>
     }
 
 
-    public StateValidationMessageFormatter(MessageBuilderOptions messageBuilderOptions, Func<TState, string> confirmMessageFormatter, IEnumerable<Tuple<IStateValidationDisplayNameProvider, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> btnDisplayNameProviders, string allGoodButtonDisplayName)
+    public StateValidationMessageFormatter(MessageBuilderOptions messageBuilderOptions, Func<TState, string> confirmMessageFormatter, IEnumerable<Tuple<IStateValidationDisplayNameProvider, IHandlerFactoryWithContext<StepCommand, Update, StepCommand>>> btnDisplayNameProviders, string allGoodButtonDisplayName)
     {
         _awaitsUserResponse = false;
 

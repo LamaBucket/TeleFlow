@@ -7,10 +7,10 @@ namespace TeleFlow.Builders;
 
 public class StepManagerCommandBuilder<TState, TBuildArgs> where TBuildArgs : class
 {
-    private readonly Queue<Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> _factoryBuildQueue;
+    private readonly Queue<Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithContext<StepCommand, Update, StepCommand>>> _factoryBuildQueue;
 
 
-    public virtual StepManagerCommandBuilder<TState, TBuildArgs> WithStep(Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>> stepFactory)
+    public virtual StepManagerCommandBuilder<TState, TBuildArgs> WithStep(Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithContext<StepCommand, Update, StepCommand>> stepFactory)
     {
         _factoryBuildQueue.Enqueue(stepFactory);
 
@@ -26,7 +26,7 @@ public class StepManagerCommandBuilder<TState, TBuildArgs> where TBuildArgs : cl
 
     private void SetupStepChainBuilder(MultiStepCommandBuilderArgs<TState, TBuildArgs> args)
     {
-        Queue<Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithArgs<StepCommand, Update, StepCommand>>> factoryBuildQueueClone = new(_factoryBuildQueue);
+        Queue<Func<MultiStepCommandBuilderArgs<TState, TBuildArgs>, IHandlerFactoryWithContext<StepCommand, Update, StepCommand>>> factoryBuildQueueClone = new(_factoryBuildQueue);
 
         while(factoryBuildQueueClone.Count != 0)
         {
