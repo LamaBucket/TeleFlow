@@ -18,7 +18,7 @@ public class ContinueCommandMiddleware : CommandInterpreterBase<ContinueCommandR
         await _sessionStore.SetAsync(session);
     }
 
-    protected override bool ContinueAfterMatch => true;
+    protected override bool ContinueAfterMatch => false;
 
 
     public ContinueCommandMiddleware(IChatSessionStore sessionStore, IHandler<CommandResultContext> next) : base(next)
