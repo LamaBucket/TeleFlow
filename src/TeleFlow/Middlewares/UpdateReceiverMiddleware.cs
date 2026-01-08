@@ -26,7 +26,7 @@ public class UpdateReceiverMiddleware : IHandlerMiddleware<Update, UpdateContext
 
     protected virtual long GetChatId(Update args)
     {
-        return 0;
+        return args.GetChatId();
     }
 
     private IServiceScope CreateScope(long chatId)

@@ -32,7 +32,7 @@ public class CommandRoutingMiddleware : IHandlerMiddleware<UpdateContext, Sessio
 
     protected virtual string GetCommandName(Update args)
     {
-        return "";
+        return args.GetCommandName() ?? throw new Exception("Command name could not be determined");
     }
 
 
