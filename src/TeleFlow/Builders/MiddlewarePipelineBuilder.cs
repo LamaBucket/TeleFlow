@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using TeleFlow.Commands;
-using TeleFlow.Factories.CommandFactories;
+using TeleFlow.Factories;
 using TeleFlow.Middlewares;
 using TeleFlow.Middlewares.CommandInterpreters;
 using TeleFlow.Models;
