@@ -11,11 +11,13 @@ public class ContinueCommandMiddleware : CommandInterpreterBase<ContinueCommandR
 
     protected override async Task Handle(CommandResultContext<ContinueCommandResult> args)
     {
+        var chatId = args.GetService<IChatIdProvider>().GetChatId();
+
         var session = args.Session;
 
         session.MoveNextStep();
 
-        await _sessionStore.SetAsync(session);
+        await _sessionStore.SetAsync(chatId, session);
     }
 
     protected override bool ContinueAfterMatch => false;
