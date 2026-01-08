@@ -39,7 +39,7 @@ public class UpdateReceiverMiddleware : IHandlerMiddleware<Update, UpdateContext
     }
 
 
-    public UpdateReceiverMiddleware(IServiceScopeFactory scopeFactory, IHandler<UpdateContext> next)
+    public UpdateReceiverMiddleware(IHandler<UpdateContext> next, IServiceScopeFactory scopeFactory)
     {
         _serviceScopeFactory = scopeFactory;
         Next = next;

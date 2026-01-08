@@ -21,7 +21,7 @@ public class ContinueCommandMiddleware : CommandInterpreterBase<ContinueCommandR
     protected override bool ContinueAfterMatch => false;
 
 
-    public ContinueCommandMiddleware(IChatSessionStore sessionStore, IHandler<CommandResultContext> next) : base(next)
+    public ContinueCommandMiddleware(IHandler<CommandResultContext> next, IChatSessionStore sessionStore) : base(next)
     {
         _sessionStore = sessionStore;
     }

@@ -10,7 +10,7 @@ namespace TeleFlow.Middlewares.CommandInterpreters;
 
 public class NavigateCommandMiddleware : CommandInterpreterBase<NavigateCommandResult>
 {
-    private readonly IHandlerMiddleware<CommandResultContext> _navigatedCommandInterpreter;
+    private readonly IHandler<CommandResultContext> _navigatedCommandInterpreter;
 
     private readonly ICommandFactory<ICommandHandler, NavigateCommandResult> _navigatorCommandFactory;
 
@@ -63,7 +63,7 @@ public class NavigateCommandMiddleware : CommandInterpreterBase<NavigateCommandR
 
 
     public NavigateCommandMiddleware(IHandler<CommandResultContext> nextInMiddleware,
-                                     IHandlerMiddleware<CommandResultContext> navigatedCommandInterpreter,
+                                     IHandler<CommandResultContext> navigatedCommandInterpreter,
                                      ICommandFactory<ICommandHandler, NavigateCommandResult> navigatorCommandFactory,
                                      IChatSessionStore sessionStore) : base(nextInMiddleware)
     {

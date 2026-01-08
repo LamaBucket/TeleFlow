@@ -18,7 +18,7 @@ public class ExitCommandMiddleware : CommandInterpreterBase<ExitCommandResult>
 
     protected override bool ContinueAfterMatch => false;
 
-    public ExitCommandMiddleware(IChatSessionStore sessionStore, IHandler<CommandResultContext> next) : base(next)
+    public ExitCommandMiddleware(IHandler<CommandResultContext> next, IChatSessionStore sessionStore) : base(next)
     {
         _sessionStore = sessionStore;
     }
