@@ -7,14 +7,27 @@ public class ChatSession
 
     public int CurrentCommandStep => _currentCommandStep;
 
+    public bool IsStepInitialized => _isStepInitialized;
+
+
     private int _currentCommandStep;
 
+    private bool _isStepInitialized;
 
-    public void MoveNextStep()
+
+    public void GoToStep(int step)
     {
-        _currentCommandStep += 1;
+        if(step < 0)
+            throw new Exception("step cannot be less than 0");
+        
+        _currentCommandStep = step;
+        _isStepInitialized = false;
     }
 
+    public void InitializeStep()
+    {
+        _isStepInitialized = true;
+    }
 
     public ChatSession(string currentCommand) : this(currentCommand, 0)
     {
@@ -24,6 +37,11 @@ public class ChatSession
     public ChatSession(string currentCommand, int currentCommandStep)
     {
         CurrentCommand = currentCommand;
+
+        if(currentCommandStep < 0)
+            throw new Exception("currentCommandStep cannot be less than 0");
+
         _currentCommandStep = currentCommandStep;
+        _isStepInitialized = false;
     }
 }

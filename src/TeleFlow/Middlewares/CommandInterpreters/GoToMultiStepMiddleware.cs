@@ -1,21 +1,20 @@
-using TeleFlow.Middlewares.CommandInterpreters;
 using TeleFlow.Models.CommandResults;
 using TeleFlow.Models.Contexts;
 using TeleFlow.Services;
 
-namespace TeleFlow;
+namespace TeleFlow.Middlewares.CommandInterpreters;
 
-public class ContinueCommandMiddleware : CommandInterpreterBase<ContinueCommandResult>
+public class GoToMultiStepMiddleware : CommandInterpreterBase<GoToMultiStepResult>
 {
     private readonly IChatSessionStore _sessionStore;
 
-    protected override async Task Handle(CommandResultContext<ContinueCommandResult> args)
+    protected override async Task Handle(CommandResultContext<GoToMultiStepResult> args)
     {
         var chatId = args.GetService<IChatIdProvider>().GetChatId();
 
         var session = args.Session;
 
-        session.MoveNextStep();
+        session.GoToStep(args.CommandResult.GoToStepNumber);
 
         await _sessionStore.SetAsync(chatId, session);
     }
@@ -23,7 +22,7 @@ public class ContinueCommandMiddleware : CommandInterpreterBase<ContinueCommandR
     protected override bool ContinueAfterMatch => false;
 
 
-    public ContinueCommandMiddleware(IHandler<CommandResultContext> next, IChatSessionStore sessionStore) : base(next)
+    public GoToMultiStepMiddleware(IHandler<CommandResultContext> next, IChatSessionStore sessionStore) : base(next)
     {
         _sessionStore = sessionStore;
     }
