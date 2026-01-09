@@ -5,11 +5,9 @@ namespace TeleFlow.Factories;
 
 public class StepCommandFactory
 {
-    public int StepCount => _stepFactories.Count;
+    public int StepCount => _stepFactories.Length;
 
-    private readonly List<Func<IStepCommand>> _stepFactories;
-
-    private bool _usedInCreation;
+    private readonly Func<IStepCommand>[] _stepFactories;
 
     public IStepCommand Create(int context)
     {
@@ -21,24 +19,11 @@ public class StepCommandFactory
 
         var stepFactory = _stepFactories[context];
 
-        var factory = stepFactory.Invoke();
-
-        _usedInCreation = true;
-
-        return factory;
+        return stepFactory.Invoke();
     }
 
-    public void AddStepFactory(Func<IStepCommand> factory, bool prepend = false)
+    public StepCommandFactory(Func<IStepCommand>[] stepFactories)
     {
-        if(_usedInCreation)
-            throw new Exception("This Factory was already used in creating StepCommands!");
-
-        _stepFactories.Insert(prepend ? 0 : _stepFactories.Count, factory);
-    }
-
-    public StepCommandFactory()
-    {
-        _stepFactories = [];
-        _usedInCreation = false;
+        _stepFactories = stepFactories;
     }
 }
