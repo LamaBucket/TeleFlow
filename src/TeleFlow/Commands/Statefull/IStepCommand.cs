@@ -7,5 +7,5 @@ public interface IStepCommand
 {
     Task<StepResult> Handle(UpdateContext args);
 
-    Task OnEnter();
+    Task OnEnter(IServiceProvider serviceProvider);
 }

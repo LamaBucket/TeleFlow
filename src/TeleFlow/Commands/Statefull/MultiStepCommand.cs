@@ -19,7 +19,7 @@ public class MultiStepCommand : ICommandHandler
 
         if (!_stepState.IsStepInitialized)
         {
-            await stepCommand.OnEnter();
+            await stepCommand.OnEnter(update.ServiceProvider);
 
             return new HoldOnMultiStepResult(HoldOnReason.Initialize);
         }

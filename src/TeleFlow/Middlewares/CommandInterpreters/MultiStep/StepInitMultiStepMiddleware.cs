@@ -37,7 +37,7 @@ public class StepInitMultiStepMiddleware : CommandInterpreterBase<GoToMultiStepR
 
         var stepCommand = stepCommandFactory.Create(commandStep);
 
-        await stepCommand.OnEnter();
+        await stepCommand.OnEnter(context.ServiceProvider);
     }
 
     private async Task UpdateSessionStore(SessionContext args)
