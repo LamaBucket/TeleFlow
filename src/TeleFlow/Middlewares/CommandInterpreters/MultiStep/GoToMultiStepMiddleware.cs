@@ -2,11 +2,13 @@ using TeleFlow.Models.CommandResults;
 using TeleFlow.Models.Contexts;
 using TeleFlow.Services;
 
-namespace TeleFlow.Middlewares.CommandInterpreters;
+namespace TeleFlow.Middlewares.CommandInterpreters.MultiStep;
 
 public class GoToMultiStepMiddleware : CommandInterpreterBase<GoToMultiStepResult>
 {
     private readonly IChatSessionStore _sessionStore;
+
+    protected override bool ContinueAfterMatch => true;
 
     protected override async Task Handle(CommandResultContext<GoToMultiStepResult> args)
     {
@@ -18,8 +20,6 @@ public class GoToMultiStepMiddleware : CommandInterpreterBase<GoToMultiStepResul
 
         await _sessionStore.SetAsync(chatId, session);
     }
-
-    protected override bool ContinueAfterMatch => false;
 
 
     public GoToMultiStepMiddleware(IHandler<CommandResultContext> next, IChatSessionStore sessionStore) : base(next)

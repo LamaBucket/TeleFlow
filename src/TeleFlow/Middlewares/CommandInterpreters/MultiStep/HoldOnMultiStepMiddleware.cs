@@ -2,7 +2,7 @@ using TeleFlow.Models.CommandResults;
 using TeleFlow.Models.Contexts;
 using TeleFlow.Services;
 
-namespace TeleFlow.Middlewares.CommandInterpreters;
+namespace TeleFlow.Middlewares.CommandInterpreters.MultiStep;
 
 public class HoldOnMultiStepMiddleware : CommandInterpreterBase<HoldOnMultiStepResult>
 {
