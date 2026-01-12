@@ -8,7 +8,7 @@ public class GoToMultiStepMiddleware : CommandInterpreterBase<GoToMultiStepResul
 {
     private readonly IChatSessionStore _sessionStore;
 
-    protected override bool ContinueAfterMatch => true;
+    protected override bool ContinueAfterMatch => false;
 
     protected override async Task Handle(CommandResultContext<GoToMultiStepResult> args)
     {
@@ -18,7 +18,7 @@ public class GoToMultiStepMiddleware : CommandInterpreterBase<GoToMultiStepResul
 
         session.GoToStep(args.CommandResult.GoToStepNumber);
 
-        if(session.IsStepInitialized)
+        if(args.CommandResult.NextStepInitialized)
             session.InitializeStep();
 
         await _sessionStore.SetAsync(chatId, session);
