@@ -18,6 +18,9 @@ public class GoToMultiStepMiddleware : CommandInterpreterBase<GoToMultiStepResul
 
         session.GoToStep(args.CommandResult.GoToStepNumber);
 
+        if(session.IsStepInitialized)
+            session.InitializeStep();
+
         await _sessionStore.SetAsync(chatId, session);
     }
 

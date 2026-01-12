@@ -13,6 +13,8 @@ public class MultiStepCommand : ICommandHandler
 
     private readonly StepCommandFactory _stepCommandFactory;
 
+    protected virtual bool InitializeNextStep => true;
+
     public async Task<CommandResult> Handle(UpdateContext update)
     {
         var stepCommand = _stepCommandFactory.Create(_stepState.CurrentCommandStep);
@@ -40,8 +42,15 @@ public class MultiStepCommand : ICommandHandler
 
         if(nextStepNum >= _stepCommandFactory.StepCount)
             return GetCommandResultAfterLastStep();
+
+        if (InitializeNextStep)
+        {
+            var next = _stepCommandFactory.Create(nextStepNum);
+
+            await next.OnEnter(update.ServiceProvider);
+        }
         
-        return new GoToMultiStepResult(nextStepNum);
+        return new GoToMultiStepResult(nextStepNum, InitializeNextStep);
     }
 
     protected virtual CommandResult GetCommandResultAfterLastStep()

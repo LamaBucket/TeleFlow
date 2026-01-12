@@ -6,11 +6,14 @@ public class GoToMultiStepResult : CommandResult
 {
     public int GoToStepNumber { get; init; }
 
-    public GoToMultiStepResult(int goToStepNumber)
+    public bool NextStepInitialized { get; init; }
+
+    public GoToMultiStepResult(int goToStepNumber, bool nextStepInitialized)
     {
-        if(goToStepNumber < 0)
+        if (goToStepNumber < 0)
             throw new Exception("");
 
         GoToStepNumber = goToStepNumber;
+        NextStepInitialized = nextStepInitialized;
     }
 }
