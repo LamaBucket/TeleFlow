@@ -13,9 +13,9 @@ public class NavigateCommandResult : CommandResult
     }
 
 
-    public NavigateCommandResult(string commandToNavigate, Dictionary<string, string> parameters)
+    public NavigateCommandResult(string commandToNavigate, Dictionary<string, string>? parameters = null)
     {
         CommandToNavigate = commandToNavigate;
-        _parameters = parameters;
+        _parameters = parameters ?? [];
     }
 }
