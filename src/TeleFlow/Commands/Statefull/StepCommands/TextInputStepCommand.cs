@@ -13,7 +13,7 @@ public class TextInputStepCommand : IStepCommand
 {
     private readonly string _userPrompt;
 
-    private readonly Func<string, Task> _onUserInput;
+    private readonly Func<IServiceProvider, string, Task> _onUserInput;
 
     public async Task<StepResult> Handle(UpdateContext args)
     {
@@ -22,7 +22,7 @@ public class TextInputStepCommand : IStepCommand
         if(update.Type != UpdateType.Message || update.Message is null || update.Message.Text is null)
             return StepResult.HoldOn(StepHoldOnReason.InvalidInput);
 
-        await _onUserInput(update.Message.Text);
+        await _onUserInput(args.ServiceProvider, update.Message.Text);
 
         return GetSuccessStepResult();
     }
@@ -42,7 +42,7 @@ public class TextInputStepCommand : IStepCommand
 
 
     public TextInputStepCommand(string userPrompt,
-                                Func<string, Task> onUserInput)
+                                Func<IServiceProvider, string, Task> onUserInput)
     {
         _userPrompt = userPrompt;
         _onUserInput = onUserInput;

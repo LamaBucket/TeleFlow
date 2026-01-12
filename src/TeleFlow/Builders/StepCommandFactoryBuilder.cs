@@ -15,7 +15,7 @@ public class StepCommandFactoryBuilder
         return this;
     }
 
-    public StepCommandFactoryBuilder AddTextInput(string userPrompt, Func<string, Task> onUserInput) => Add(() => new TextInputStepCommand(userPrompt, onUserInput));
+    public StepCommandFactoryBuilder AddTextInput(string userPrompt, Func<IServiceProvider, string, Task> onUserInput) => Add(() => new TextInputStepCommand(userPrompt, onUserInput));
 
     public StepCommandFactory Build()
     {
