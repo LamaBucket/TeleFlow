@@ -13,7 +13,11 @@ public class MultiStepCommand : ICommandHandler
 
     private readonly StepCommandFactory _stepCommandFactory;
 
+    private readonly Func<IServiceProvider, Task<CommandResult>> _onCompleted; 
+
+
     protected virtual bool InitializeNextStep => true;
+
 
     public async Task<CommandResult> Handle(UpdateContext update)
     {
@@ -41,7 +45,7 @@ public class MultiStepCommand : ICommandHandler
             throw new Exception("Step Number Cannot be less than 0!");
 
         if(nextStepNum >= _stepCommandFactory.StepCount)
-            return GetCommandResultAfterLastStep();
+            return await _onCompleted.Invoke(update.ServiceProvider);
 
         if (InitializeNextStep)
         {
@@ -51,11 +55,6 @@ public class MultiStepCommand : ICommandHandler
         }
         
         return new GoToMultiStepResult(nextStepNum, InitializeNextStep);
-    }
-
-    protected virtual CommandResult GetCommandResultAfterLastStep()
-    {
-        return CommandResult.Exit;
     }
 
     private int CalculateNextStepNum(StepResult result)
@@ -79,9 +78,10 @@ public class MultiStepCommand : ICommandHandler
         };
     }
 
-    public MultiStepCommand(ChatSessionStepState stepState, StepCommandFactory stepCommandFactory)
+    public MultiStepCommand(ChatSessionStepState stepState, StepCommandFactory stepCommandFactory, Func<IServiceProvider, Task<CommandResult>> onCompleted)
     {
         _stepState = stepState;
         _stepCommandFactory = stepCommandFactory;
+        _onCompleted = onCompleted;
     }
 }

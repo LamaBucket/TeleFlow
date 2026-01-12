@@ -2,6 +2,7 @@ using TeleFlow.Commands;
 using TeleFlow.Commands.Statefull;
 using TeleFlow.Factories;
 using TeleFlow.Models;
+using TeleFlow.Models.CommandResults;
 using Telegram.Bot.Requests;
 
 namespace TeleFlow.Builders;
@@ -32,7 +33,7 @@ public class CommandRegistryBuilder
 
     public CommandRegistryBuilder Add(string name, Func<ChatSession, ICommandHandler> factory) => Add(name, new LambdaCommandFactory(factory));
 
-    public CommandRegistryBuilder AddMultiStep(string name, Action<StepCommandFactoryBuilder> multiStepFactoryConfig)
+    public CommandRegistryBuilder AddMultiStep(string name, Action<StepCommandFactoryBuilder> multiStepFactoryConfig, Func<IServiceProvider, Task<CommandResult>>? onCompleted = null)
     {
         return Add(name, (session) => { 
             ChatSessionStepState stepState = new(session.CurrentCommandStep, session.IsStepInitialized);
@@ -40,7 +41,9 @@ public class CommandRegistryBuilder
 
             multiStepFactoryConfig.Invoke(builder);
 
-            return new MultiStepCommand(stepState, builder.Build());
+            onCompleted ??= async (serviceProvider) => { return CommandResult.Exit; };
+
+            return new MultiStepCommand(stepState, builder.Build(), onCompleted);
         });
     }
 
