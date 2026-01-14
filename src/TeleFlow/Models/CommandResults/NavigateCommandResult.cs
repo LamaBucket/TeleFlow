@@ -1,9 +1,22 @@
+using System.Collections.ObjectModel;
+
 namespace TeleFlow.Models.CommandResults;
 
 public class NavigateCommandResult : CommandResult
 {
     public string CommandToNavigate { get; init; }
 
+    public NavigateCommandParameters Parameters { get; init; }
+
+    public NavigateCommandResult(string commandToNavigate, Dictionary<string, string>? parameters = null)
+    {
+        CommandToNavigate = commandToNavigate;
+        Parameters = new(parameters ?? []);
+    }
+}
+
+public class NavigateCommandParameters
+{
     private readonly Dictionary<string, string> _parameters;
 
 
@@ -12,10 +25,8 @@ public class NavigateCommandResult : CommandResult
         return _parameters.GetValueOrDefault(paramName);
     }
 
-
-    public NavigateCommandResult(string commandToNavigate, Dictionary<string, string>? parameters = null)
+    public NavigateCommandParameters(Dictionary<string, string> parameters)
     {
-        CommandToNavigate = commandToNavigate;
-        _parameters = parameters ?? [];
+        _parameters = parameters;
     }
 }

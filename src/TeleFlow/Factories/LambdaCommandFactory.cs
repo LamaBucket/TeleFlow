@@ -3,12 +3,12 @@ using TeleFlow.Models;
 
 namespace TeleFlow.Factories;
 
-public class LambdaCommandFactory : ICommandFactory<ICommandHandler, ChatSession>
+public class LambdaCommandFactory<T> : ICommandFactory<ICommandHandler, T>
 {
-    private readonly Func<ChatSession, ICommandHandler> _factory;
+    private readonly Func<T, ICommandHandler> _factory;
 
 
-    public ICommandHandler Create(ChatSession context) => _factory(context);
+    public ICommandHandler Create(T context) => _factory(context);
 
 
     public LambdaCommandFactory(Func<ICommandHandler> factory) : this((session) => factory())
@@ -16,7 +16,7 @@ public class LambdaCommandFactory : ICommandFactory<ICommandHandler, ChatSession
         
     }
 
-    public LambdaCommandFactory(Func<ChatSession, ICommandHandler> factory)
+    public LambdaCommandFactory(Func<T, ICommandHandler> factory)
     {
         _factory = factory;
     }
