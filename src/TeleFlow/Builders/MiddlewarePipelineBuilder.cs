@@ -54,38 +54,38 @@ public class MiddlewarePipelineBuilder
     }
 
 
-    public void WithUpdateReceiver(Func<IHandler<UpdateContext>, IHandlerMiddleware<Update, UpdateContext>> factory)
+    public void UseUpdateReceiver(Func<IHandler<UpdateContext>, IHandlerMiddleware<Update, UpdateContext>> factory)
     {
         _updateReceiver = factory;
     }
 
-    public void WithCommandRouter(Func<IHandler<SessionContext>, IHandlerMiddleware<UpdateContext, SessionContext>> factory)
+    public void UseCommandRouter(Func<IHandler<SessionContext>, IHandlerMiddleware<UpdateContext, SessionContext>> factory)
     {
         _commandRouter = factory;
     }
 
-    public void WithCommandExecutor(Func<IHandler<CommandResultContext>, IHandlerMiddleware<SessionContext, CommandResultContext>> factory)
+    public void UseCommandExecutor(Func<IHandler<CommandResultContext>, IHandlerMiddleware<SessionContext, CommandResultContext>> factory)
     {
         _commandExecutor = factory;
     }
 
 
-    public void UseUpdateContextMiddleware(Func<IHandler<UpdateContext>, IHandlerMiddleware<UpdateContext>> factory, bool prepend = false)
+    public void WithUpdateContextMiddleware(Func<IHandler<UpdateContext>, IHandlerMiddleware<UpdateContext>> factory, bool prepend = false)
     {
         _updateCtxMws.Insert(prepend ? 0 : _updateCtxMws.Count, factory);
     }
 
-    public void UseSessionMiddleware(Func<IHandler<SessionContext>, IHandlerMiddleware<SessionContext>> factory, bool prepend = false)
+    public void WithSessionMiddleware(Func<IHandler<SessionContext>, IHandlerMiddleware<SessionContext>> factory, bool prepend = false)
     {
         _sessionMws.Insert(prepend ? 0 : _sessionMws.Count, factory);
     }
 
-    public void UseCommandResultMiddleware(Func<IHandler<CommandResultContext>, IHandlerMiddleware<CommandResultContext>> factory, bool prepend = false)
+    public void WithCommandResultMiddleware(Func<IHandler<CommandResultContext>, IHandlerMiddleware<CommandResultContext>> factory, bool prepend = false)
     {
         _resultMws.Insert(prepend ? 0 : _resultMws.Count, factory);
     }
 
-    public void UseCommandResultMiddleware(Func<IHandler<CommandResultContext>, IChatSessionStore, IHandlerMiddleware<CommandResultContext>> factory, bool prepend = false)
+    public void WithCommandResultMiddleware(Func<IHandler<CommandResultContext>, IChatSessionStore, IHandlerMiddleware<CommandResultContext>> factory, bool prepend = false)
     {
         if(_chatSessionStore == null)
             throw new InvalidOperationException("Chat session store is not provided in the builder.");
