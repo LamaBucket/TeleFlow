@@ -10,12 +10,14 @@ public class StepResult
 
     public StepHoldOnReason HoldOnReason { get; init; } = StepHoldOnReason.None;
 
+    public string? HoldOnMessage { get; init; } = null;
+
 
     public static StepResult Next => new(StepAction.MoveNext);
 
     public static StepResult Previous => new(StepAction.MovePrevious);
 
-    public static StepResult HoldOn(StepHoldOnReason reason) => new(reason);
+    public static StepResult HoldOn(StepHoldOnReason reason, string? holdOnMessage = null) => new(reason, holdOnMessage);
 
     public static StepResult GoTo(int stepNumber) => new(stepNumber);
 
@@ -39,13 +41,14 @@ public class StepResult
         GoToStepNumber = goToStepNumber;
     }
 
-    private StepResult(StepHoldOnReason reason)
+    private StepResult(StepHoldOnReason reason, string? holdOnMessage)
     {
         if(reason == StepHoldOnReason.None)
             throw new Exception("");
 
         Action = StepAction.HoldOn;
         HoldOnReason = reason;
+        HoldOnMessage = holdOnMessage;
     }
 }
 

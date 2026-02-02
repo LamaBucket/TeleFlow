@@ -27,7 +27,7 @@ public class MultiStepCommand : ICommandHandler
         {
             await stepCommand.OnEnter(update.ServiceProvider);
 
-            return new HoldOnMultiStepResult(HoldOnReason.Initialize);
+            return HoldOnMultiStepResult.Initialize;
         }
 
         var result = await stepCommand.Handle(update);
@@ -36,7 +36,7 @@ public class MultiStepCommand : ICommandHandler
         {
             var holdOnReason = GetMiddlewareReasonFromStepReason(result.HoldOnReason);
 
-            return new HoldOnMultiStepResult(holdOnReason);
+            return new HoldOnMultiStepResult(holdOnReason, result.HoldOnMessage);
         }   
 
         var nextStepNum = CalculateNextStepNum(result);

@@ -7,9 +7,9 @@ using TeleFlow.Services.Messaging;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TeleFlow.Commands.MultiStep.StepCommands;
+namespace TeleFlow.Commands.Statefull.StepCommands;
 
-public class TextInputStepCommand : IStepCommand
+public class TextInputStep : IStepCommand
 {
     private readonly string _userPrompt;
 
@@ -20,7 +20,7 @@ public class TextInputStepCommand : IStepCommand
         var update = args.Update;
 
         if(update.Type != UpdateType.Message || update.Message is null || update.Message.Text is null)
-            return StepResult.HoldOn(StepHoldOnReason.InvalidInput);
+            return StepResult.HoldOn(StepHoldOnReason.InvalidInput, "Please provide a valid text input.");
 
         await _onUserInput(args.ServiceProvider, update.Message.Text);
 
@@ -41,7 +41,7 @@ public class TextInputStepCommand : IStepCommand
     }
 
 
-    public TextInputStepCommand(string userPrompt,
+    public TextInputStep(string userPrompt,
                                 Func<IServiceProvider, string, Task> onUserInput)
     {
         _userPrompt = userPrompt;

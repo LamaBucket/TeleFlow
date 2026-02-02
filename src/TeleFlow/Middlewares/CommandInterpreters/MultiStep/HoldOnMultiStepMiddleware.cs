@@ -1,6 +1,7 @@
 using TeleFlow.Models.CommandResults;
 using TeleFlow.Models.Contexts;
 using TeleFlow.Services;
+using TeleFlow.Services.Messaging;
 
 namespace TeleFlow.Middlewares.CommandInterpreters.MultiStep;
 
@@ -21,6 +22,12 @@ public class HoldOnMultiStepMiddleware : CommandInterpreterBase<HoldOnMultiStepR
             session.InitializeStep();
 
             await _sessionStore.SetAsync(chatId, session);
+        }
+
+        if(args.CommandResult.HoldOnMessage is not null)
+        {
+            var messageService = args.GetService<IMessageService<string>>();
+            await messageService.SendMessage(args.CommandResult.HoldOnMessage);
         }
 
     }
