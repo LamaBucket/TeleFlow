@@ -1,3 +1,5 @@
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using TeleFlow.Commands;
 using TeleFlow.Commands.Statefull;
 using TeleFlow.Factories;
@@ -9,31 +11,38 @@ namespace TeleFlow.Builders;
 
 public class CommandRegistryBuilder
 {
-    private readonly Dictionary<string, ICommandFactory<ICommandHandler, ChatSession>> _factories;
+    private readonly Dictionary<string, CommandDescriptor> _descriptors;
 
     private bool _built;
 
 
-    public CommandRegistryBuilder Add(string name, ICommandFactory<ICommandHandler, ChatSession> factory)
+    public CommandOptionsBuilder Add(string name, ICommandFactory<ICommandHandler, ChatSession> factory)
     {
-        if(_built)
-            throw new Exception("Cannot Add Commands after successfull build!");
+        EnsureNotBuilt();
         
-        if(_factories.ContainsKey(name))
+        if(_descriptors.ContainsKey(name))
             throw new Exception($"Command with name {name} already exists");
 
-        _factories.Add(name, factory);
+        CommandDescriptor descriptor = new(name, factory);
 
-        return this;
+        _descriptors.Add(name, descriptor);
+
+        return new CommandOptionsBuilder(descriptor, EnsureNotBuilt);
+    }
+
+    private void EnsureNotBuilt()
+    {
+        if(_built)
+            throw new Exception("Cannot configure Command Registry after finishing configuration!");
     }
 
 
-    public CommandRegistryBuilder Add(string name, Func<ICommandHandler> factory) => Add(name, new LambdaCommandFactory(factory));
+    public CommandOptionsBuilder Add(string name, Func<ICommandHandler> factory) => Add(name, new LambdaCommandFactory<ChatSession>(factory));
 
 
-    public CommandRegistryBuilder Add(string name, Func<ChatSession, ICommandHandler> factory) => Add(name, new LambdaCommandFactory(factory));
+    public CommandOptionsBuilder Add(string name, Func<ChatSession, ICommandHandler> factory) => Add(name, new LambdaCommandFactory<ChatSession>(factory));
 
-    public CommandRegistryBuilder AddMultiStep(string name, Action<StepCommandFactoryBuilder> multiStepFactoryConfig, Func<IServiceProvider, Task<CommandResult>>? onCompleted = null)
+    public CommandOptionsBuilder AddMultiStep(string name, Action<StepCommandFactoryBuilder> multiStepFactoryConfig, Func<IServiceProvider, Task<CommandResult>>? onCompleted = null)
     {
         return Add(name, (session) => { 
             ChatSessionStepState stepState = new(session.CurrentCommandStep, session.IsStepInitialized);
@@ -47,19 +56,71 @@ public class CommandRegistryBuilder
         });
     }
 
-    public CommandRegistryFactory Build()
+
+    public (SessionCommandRegistry Session, NavigatedCommandRegistry Navigated) Build()
     {
-        if(_factories.Count == 0)
-            throw new Exception("You did not add any commands!");
+        EnsureNotBuilt();
+
+        if (_descriptors.Count == 0)
+            throw new InvalidOperationException("You did not add any commands!");
 
         _built = true;
 
-        return new(new(_factories));
+        var sessionFactories = new Dictionary<string, ICommandFactory<ICommandHandler, ChatSession>>();
+        var navFactories = new Dictionary<string, ICommandFactory<ICommandHandler, NavigateCommandParameters>>();
+
+        foreach (var (name, descriptor) in _descriptors)
+        {
+            var sessionFactory = CompileSessionFactory(descriptor);
+            sessionFactories[name] = sessionFactory;
+
+            if (descriptor.NavigationEnabled)
+            {
+                navFactories[name] = CompileNavFactory(descriptor, sessionFactory);
+            }
+        }
+
+        return (new SessionCommandRegistry(new(sessionFactories)),
+                new NavigatedCommandRegistry(new(navFactories)));
+    }
+
+    private static ICommandFactory<ICommandHandler, ChatSession> CompileSessionFactory(CommandDescriptor descriptor)
+    {
+        if (descriptor.Interceptors.Count == 0)
+            return descriptor.CommandFactory;
+
+        return new LambdaCommandFactory<ChatSession>(session =>
+        {
+            ICommandHandler handler = descriptor.CommandFactory.Create(session);
+
+            foreach(var interceptorFactory in descriptor.Interceptors)
+            {
+                var interceptor = interceptorFactory.Invoke();
+
+                handler = new InterceptedCommandWrapper(handler, interceptor);
+            }
+
+            return handler;
+        });
+    }
+
+    private static ICommandFactory<ICommandHandler, NavigateCommandParameters> CompileNavFactory(
+        CommandDescriptor descriptor,
+        ICommandFactory<ICommandHandler, ChatSession> finalSessionFactory)
+    {
+        return new LambdaCommandFactory<NavigateCommandParameters>(navArgs =>
+        {
+            var session = new ChatSession(descriptor.Name);
+
+            var handler = finalSessionFactory.Create(session);
+
+            return new NavigatedCommandWrapper(handler, navArgs, descriptor.NavParamHandler);
+        });
     }
 
     public CommandRegistryBuilder()
     {
-        _factories = new();
+        _descriptors = [];
         _built = false;
     }
 }
