@@ -1,6 +1,7 @@
 using TeleFlow.Commands.Statefull;
 using TeleFlow.Commands.Statefull.StepCommands;
 using TeleFlow.Factories;
+using TeleFlow.Models.MultiStep;
 
 namespace TeleFlow.Builders;
 
@@ -15,7 +16,7 @@ public class StepCommandFactoryBuilder
         return this;
     }
 
-    public StepCommandFactoryBuilder AddTextInput(string userPrompt, Func<IServiceProvider, string, Task> onUserInput) => Add(() => new TextInputStep(userPrompt, onUserInput));
+    public StepCommandFactoryBuilder AddTextInput(string userPrompt, Func<StepCommitContext, string, Task> onUserInput) => Add(() => new TextInputStep(userPrompt, onUserInput));
 
     public StepCommandFactory Build()
     {
