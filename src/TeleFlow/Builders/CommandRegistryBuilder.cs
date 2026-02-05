@@ -16,16 +16,14 @@ public class CommandRegistryBuilder
     private bool _built;
 
 
-    public CommandOptionsBuilder Add(string name, ICommandFactory<ICommandHandler, ChatSession> factory)
+    public CommandOptionsBuilder AddOrReplace(string name, ICommandFactory<ICommandHandler, ChatSession> factory)
     {
         EnsureNotBuilt();
-        
-        if(_descriptors.ContainsKey(name))
-            throw new Exception($"Command with name {name} already exists");
 
         CommandDescriptor descriptor = new(name, factory);
 
-        _descriptors.Add(name, descriptor);
+        if (!_descriptors.TryAdd(name, descriptor))
+            _descriptors[name] = descriptor;
 
         return new CommandOptionsBuilder(descriptor, EnsureNotBuilt);
     }
@@ -37,14 +35,14 @@ public class CommandRegistryBuilder
     }
 
 
-    public CommandOptionsBuilder Add(string name, Func<ICommandHandler> factory) => Add(name, new LambdaCommandFactory<ChatSession>(factory));
+    public CommandOptionsBuilder AddOrReplace(string name, Func<ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
 
 
-    public CommandOptionsBuilder Add(string name, Func<ChatSession, ICommandHandler> factory) => Add(name, new LambdaCommandFactory<ChatSession>(factory));
+    public CommandOptionsBuilder AddOrReplace(string name, Func<ChatSession, ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
 
     public CommandOptionsBuilder AddMultiStep(string name, Action<StepCommandFactoryBuilder> multiStepFactoryConfig, Func<IServiceProvider, Task<CommandResult>>? onCompleted = null)
     {
-        return Add(name, (session) => { 
+        return AddOrReplace(name, (session) => { 
             ChatSessionStepState stepState = new(session.CurrentCommandStep, session.IsStepInitialized);
             StepCommandFactoryBuilder builder = new();
 
