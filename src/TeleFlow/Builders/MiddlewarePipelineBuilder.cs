@@ -1,4 +1,8 @@
+using System.Reflection.Metadata.Ecma335;
 using Microsoft.Extensions.DependencyInjection;
+using TeleFlow.Builders.Services;
+using TeleFlow.Builders.Services.Registrations.Middlewares;
+using TeleFlow.Builders.Services.Registrations.Transformers;
 using TeleFlow.Commands;
 using TeleFlow.Factories;
 using TeleFlow.Middlewares;
@@ -13,98 +17,94 @@ namespace TeleFlow.Builders;
 
 public class MiddlewarePipelineBuilder
 {
-    private Func<IHandler<UpdateContext>, IHandlerMiddleware<Update, UpdateContext>>? _updateReceiver;
-    private Func<IHandler<SessionContext>, IHandlerMiddleware<UpdateContext, SessionContext>>? _commandRouter;
-    private Func<IHandler<CommandResultContext>, IHandlerMiddleware<SessionContext, CommandResultContext>>? _commandExecutor;
+    private IContextTransformerRegistration<Update, UpdateContext>? _updateReceiver;
+    private IContextTransformerRegistration<UpdateContext, SessionContext>? _commandRouter;
+    private IContextTransformerRegistration<SessionContext, CommandResultContext>? _commandExecutor;
     
-    private readonly List<Func<IHandler<UpdateContext>, IHandlerMiddleware<UpdateContext>>> _updateCtxMws = [];
-    private readonly List<Func<IHandler<SessionContext>, IHandlerMiddleware<SessionContext>>> _sessionMws = [];
-    private readonly List<Func<IHandler<CommandResultContext>, IHandlerMiddleware<CommandResultContext>>> _resultMws = [];
+    private readonly List<IContextMiddlewareRegistration<UpdateContext>> _updateCtxMws = [];
+    private readonly List<IContextMiddlewareRegistration<SessionContext>> _sessionMws = [];
 
-    private readonly IChatSessionStore? _chatSessionStore;
+    private readonly InterpreterPipelineBuilder _interpreterBuilder = new();
 
 
-    public IHandler<Update> Build()
+    public InterpreterPipelineBuilder Interpreters => _interpreterBuilder;
+
+
+    public IHandler<Update> Build(IServiceProvider sp)
     {
-        IHandler<CommandResultContext> tail = GenerateTerminalHandler();
-        var result = Wrap(_resultMws, tail);
-        var exec = _commandExecutor?.Invoke(result) ?? throw new Exception("Command Executor middleware is not set.");
-        var session = Wrap(_sessionMws, exec);
-        var routed = _commandRouter?.Invoke(session) ?? throw new Exception("Command Router middleware is not set.");
-        var update = Wrap(_updateCtxMws, routed);
-        var root = _updateReceiver?.Invoke(update) ?? throw new Exception("Update Receiver middleware is not set.");
+        var interpreters = _interpreterBuilder.Build(sp);
+        var exec = _commandExecutor?.Create(sp, interpreters) ?? throw new Exception("Command Executor middleware is not set.");
+        var session = Wrap(sp, _sessionMws, exec);
+        var routed = _commandRouter?.Create(sp, session) ?? throw new Exception("Command Router middleware is not set.");
+        var update = Wrap(sp, _updateCtxMws, routed);
+        var root = _updateReceiver?.Create(sp, update) ?? throw new Exception("Update Receiver middleware is not set.");
 
         return root;
     }
 
-    protected virtual IHandler<CommandResultContext> GenerateTerminalHandler()
-    {
-        if(_chatSessionStore is null)
-            throw new InvalidOperationException("Default Command Interpreter is supported only with ChatSessionStore provided. Either provide ChatSessionStore to the builder or use custom terminal handler.");
-
-        return new DefaultCommandInterpreter(_chatSessionStore);
-    }
-
-    private static IHandler<TContext> Wrap<TContext>(IEnumerable<Func<IHandler<TContext>, IHandlerMiddleware<TContext>>> factories, IHandler<TContext> next)
+    private static IHandler<TContext> Wrap<TContext>(IServiceProvider sp,
+                                                     IEnumerable<IContextMiddlewareRegistration<TContext>> factories,
+                                                     IHandler<TContext> next)
     {
         var current = next;
         foreach (var factory in factories.Reverse())
-            current = factory(current);
+            current = factory.Create(sp, current);
         return current;
     }
 
 
-    public void UseUpdateReceiver(Func<IHandler<UpdateContext>, IHandlerMiddleware<Update, UpdateContext>> factory)
-    {
-        _updateReceiver = factory;
-    }
+    public MiddlewarePipelineBuilder UseUpdateReceiver(IContextTransformerRegistration<Update, UpdateContext> registration)
+    { _updateReceiver = registration; return this; }
 
-    public void UseCommandRouter(Func<IHandler<SessionContext>, IHandlerMiddleware<UpdateContext, SessionContext>> factory)
-    {
-        _commandRouter = factory;
-    }
+    public MiddlewarePipelineBuilder UseUpdateReceiver<T>() where T : IHandlerMiddleware<Update, UpdateContext>
+        => UseUpdateReceiver(new ContextTransformerTypeRegistration<Update, UpdateContext>(typeof(T)));
 
-    public void UseCommandExecutor(Func<IHandler<CommandResultContext>, IHandlerMiddleware<SessionContext, CommandResultContext>> factory)
-    {
-        _commandExecutor = factory;
-    }
-
-
-    public void WithUpdateContextMiddleware(Func<IHandler<UpdateContext>, IHandlerMiddleware<UpdateContext>> factory, bool prepend = false)
-    {
-        _updateCtxMws.Insert(prepend ? 0 : _updateCtxMws.Count, factory);
-    }
-
-    public void WithSessionMiddleware(Func<IHandler<SessionContext>, IHandlerMiddleware<SessionContext>> factory, bool prepend = false)
-    {
-        _sessionMws.Insert(prepend ? 0 : _sessionMws.Count, factory);
-    }
-
-    public void WithCommandResultMiddleware(Func<IHandler<CommandResultContext>, IHandlerMiddleware<CommandResultContext>> factory, bool prepend = false)
-    {
-        _resultMws.Insert(prepend ? 0 : _resultMws.Count, factory);
-    }
-
-    public void WithCommandResultMiddleware(Func<IHandler<CommandResultContext>, IChatSessionStore, IHandlerMiddleware<CommandResultContext>> factory, bool prepend = false)
-    {
-        if(_chatSessionStore == null)
-            throw new InvalidOperationException("Chat session store is not provided in the builder.");
-
-        _resultMws.Insert(prepend ? 0 : _resultMws.Count, (next) => factory.Invoke(next, _chatSessionStore));
-    }
-
+    public MiddlewarePipelineBuilder UseUpdateReceiver(Func<IServiceProvider, IHandler<UpdateContext>, IHandler<Update>> factory)
+        => UseUpdateReceiver(new ContextTransformerFactoryRegistration<Update, UpdateContext>(factory));
     
-    public MiddlewarePipelineBuilder(IServiceScopeFactory? serviceScopeFactory = null, IChatSessionStore? chatSessionStore = null, ICommandFactory<ICommandHandler, ChatSession>? commandFactory = null)
-    {
-        _chatSessionStore = chatSessionStore;
 
-        if(serviceScopeFactory != null)
-            _updateReceiver = next => new UpdateReceiverMiddleware(next, serviceScopeFactory);
+    public MiddlewarePipelineBuilder UseCommandRouter(IContextTransformerRegistration<UpdateContext, SessionContext> registration)
+    { _commandRouter = registration; return this; }
+
+    public MiddlewarePipelineBuilder UseCommandRouter<T>() where T : IHandlerMiddleware<UpdateContext, SessionContext>
+        => UseCommandRouter(new ContextTransformerTypeRegistration<UpdateContext, SessionContext>(typeof(T)));
+
+    public MiddlewarePipelineBuilder UseCommandRouter(Func<IServiceProvider, IHandler<SessionContext>, IHandler<UpdateContext>> factory)
+        => UseCommandRouter(new ContextTransformerFactoryRegistration<UpdateContext, SessionContext>(factory));
+
+
+    public MiddlewarePipelineBuilder UseCommandExecutor(IContextTransformerRegistration<SessionContext, CommandResultContext> registration)
+    { _commandExecutor = registration; return this; }
+    
+    public MiddlewarePipelineBuilder UseCommandExecutor<T>() where T : IHandlerMiddleware<SessionContext, CommandResultContext>
+        => UseCommandExecutor(new ContextTransformerTypeRegistration<SessionContext, CommandResultContext>(typeof(T)));
+
+    public MiddlewarePipelineBuilder UseCommandExecutor(Func<IServiceProvider, IHandler<CommandResultContext>, IHandler<SessionContext>> factory)
+        => UseCommandExecutor(new ContextTransformerFactoryRegistration<SessionContext, CommandResultContext>(factory));
+
+
+
+    public MiddlewarePipelineBuilder WithUpdateContextMiddleware(IContextMiddlewareRegistration<UpdateContext> registration)
+    { _updateCtxMws.Add(registration); return this; }
+
+    public MiddlewarePipelineBuilder WithUpdateContextMiddleware<T>() where T : IHandlerMiddleware<UpdateContext>
+        => WithUpdateContextMiddleware(new ContextMiddlewareTypeRegistration<UpdateContext>(typeof(T)));
+
+    public MiddlewarePipelineBuilder WithUpdateContextMiddleware(Func<IServiceProvider, IHandler<UpdateContext>, IHandler<UpdateContext>> factory)
+        => WithUpdateContextMiddleware(new ContextMiddlewareFactoryRegistration<UpdateContext>(factory));
+
+
+    public MiddlewarePipelineBuilder WithSessionMiddleware(IContextMiddlewareRegistration<SessionContext> registration)
+    { _sessionMws.Add(registration); return this; }
+
+    public MiddlewarePipelineBuilder WithSessionMiddleware<T>() where T : IHandlerMiddleware<SessionContext>
+        => WithSessionMiddleware(new ContextMiddlewareTypeRegistration<SessionContext>(typeof(T)));
+
+    public MiddlewarePipelineBuilder WithSessionMiddleware(Func<IServiceProvider, IHandler<SessionContext>, IHandler<SessionContext>> factory)
+        => WithSessionMiddleware(new ContextMiddlewareFactoryRegistration<SessionContext>(factory));
+
         
-        if(chatSessionStore != null)
-            _commandRouter = next => new CommandRoutingMiddleware(next, chatSessionStore);
-
-        if(commandFactory != null)
-            _commandExecutor = next => new CommandExecutionMiddleware(next, commandFactory);
+    public MiddlewarePipelineBuilder()
+    {
     }
 }
