@@ -7,7 +7,7 @@ public class HoldOnMultiStepResult : CommandResult
     public string? HoldOnMessage { get; init; }
 
 
-    public static HoldOnMultiStepResult Initialize => new HoldOnMultiStepResult(HoldOnReason.Initialize, null);
+    public static HoldOnMultiStepResult Initialize => new();
 
     public HoldOnMultiStepResult(HoldOnReason reason, string? holdOnMessage)
     {
@@ -16,6 +16,11 @@ public class HoldOnMultiStepResult : CommandResult
 
         Reason = reason;
         HoldOnMessage = holdOnMessage;
+    }
+
+    private HoldOnMultiStepResult()
+    {
+        Reason = HoldOnReason.Initialize;
     }
 }
 
