@@ -2,11 +2,56 @@ using TeleFlow.ViewModels.CallbackQuery;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Microsoft.Extensions.DependencyInjection;
+using TeleFlow.Bootstrap;
+using TeleFlow.Builders;
+using TeleFlow.Middlewares.CommandInterpreters;
+using TeleFlow.Factories;
+using TeleFlow.Commands;
+using TeleFlow.Models.CommandResults;
+using TeleFlow.Services;
 
 namespace TeleFlow;
 
 public static class LibraryExtensions
 {
+    public static void AddTeleFlow(this IServiceCollection services, Action<TeleFlowConfiguration> options)
+    {
+        TeleFlowDefaultServices.ConfigureServices(services);
+
+        var configuration = TeleFlowConfiguration.Default;
+
+        options.Invoke(configuration);
+
+        TeleFlowDefaultServices.ConfigureMiddlewarePipeline(services, configuration.MiddlewareConfiguration);
+
+        TeleFlowDefaultServices.ConfigureCommandRegistries(services, configuration.CommandRegistryConfiguration);
+    }
+
+
+    public static InterpreterPipelineBuilder WithNavigateInterpreter(this InterpreterPipelineBuilder builder, int navigateDepth)
+    {
+        if(navigateDepth < 0)
+            throw new Exception();
+        
+        if(navigateDepth > 0)
+        {
+            var navigatedCommandInterpreterBuilder = builder.Clone();
+            navigatedCommandInterpreterBuilder.WithNavigateInterpreter(navigateDepth - 1);
+
+            builder.WithInterpreterMiddleware((sp, next) =>
+            {
+                var cmdFactory                  = sp.GetRequiredService<ICommandFactory<ICommandHandler, NavigateCommandResult>>(); 
+                var store                       = sp.GetRequiredService<IChatSessionStore>();
+                var navigatedCommandInterpreter = navigatedCommandInterpreterBuilder.Build(sp);
+
+                return new NavigateCommandMiddleware(next, navigatedCommandInterpreter, cmdFactory, store);
+            });
+        }
+
+        return builder;
+    }
+
     public static long GetChatId(this Update update)
     {
         return update.Type switch
