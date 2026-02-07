@@ -16,14 +16,18 @@ public class StepCommandFactoryBuilder
         return this;
     }
 
-    public StepCommandFactoryBuilder AddTextInput(string userPrompt, Func<StepCommitContext, string, Task> onUserInput) => Add(() => new TextInputStep(userPrompt, onUserInput));
+    public StepCommandFactoryBuilder AddTextInput(string userPrompt, Func<StepCommitContext, string, Task> onUserInput) 
+        => Add(() => new TextInputStep(userPrompt, onUserInput));
+
+    public StepCommandFactoryBuilder AddContactInput(ContactInputStepOptions options) 
+        => Add(() => new ContactInputStep(options));
 
     public StepCommandFactory Build()
     {
         if(_stepCommandFactories.Count == 0)
             throw new Exception("No Step Commands Provided!");
 
-        return new StepCommandFactory(_stepCommandFactories.ToArray());
+        return new StepCommandFactory([.. _stepCommandFactories]);
     }
 
     public StepCommandFactoryBuilder()
