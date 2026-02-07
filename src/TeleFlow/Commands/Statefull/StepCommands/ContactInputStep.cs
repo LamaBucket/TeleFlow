@@ -73,7 +73,7 @@ public class ContactInputStep : IStepCommand
 
         OutgoingMessage msg = new()
         {
-            Text = _options.InitMessage,
+            Text = _options.UserPrompt,
             ReplyMarkup = BuildReplyMarkup()
         };
 
@@ -100,7 +100,7 @@ public class ContactInputStep : IStepCommand
 
 public class ContactInputStepOptions
 {
-    public required string InitMessage { get; init; }
+    public required string UserPrompt { get; init; }
 
     public required Func<StepCommitContext, Contact, Task> OnUserCommit { get; init; }
 

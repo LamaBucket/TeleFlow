@@ -2,6 +2,7 @@ using TeleFlow.Commands.Statefull;
 using TeleFlow.Commands.Statefull.StepCommands;
 using TeleFlow.Factories;
 using TeleFlow.Models.MultiStep;
+using Telegram.Bot.Types;
 
 namespace TeleFlow.Builders;
 
@@ -16,11 +17,19 @@ public class StepCommandFactoryBuilder
         return this;
     }
 
-    public StepCommandFactoryBuilder AddTextInput(string userPrompt, Func<StepCommitContext, string, Task> onUserInput) 
-        => Add(() => new TextInputStep(userPrompt, onUserInput));
+    public StepCommandFactoryBuilder AddTextInput(TextInputStepOptions options) 
+        => Add(() => new TextInputStep(options));
+
+    public StepCommandFactoryBuilder AddTextInput(string userPrompt, Func<StepCommitContext, string, Task> onUserCommit) 
+        => AddTextInput(new() { UserPrompt = userPrompt, OnUserCommit = onUserCommit });
+
 
     public StepCommandFactoryBuilder AddContactInput(ContactInputStepOptions options) 
         => Add(() => new ContactInputStep(options));
+
+    public StepCommandFactoryBuilder AddContactInput(string userPrompt, Func<StepCommitContext, Contact, Task> onUserCommit) 
+        => AddContactInput(new() { UserPrompt = userPrompt, OnUserCommit =  onUserCommit});
+
 
     public StepCommandFactory Build()
     {
