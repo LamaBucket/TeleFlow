@@ -26,7 +26,7 @@ public class HoldOnMultiStepMiddleware : CommandInterpreterBase<HoldOnMultiStepR
 
         if(args.CommandResult.HoldOnMessage is not null)
         {
-            var messageService = args.GetService<IMessageService<string>>();
+            var messageService = args.GetService<IMessageSender>();
             await messageService.SendMessage(args.CommandResult.HoldOnMessage);
         }
 

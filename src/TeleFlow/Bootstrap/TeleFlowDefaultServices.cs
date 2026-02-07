@@ -34,14 +34,24 @@ public static class TeleFlowDefaultServices
 
     private static void TryAddDefaultMessageServices(this IServiceCollection services)
     {
-        services.AddScoped<IMessageService<string>>(sp =>
+        services.TryAddScoped<IMessageSender>(sp =>
         {
             var chatIdProvider = sp.GetRequiredService<IChatIdProvider>();
             var botClient = sp.GetRequiredService<ITelegramBotClient>(); 
 
             var chatId = chatIdProvider.GetChatId();
 
-            return new StringMessageService(botClient, chatId);
+            return new DefaultMessageSender(botClient, chatId);
+        });
+
+        services.TryAddScoped<IMessageEditor>(sp =>
+        {
+            var chatIdProvider = sp.GetRequiredService<IChatIdProvider>();
+            var botClient = sp.GetRequiredService<ITelegramBotClient>(); 
+
+            var chatId = chatIdProvider.GetChatId();
+
+            return new DefaultMessageEditor(botClient, chatId);
         });
     }
 

@@ -10,6 +10,8 @@ using TeleFlow.Factories;
 using TeleFlow.Commands;
 using TeleFlow.Models.CommandResults;
 using TeleFlow.Services;
+using TeleFlow.Services.Messaging;
+using TeleFlow.Models.Messaging;
 
 namespace TeleFlow;
 
@@ -82,4 +84,11 @@ public static class LibraryExtensions
 
         return args?.CommandToExecute;
     }
+
+    public static Task<Message> SendMessage(this IMessageSender messageService, string message)
+    {
+        OutgoingMessage msg = new(){ Text = message };
+        
+        return messageService.SendMessage(msg);
+    } 
 }

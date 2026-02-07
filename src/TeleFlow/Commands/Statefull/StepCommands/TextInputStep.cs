@@ -35,14 +35,14 @@ public class TextInputStep : IStepCommand
 
     public async Task OnEnter(IServiceProvider serviceProvider)
     {
-        var messageService = serviceProvider.GetService<IMessageService<string>>() ?? throw new Exception("Unable to get MessageService");
+        var messageService = serviceProvider.GetRequiredService<IMessageSender>();
 
         await messageService.SendMessage(_userPrompt);
     }
 
 
     public TextInputStep(string userPrompt,
-                                Func<StepCommitContext, string, Task> onUserInput)
+                         Func<StepCommitContext, string, Task> onUserInput)
     {
         _userPrompt = userPrompt;
         _onUserInput = onUserInput;

@@ -1,26 +1,31 @@
 using TeleFlow.Models.Contexts;
+using TeleFlow.Models.Messaging;
 using TeleFlow.Services.Messaging;
 
 namespace TeleFlow.Commands.Stateless;
 
-public class SendMessageCommand<TMessage> : OutputCommand
+public class SendMessageCommand : OutputCommand
 {
-    private readonly Func<Task<TMessage>> _message;
+    private readonly Func<Task<OutgoingMessage>> _message;
 
     protected override async Task ExecuteCommand(UpdateContext context)
     {
-        var messageService = context.GetService<IMessageService<TMessage>>();
+        var messageService = context.GetService<IMessageSender>();
 
         var message = await _message.Invoke();
         await messageService.SendMessage(message);
     }
 
-    public SendMessageCommand(TMessage message)
+
+    public SendMessageCommand(string message) : this(OutgoingMessage.CreateTextMessage(message))
     {
-        _message = async () => { return message; };
     }
 
-    public SendMessageCommand(Func<Task<TMessage>> message)
+    public SendMessageCommand(OutgoingMessage message) : this(async () => message )
+    {
+    }
+
+    public SendMessageCommand(Func<Task<OutgoingMessage>> message)
     {
         _message = message;
     }
