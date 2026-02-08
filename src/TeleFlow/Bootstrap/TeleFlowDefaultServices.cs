@@ -6,9 +6,13 @@ using TeleFlow.Factories;
 using TeleFlow.Models;
 using TeleFlow.Models.CommandResults;
 using TeleFlow.Services;
+using TeleFlow.Services.Callbacks;
 using TeleFlow.Services.Defaults;
+using TeleFlow.Services.Defaults.Callbacks;
 using TeleFlow.Services.Defaults.Messaging;
+using TeleFlow.Services.Defaults.ViewModels;
 using TeleFlow.Services.Messaging;
+using TeleFlow.Services.ViewModels;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -21,6 +25,9 @@ public static class TeleFlowDefaultServices
         services.TryAddSingleton<IChatSessionStore, InMemoryChatSessionStore>();
 
         services.TryAddDefaultChatIdManager();
+
+        services.TryAddDefaultCallbackEncoder();
+        services.TryAddInMemoryInteractiveStateStore();
 
         services.TryAddDefaultMessageServices();
     }
@@ -53,6 +60,18 @@ public static class TeleFlowDefaultServices
 
             return new DefaultMessageEditor(botClient, chatId);
         });
+    }
+
+    public static IServiceCollection TryAddDefaultCallbackEncoder(this IServiceCollection services)
+    {
+        services.TryAddSingleton<ICallbackEncoder, DefaultCallbackEncoder>();
+        return services;
+    }
+
+    public static IServiceCollection TryAddInMemoryInteractiveStateStore(this IServiceCollection services)
+    {
+        services.TryAddSingleton<IChatInteractiveStateStore, InMemoryChatInteractiveStateStore>();
+        return services;
     }
 
     public static void ConfigureMiddlewarePipeline(this IServiceCollection services, Action<MiddlewarePipelineBuilder> options)

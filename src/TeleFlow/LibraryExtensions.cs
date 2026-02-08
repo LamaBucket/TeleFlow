@@ -1,4 +1,3 @@
-using TeleFlow.ViewModels.CallbackQuery;
 using Newtonsoft.Json;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -70,19 +69,8 @@ public static class LibraryExtensions
         {
             case UpdateType.Message:
                 return args.Message?.Text;
-            case UpdateType.CallbackQuery:
-                return GetCommandNameFromCallbackQuery(args.CallbackQuery ?? throw new ArgumentNullException($"The callback query in {nameof(args)} was not provided"));
         }
         throw new InvalidOperationException("Unknown update type");
-    }
-
-    private static string? GetCommandNameFromCallbackQuery(CallbackQuery query)
-    {
-        string queryData = query.Data ?? throw new ArgumentNullException($"The data in {nameof(query)} was not provided");
-
-        var args = JsonConvert.DeserializeObject<UniversalCommandFactoryViewModel>(queryData);
-
-        return args?.CommandToExecute;
     }
 
     public static Task<Message> SendMessage(this IMessageSender messageService, string message)
