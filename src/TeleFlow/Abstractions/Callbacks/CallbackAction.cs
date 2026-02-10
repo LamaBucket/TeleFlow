@@ -1,4 +1,4 @@
-namespace TeleFlow.Models.Callbacks;
+namespace TeleFlow.Abstractions.Callbacks;
 
 public abstract record CallbackAction
 {

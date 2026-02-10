@@ -1,4 +1,4 @@
-namespace TeleFlow.Models.Interactive;
+namespace TeleFlow.Abstractions.Interactivity;
 
 public sealed class InteractiveState<TVm> where TVm : class
 {

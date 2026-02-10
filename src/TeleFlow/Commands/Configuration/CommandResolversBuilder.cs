@@ -1,13 +1,12 @@
-using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using TeleFlow.Commands;
-using TeleFlow.Commands.Statefull;
-using TeleFlow.Factories;
-using TeleFlow.Models;
-using TeleFlow.Models.CommandResults;
-using Telegram.Bot.Requests;
+using TeleFlow.Abstractions.Sessions;
+using TeleFlow.Commands.Decorators;
+using TeleFlow.Commands.Factories;
+using TeleFlow.Commands.Flow;
+using TeleFlow.Commands.Flow.Steps.Configuration;
+using TeleFlow.Commands.Resolvers;
+using TeleFlow.Commands.Results;
 
-namespace TeleFlow.Builders;
+namespace TeleFlow.Commands.Configuration;
 
 public class CommandResolversBuilder
 {

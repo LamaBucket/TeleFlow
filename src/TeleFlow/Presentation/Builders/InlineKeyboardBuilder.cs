@@ -1,7 +1,7 @@
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TeleFlow.Builders.Keyboards;
+namespace TeleFlow.Presentation.Builders;
 
 public sealed class InlineKeyboardBuilder
 {

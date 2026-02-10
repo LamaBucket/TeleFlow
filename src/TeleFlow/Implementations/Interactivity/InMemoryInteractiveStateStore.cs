@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Concurrent;
-using TeleFlow.Models.Interactive;
-using TeleFlow.Services.ViewModels;
+using TeleFlow.Abstractions.Interactivity;
 
-namespace TeleFlow.Services.Defaults.ViewModels;
+namespace TeleFlow.Implementations.Interactivity;
 
 public sealed class InMemoryInteractiveStateStore : IInteractiveStateStore
 {

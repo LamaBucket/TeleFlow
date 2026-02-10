@@ -1,8 +1,7 @@
 using TeleFlow.Abstractions.Messaging;
-using TeleFlow.Models.Contexts;
-using TeleFlow.Services.Messaging;
+using TeleFlow.Pipeline.Contexts;
 
-namespace TeleFlow.Commands.Stateless;
+namespace TeleFlow.Commands.Instant;
 
 public class NavigateWithTextCommand : NavigateCommand
 {

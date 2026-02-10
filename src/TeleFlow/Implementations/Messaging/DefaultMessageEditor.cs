@@ -1,11 +1,10 @@
-using TeleFlow.Models.Messaging;
-using TeleFlow.Services.Messaging;
+using TeleFlow.Abstractions.Messaging;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TeleFlow.Services.Defaults.Messaging;
+namespace TeleFlow.Implementations.Messaging;
 
 public class DefaultMessageEditor : IMessageEditor
 {

@@ -1,9 +1,8 @@
 using System;
 using System.Text;
-using TeleFlow.Models.Callbacks;
-using TeleFlow.Services.Callbacks;
+using TeleFlow.Abstractions.Callbacks;
 
-namespace TeleFlow.Services.Defaults.Callbacks;
+namespace TeleFlow.Implementations.Callbacks;
 
 public sealed class DefaultCallbackEncoder : ICallbackCodec
 {

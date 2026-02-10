@@ -1,4 +1,4 @@
-namespace TeleFlow.ViewModels;
+namespace TeleFlow.Presentation.ViewModels;
 
 public sealed class ListSelectionStepViewModel<T>
 {

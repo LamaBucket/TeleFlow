@@ -1,6 +1,4 @@
-using TeleFlow.Models;
-
-namespace TeleFlow.Services;
+namespace TeleFlow.Abstractions.Sessions;
 
 public interface IChatSessionStore
 {

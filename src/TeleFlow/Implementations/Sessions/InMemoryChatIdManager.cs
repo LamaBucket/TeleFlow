@@ -1,4 +1,6 @@
-namespace TeleFlow.Services.Defaults;
+using TeleFlow.Abstractions.Sessions;
+
+namespace TeleFlow.Implementations.Sessions;
 
 public class InMemoryChatIdManager : IChatIdSetter, IChatIdProvider
 {

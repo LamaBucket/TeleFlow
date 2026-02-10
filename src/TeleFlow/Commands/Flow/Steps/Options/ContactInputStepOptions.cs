@@ -1,4 +1,3 @@
-using TeleFlow.Models.MultiStep;
 using Telegram.Bot.Types;
 
 namespace TeleFlow.Commands.Flow.Steps.Options;

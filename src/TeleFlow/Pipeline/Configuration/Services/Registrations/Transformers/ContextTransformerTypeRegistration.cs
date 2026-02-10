@@ -1,7 +1,9 @@
 
 using Microsoft.Extensions.DependencyInjection;
+using TeleFlow.Pipeline;
+using TeleFlow.Pipeline.Configuration.Services;
 
-namespace TeleFlow.Builders.Services.Registrations.Transformers;
+namespace TeleFlow.Pipeline.Configuration.Services.Registrations.Transformers;
 
 public sealed class ContextTransformerTypeRegistration<TContext, TNextContext> : IContextTransformerRegistration<TContext, TNextContext>
 {

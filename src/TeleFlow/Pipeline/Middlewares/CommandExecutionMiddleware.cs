@@ -1,9 +1,10 @@
+using TeleFlow.Abstractions.Sessions;
 using TeleFlow.Commands;
-using TeleFlow.Factories;
-using TeleFlow.Models;
-using TeleFlow.Models.Contexts;
+using TeleFlow.Commands.Factories;
+using TeleFlow.Pipeline;
+using TeleFlow.Pipeline.Contexts;
 
-namespace TeleFlow.Middlewares;
+namespace TeleFlow.Pipeline.Middlewares;
 
 public class CommandExecutionMiddleware : IHandlerMiddleware<SessionContext, CommandResultContext>
 {

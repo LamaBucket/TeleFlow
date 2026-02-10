@@ -1,5 +1,3 @@
-using TeleFlow.Models.Messaging;
-using TeleFlow.Services.Messaging;
 using Telegram.Bot.Types;
 
 namespace TeleFlow.Abstractions.Messaging;

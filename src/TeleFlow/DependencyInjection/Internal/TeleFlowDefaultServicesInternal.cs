@@ -1,22 +1,21 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using TeleFlow.Builders;
+using TeleFlow.Abstractions.Callbacks;
+using TeleFlow.Abstractions.Interactivity;
+using TeleFlow.Abstractions.Messaging;
+using TeleFlow.Abstractions.Sessions;
 using TeleFlow.Commands;
-using TeleFlow.Factories;
-using TeleFlow.Models;
-using TeleFlow.Models.CommandResults;
-using TeleFlow.Services;
-using TeleFlow.Services.Callbacks;
-using TeleFlow.Services.Defaults;
-using TeleFlow.Services.Defaults.Callbacks;
-using TeleFlow.Services.Defaults.Messaging;
-using TeleFlow.Services.Defaults.ViewModels;
-using TeleFlow.Services.Messaging;
-using TeleFlow.Services.ViewModels;
+using TeleFlow.Commands.Configuration;
+using TeleFlow.Commands.Factories;
+using TeleFlow.Commands.Results;
+using TeleFlow.Implementations.Callbacks;
+using TeleFlow.Implementations.Interactivity;
+using TeleFlow.Implementations.Messaging;
+using TeleFlow.Implementations.Sessions;
+using TeleFlow.Pipeline.Configuration;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
-namespace TeleFlow.Bootstrap;
+namespace TeleFlow.DependencyInjection.Internal;
 
 internal static class TeleFlowDefaultServicesInternal
 {

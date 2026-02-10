@@ -1,4 +1,6 @@
-namespace TeleFlow.Models.CommandResults;
+using TeleFlow.Commands.Results;
+
+namespace TeleFlow.Commands.Results.MultiStep;
 
 public class HoldOnMultiStepResult : CommandResult
 {

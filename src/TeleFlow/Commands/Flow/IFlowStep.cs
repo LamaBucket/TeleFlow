@@ -1,7 +1,6 @@
-using TeleFlow.Models.Contexts;
-using TeleFlow.Models.MultiStep;
+using TeleFlow.Pipeline.Contexts;
 
-namespace TeleFlow.Commands.Statefull;
+namespace TeleFlow.Commands.Flow;
 
 public interface IFlowStep
 {

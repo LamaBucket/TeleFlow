@@ -1,6 +1,4 @@
-using TeleFlow.Models.CommandResults;
-
-namespace TeleFlow.Models.MultiStep;
+namespace TeleFlow.Commands.Flow;
 
 public class FlowStepResult
 {

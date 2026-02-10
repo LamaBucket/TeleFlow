@@ -1,5 +1,3 @@
-using TeleFlow.Models.MultiStep;
-
 namespace TeleFlow.Commands.Flow.Steps.Interactive.Options;
 
 public abstract class ListSelectionMode<T>

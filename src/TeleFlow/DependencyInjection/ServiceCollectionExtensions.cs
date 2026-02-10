@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Bootstrap;
+using TeleFlow.DependencyInjection.Internal;
 
 namespace TeleFlow.DependencyInjection;
 

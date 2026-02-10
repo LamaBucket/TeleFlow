@@ -1,10 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Builders;
+using TeleFlow.Abstractions.Sessions;
 using TeleFlow.Commands;
-using TeleFlow.Factories;
-using TeleFlow.Middlewares.CommandInterpreters;
-using TeleFlow.Models.CommandResults;
-using TeleFlow.Services;
+using TeleFlow.Commands.Factories;
+using TeleFlow.Commands.Results;
+using TeleFlow.Pipeline.Middlewares.CommandInterpreters;
 
 namespace TeleFlow.Pipeline.Configuration;
 

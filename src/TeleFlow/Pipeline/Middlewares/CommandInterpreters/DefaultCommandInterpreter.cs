@@ -1,8 +1,7 @@
-using TeleFlow.Models.CommandResults;
-using TeleFlow.Models.Contexts;
-using TeleFlow.Services;
+using TeleFlow.Abstractions.Sessions;
+using TeleFlow.Pipeline.Contexts;
 
-namespace TeleFlow.Middlewares.CommandInterpreters;
+namespace TeleFlow.Pipeline.Middlewares.CommandInterpreters;
 
 public class DefaultCommandInterpreter : IHandler<CommandResultContext>
 {

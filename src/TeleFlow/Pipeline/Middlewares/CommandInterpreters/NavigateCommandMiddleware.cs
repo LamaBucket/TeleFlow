@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Session;
+using TeleFlow.Abstractions.Sessions;
 using TeleFlow.Commands;
-using TeleFlow.Factories;
-using TeleFlow.Models;
-using TeleFlow.Models.CommandResults;
-using TeleFlow.Models.Contexts;
-using TeleFlow.Services;
+using TeleFlow.Commands.Factories;
+using TeleFlow.Commands.Results;
+using TeleFlow.Pipeline;
+using TeleFlow.Pipeline.Contexts;
 
-namespace TeleFlow.Middlewares.CommandInterpreters;
+namespace TeleFlow.Pipeline.Middlewares.CommandInterpreters;
 
 public class NavigateCommandMiddleware : CommandInterpreterBase<NavigateCommandResult>
 {

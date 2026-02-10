@@ -1,6 +1,8 @@
-using TeleFlow.Builders;
+using TeleFlow.Commands.Configuration;
+using TeleFlow.DependencyInjection.Internal;
+using TeleFlow.Pipeline.Configuration;
 
-namespace TeleFlow.Bootstrap;
+namespace TeleFlow.DependencyInjection;
 
 public class TeleFlowConfiguration
 {

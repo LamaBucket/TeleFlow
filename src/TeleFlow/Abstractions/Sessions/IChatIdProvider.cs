@@ -1,4 +1,4 @@
-namespace TeleFlow.Services;
+namespace TeleFlow.Abstractions.Sessions;
 
 public interface IChatIdProvider
 {

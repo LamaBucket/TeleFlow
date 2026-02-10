@@ -1,6 +1,6 @@
-using TeleFlow.Models;
+using TeleFlow.Abstractions.Sessions;
 
-namespace TeleFlow.Services.Defaults;
+namespace TeleFlow.Implementations.Sessions;
 
 public class InMemoryChatSessionStore : IChatSessionStore
 {

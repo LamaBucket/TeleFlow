@@ -1,4 +1,6 @@
-namespace TeleFlow.Builders.Services;
+using TeleFlow.Pipeline;
+
+namespace TeleFlow.Pipeline.Configuration.Services;
 
 public interface IContextMiddlewareRegistration<TContext>
 {

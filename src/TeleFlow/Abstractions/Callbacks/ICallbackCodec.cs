@@ -1,6 +1,4 @@
-using TeleFlow.Models.Callbacks;
-
-namespace TeleFlow.Services.Callbacks;
+namespace TeleFlow.Abstractions.Callbacks;
 
 public interface ICallbackCodec
 {

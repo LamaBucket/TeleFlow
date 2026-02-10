@@ -1,8 +1,8 @@
-using TeleFlow.Models.CommandResults;
-using TeleFlow.Models.Contexts;
-using TeleFlow.Services;
+using TeleFlow.Abstractions.Sessions;
+using TeleFlow.Commands.Results.MultiStep;
+using TeleFlow.Pipeline.Contexts;
 
-namespace TeleFlow.Middlewares.CommandInterpreters.MultiStep;
+namespace TeleFlow.Pipeline.Middlewares.CommandInterpreters.FlowStep;
 
 public class GoToMultiStepMiddleware : CommandInterpreterBase<GoToMultiStepResult>
 {

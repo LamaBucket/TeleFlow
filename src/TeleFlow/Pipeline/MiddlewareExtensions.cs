@@ -1,7 +1,7 @@
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TeleFlow.Pipeline.Middlewares;
+namespace TeleFlow.Pipeline;
 
 public static class MiddlewareExtensions
 {

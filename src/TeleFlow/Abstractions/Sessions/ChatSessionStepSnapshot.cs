@@ -1,4 +1,4 @@
-namespace TeleFlow.Models;
+namespace TeleFlow.Abstractions.Sessions;
 
 public class ChatSessionStepSnapshot
 {

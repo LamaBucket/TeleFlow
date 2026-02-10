@@ -1,4 +1,4 @@
-namespace TeleFlow;
+namespace TeleFlow.Pipeline;
 
 public interface IHandlerMiddleware<T, TNext> : IHandler<T>
 {

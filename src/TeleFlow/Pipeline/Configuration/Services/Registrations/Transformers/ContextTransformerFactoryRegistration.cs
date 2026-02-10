@@ -1,4 +1,7 @@
-namespace TeleFlow.Builders.Services.Registrations.Transformers;
+using TeleFlow.Pipeline;
+using TeleFlow.Pipeline.Configuration.Services;
+
+namespace TeleFlow.Pipeline.Configuration.Services.Registrations.Transformers;
 
 public sealed class ContextTransformerFactoryRegistration<TContext, TNextContext> : IContextTransformerRegistration<TContext, TNextContext>
 {

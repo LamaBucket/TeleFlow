@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Services;
+using TeleFlow.Abstractions.Sessions;
 
-namespace TeleFlow.Models.MultiStep;
+namespace TeleFlow.Commands.Flow;
 
 //This context is provided in OnCommit() Funcs for user's convenience
 public class FlowStepCommitContext

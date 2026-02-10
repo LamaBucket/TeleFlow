@@ -1,19 +1,15 @@
 using Microsoft.Extensions.DependencyInjection;
+using TeleFlow.Abstractions.Callbacks;
+using TeleFlow.Abstractions.Interactivity;
+using TeleFlow.Abstractions.Messaging;
+using TeleFlow.Abstractions.Sessions;
 using TeleFlow.Commands.Flow.Steps.Interactive.Options;
-using TeleFlow.Models.Callbacks;
-using TeleFlow.Models.Contexts;
-using TeleFlow.Models.Interactive;
-using TeleFlow.Models.Messaging;
-using TeleFlow.Models.MultiStep;
-using TeleFlow.Services;
-using TeleFlow.Services.Callbacks;
-using TeleFlow.Services.Messaging;
-using TeleFlow.Services.ViewModels;
+using TeleFlow.Pipeline.Contexts;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TeleFlow.Commands.Statefull.StepCommands.Interactive;
+namespace TeleFlow.Commands.Flow.Steps.Interactive;
 
 public abstract class InteractiveFlowStepBase<TVM> : IFlowStep
     where TVM : class

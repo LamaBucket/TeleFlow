@@ -1,7 +1,6 @@
-using TeleFlow.Models.Messaging;
 using Telegram.Bot.Types;
 
-namespace TeleFlow.Services.Messaging;
+namespace TeleFlow.Abstractions.Messaging;
 
 public interface IMessageSender
 {

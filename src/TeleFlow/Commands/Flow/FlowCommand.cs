@@ -1,11 +1,10 @@
-using System.Diagnostics;
-using TeleFlow.Factories;
-using TeleFlow.Models;
-using TeleFlow.Models.CommandResults;
-using TeleFlow.Models.Contexts;
-using TeleFlow.Models.MultiStep;
+using TeleFlow.Abstractions.Sessions;
+using TeleFlow.Commands.Flow.Steps.Resolvers;
+using TeleFlow.Commands.Results;
+using TeleFlow.Commands.Results.MultiStep;
+using TeleFlow.Pipeline.Contexts;
 
-namespace TeleFlow.Commands.Statefull;
+namespace TeleFlow.Commands.Flow;
 
 public class FlowCommand : ICommandHandler
 {

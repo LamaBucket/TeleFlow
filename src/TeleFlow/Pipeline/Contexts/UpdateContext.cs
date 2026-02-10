@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot.Types;
 
-namespace TeleFlow.Models.Contexts;
+namespace TeleFlow.Pipeline.Contexts;
 
 public class UpdateContext
 {

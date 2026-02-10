@@ -1,11 +1,7 @@
-using TeleFlow.Commands;
-using TeleFlow.Factories;
-using TeleFlow.Interceptors;
-using TeleFlow.Models;
-using TeleFlow.Models.CommandResults;
-using TeleFlow.Services;
+using TeleFlow.Commands.Interceptors;
+using TeleFlow.Commands.Results;
 
-namespace TeleFlow.Builders;
+namespace TeleFlow.Commands.Configuration;
 
 public class CommandInterceptorsBuilder
 {

@@ -1,4 +1,7 @@
-namespace TeleFlow.Builders.Services.Registrations.Middlewares;
+using TeleFlow.Pipeline;
+using TeleFlow.Pipeline.Configuration.Services;
+
+namespace TeleFlow.Pipeline.Configuration.Services.Registrations.Middlewares;
 
 public sealed class ContextMiddlewareFactoryRegistration<TContext> : IContextMiddlewareRegistration<TContext>
 {

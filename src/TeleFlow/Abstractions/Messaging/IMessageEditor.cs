@@ -1,9 +1,8 @@
-using TeleFlow.Models.Messaging;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TeleFlow.Services.Messaging;
+namespace TeleFlow.Abstractions.Messaging;
 
 public interface IMessageEditor
 {

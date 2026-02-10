@@ -1,7 +1,7 @@
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TeleFlow.Models.Messaging;
+namespace TeleFlow.Abstractions.Messaging;
 
 public class OutgoingMessage
 {

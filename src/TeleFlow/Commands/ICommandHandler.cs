@@ -1,5 +1,5 @@
-using TeleFlow.Models.CommandResults;
-using TeleFlow.Models.Contexts;
+using TeleFlow.Commands.Results;
+using TeleFlow.Pipeline.Contexts;
 using Telegram.Bot.Types;
 
 namespace TeleFlow.Commands;

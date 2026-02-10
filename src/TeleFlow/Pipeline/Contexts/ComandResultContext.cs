@@ -1,6 +1,7 @@
-using TeleFlow.Models.CommandResults;
+using TeleFlow.Abstractions.Sessions;
+using TeleFlow.Commands.Results;
 
-namespace TeleFlow.Models.Contexts;
+namespace TeleFlow.Pipeline.Contexts;
 
 public class CommandResultContext<TCommandResult> : SessionContext where TCommandResult : CommandResult
 {

@@ -1,17 +1,15 @@
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Builders.Keyboards;
+using TeleFlow.Abstractions.Callbacks;
+using TeleFlow.Abstractions.Interactivity;
+using TeleFlow.Abstractions.Sessions;
 using TeleFlow.Commands.Flow.Steps.Interactive.Options;
-using TeleFlow.Models.Callbacks;
-using TeleFlow.Models.Interactive;
-using TeleFlow.Models.MultiStep;
-using TeleFlow.Services;
-using TeleFlow.Services.Callbacks;
-using TeleFlow.ViewModels;
+using TeleFlow.Presentation.Builders;
+using TeleFlow.Presentation.ViewModels;
 using Telegram.Bot.Types.ReplyMarkups;
-using static TeleFlow.Models.Callbacks.CallbackAction.Step;
-using static TeleFlow.Models.Callbacks.CallbackAction.Ui;
+using static TeleFlow.Abstractions.Callbacks.CallbackAction.Step;
+using static TeleFlow.Abstractions.Callbacks.CallbackAction.Ui;
 
-namespace TeleFlow.Commands.Statefull.StepCommands.Interactive;
+namespace TeleFlow.Commands.Flow.Steps.Interactive;
 
 public class ListSelectionFlowStep<T> : InteractiveFlowStepBase<ListSelectionStepViewModel<T>>
 {

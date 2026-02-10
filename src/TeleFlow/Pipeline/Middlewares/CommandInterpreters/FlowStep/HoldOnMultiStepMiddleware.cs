@@ -1,10 +1,11 @@
 using TeleFlow.Abstractions.Messaging;
-using TeleFlow.Models.CommandResults;
-using TeleFlow.Models.Contexts;
-using TeleFlow.Services;
-using TeleFlow.Services.Messaging;
+using TeleFlow.Abstractions.Sessions;
+using TeleFlow.Commands.Results.MultiStep;
+using TeleFlow.Pipeline;
+using TeleFlow.Pipeline.Contexts;
+using TeleFlow.Pipeline.Middlewares.CommandInterpreters;
 
-namespace TeleFlow.Middlewares.CommandInterpreters.MultiStep;
+namespace TeleFlow.Pipeline.Middlewares.CommandInterpreters.FlowStep;
 
 public class HoldOnMultiStepMiddleware : CommandInterpreterBase<HoldOnMultiStepResult>
 {

@@ -1,14 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using TeleFlow.Abstractions.Messaging;
+using TeleFlow.Commands.Flow;
 using TeleFlow.Commands.Flow.Steps.Options;
-using TeleFlow.Commands.Statefull;
-using TeleFlow.Models.Contexts;
-using TeleFlow.Models.MultiStep;
-using TeleFlow.Services.Messaging;
+using TeleFlow.Pipeline.Contexts;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TeleFlow.Commands.Statefull.StepCommands;
+namespace TeleFlow.Commands.Flow.Steps;
 
 public class TextInputFlowStep : IFlowStep
 {

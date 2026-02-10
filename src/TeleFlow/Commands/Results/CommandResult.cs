@@ -1,7 +1,4 @@
-using System.Reflection.Metadata.Ecma335;
-using TeleFlow.Models.MultiStep;
-
-namespace TeleFlow.Models.CommandResults;
+namespace TeleFlow.Commands.Results;
 
 public abstract class CommandResult
 {

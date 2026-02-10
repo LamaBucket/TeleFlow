@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Models.Contexts;
-using TeleFlow.Pipeline.Middlewares;
-using TeleFlow.Services;
+using TeleFlow.Abstractions.Sessions;
+using TeleFlow.Pipeline;
+using TeleFlow.Pipeline.Contexts;
 using Telegram.Bot.Types;
 
-namespace TeleFlow.Middlewares;
+namespace TeleFlow.Pipeline.Middlewares;
 
 public class UpdateReceiverMiddleware : IHandlerMiddleware<Update, UpdateContext>
 {

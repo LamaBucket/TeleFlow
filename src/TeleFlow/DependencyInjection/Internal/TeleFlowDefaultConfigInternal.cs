@@ -1,13 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Builders;
-using TeleFlow.Commands.Stateless;
-using TeleFlow.Middlewares;
-using TeleFlow.Middlewares.CommandInterpreters;
-using TeleFlow.Middlewares.CommandInterpreters.MultiStep;
+using TeleFlow.Abstractions.Sessions;
+using TeleFlow.Commands.Configuration;
+using TeleFlow.Commands.Instant;
 using TeleFlow.Pipeline.Configuration;
-using TeleFlow.Services;
+using TeleFlow.Pipeline.Middlewares;
+using TeleFlow.Pipeline.Middlewares.CommandInterpreters;
+using TeleFlow.Pipeline.Middlewares.CommandInterpreters.FlowStep;
 
-namespace TeleFlow.Bootstrap;
+namespace TeleFlow.DependencyInjection.Internal;
 
 internal static class TeleFlowDefaultConfigInternal
 {

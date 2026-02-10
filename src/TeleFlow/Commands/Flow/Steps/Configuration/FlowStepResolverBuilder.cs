@@ -1,11 +1,8 @@
 using TeleFlow.Commands.Flow.Steps.Options;
-using TeleFlow.Commands.Statefull;
-using TeleFlow.Commands.Statefull.StepCommands;
-using TeleFlow.Factories;
-using TeleFlow.Models.MultiStep;
+using TeleFlow.Commands.Flow.Steps.Resolvers;
 using Telegram.Bot.Types;
 
-namespace TeleFlow.Builders;
+namespace TeleFlow.Commands.Flow.Steps.Configuration;
 
 public class FlowStepResolverBuilder
 {

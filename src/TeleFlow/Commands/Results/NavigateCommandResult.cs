@@ -1,6 +1,6 @@
 using System.Collections.ObjectModel;
 
-namespace TeleFlow.Models.CommandResults;
+namespace TeleFlow.Commands.Results;
 
 public class NavigateCommandResult : CommandResult
 {

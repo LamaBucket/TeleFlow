@@ -1,5 +1,3 @@
-using TeleFlow.Models.MultiStep;
-
 namespace TeleFlow.Commands.Flow.Steps.Options;
 
 public class TextInputStepOptions

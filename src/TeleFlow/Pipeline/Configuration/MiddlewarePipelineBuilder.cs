@@ -1,19 +1,10 @@
-using System.Reflection.Metadata.Ecma335;
-using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Builders.Services;
-using TeleFlow.Builders.Services.Registrations.Middlewares;
-using TeleFlow.Builders.Services.Registrations.Transformers;
-using TeleFlow.Commands;
-using TeleFlow.Factories;
-using TeleFlow.Middlewares;
-using TeleFlow.Middlewares.CommandInterpreters;
-using TeleFlow.Models;
-using TeleFlow.Models.CommandResults;
-using TeleFlow.Models.Contexts;
-using TeleFlow.Services;
+using TeleFlow.Pipeline.Configuration.Services;
+using TeleFlow.Pipeline.Configuration.Services.Registrations.Middlewares;
+using TeleFlow.Pipeline.Configuration.Services.Registrations.Transformers;
+using TeleFlow.Pipeline.Contexts;
 using Telegram.Bot.Types;
 
-namespace TeleFlow.Builders;
+namespace TeleFlow.Pipeline.Configuration;
 
 public class MiddlewarePipelineBuilder
 {

@@ -1,6 +1,4 @@
-using TeleFlow.Models.Interactive;
-
-namespace TeleFlow.Services.ViewModels;
+namespace TeleFlow.Abstractions.Interactivity;
 
 public interface IInteractiveStateStore
 {

@@ -1,7 +1,7 @@
-using TeleFlow.Models.CommandResults;
-using TeleFlow.Models.Contexts;
+using TeleFlow.Commands.Results;
+using TeleFlow.Pipeline.Contexts;
 
-namespace TeleFlow.Commands;
+namespace TeleFlow.Commands.Decorators;
 
 internal class NavigateCommandDecorator : ICommandHandler 
 //Command is wrapped in NavigatedCommandWrapper ONLY on navigation, further updates are being handled by the main Middleware.

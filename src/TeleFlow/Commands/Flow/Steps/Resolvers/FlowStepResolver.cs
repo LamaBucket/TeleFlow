@@ -1,7 +1,7 @@
 using TeleFlow.Commands;
-using TeleFlow.Commands.Statefull;
+using TeleFlow.Commands.Flow;
 
-namespace TeleFlow.Factories;
+namespace TeleFlow.Commands.Flow.Steps.Resolvers;
 
 public class FlowStepResolver
 {

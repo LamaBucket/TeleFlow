@@ -1,7 +1,4 @@
-using TeleFlow.Commands;
-using TeleFlow.Models;
-
-namespace TeleFlow.Factories;
+namespace TeleFlow.Commands.Factories;
 
 public class LambdaCommandFactory<T> : ICommandFactory<ICommandHandler, T>
 {

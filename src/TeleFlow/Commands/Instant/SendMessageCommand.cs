@@ -1,8 +1,7 @@
-using TeleFlow.Models.Contexts;
-using TeleFlow.Models.Messaging;
-using TeleFlow.Services.Messaging;
+using TeleFlow.Abstractions.Messaging;
+using TeleFlow.Pipeline.Contexts;
 
-namespace TeleFlow.Commands.Stateless;
+namespace TeleFlow.Commands.Instant;
 
 public class SendMessageCommand : InstantCommand
 {

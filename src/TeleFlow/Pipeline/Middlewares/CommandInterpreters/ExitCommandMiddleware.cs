@@ -1,9 +1,9 @@
-using TeleFlow.Middlewares.CommandInterpreters;
-using TeleFlow.Models.CommandResults;
-using TeleFlow.Models.Contexts;
-using TeleFlow.Services;
+using TeleFlow.Abstractions.Sessions;
+using TeleFlow.Commands.Results;
+using TeleFlow.Pipeline;
+using TeleFlow.Pipeline.Contexts;
 
-namespace TeleFlow;
+namespace TeleFlow.Pipeline.Middlewares.CommandInterpreters;
 
 public class ExitCommandMiddleware : CommandInterpreterBase<ExitCommandResult>
 {
