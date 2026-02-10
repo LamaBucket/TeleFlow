@@ -14,7 +14,7 @@ namespace TeleFlow.Commands.Flow.Steps.Interactive;
 public abstract class InteractiveFlowStepBase<TVM> : IFlowStep
     where TVM : class
 {
-    private readonly InteractiveStepBaseOptions _options;
+    private readonly InteractiveFlowStepBaseOptions _options;
 
     public async Task<FlowStepResult> Handle(UpdateContext args)
     {
@@ -127,7 +127,7 @@ public abstract class InteractiveFlowStepBase<TVM> : IFlowStep
     }
 
 
-    public InteractiveFlowStepBase(InteractiveStepBaseOptions options)
+    public InteractiveFlowStepBase(InteractiveFlowStepBaseOptions options)
     {
         _options = options;
     }

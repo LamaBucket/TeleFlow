@@ -3,8 +3,8 @@ using TeleFlow.Abstractions.Callbacks;
 using TeleFlow.Abstractions.Interactivity;
 using TeleFlow.Abstractions.Sessions;
 using TeleFlow.Commands.Flow.Steps.Interactive.Options;
+using TeleFlow.Commands.Flow.Steps.Interactive.ViewModels;
 using TeleFlow.Presentation.Builders;
-using TeleFlow.Presentation.ViewModels;
 using Telegram.Bot.Types.ReplyMarkups;
 using static TeleFlow.Abstractions.Callbacks.CallbackAction.Step;
 using static TeleFlow.Abstractions.Callbacks.CallbackAction.Ui;
@@ -13,7 +13,7 @@ namespace TeleFlow.Commands.Flow.Steps.Interactive;
 
 public class ListSelectionFlowStep<T> : InteractiveFlowStepBase<ListSelectionStepViewModel<T>>
 {
-    private readonly ListSelectionStepOptions<T> _options;
+    private readonly ListSelectionFlowStepOptions<T> _options;
     
     protected override async Task<ListSelectionStepViewModel<T>> CreateDefaultViewModel(IServiceProvider sp)
     {
@@ -164,7 +164,7 @@ public class ListSelectionFlowStep<T> : InteractiveFlowStepBase<ListSelectionSte
     }
 
 
-    public ListSelectionFlowStep(ListSelectionStepOptions<T> options, InteractiveStepBaseOptions optionsBase) : base(optionsBase)
+    public ListSelectionFlowStep(ListSelectionFlowStepOptions<T> options, InteractiveFlowStepBaseOptions optionsBase) : base(optionsBase)
     {
         _options = options;
     }

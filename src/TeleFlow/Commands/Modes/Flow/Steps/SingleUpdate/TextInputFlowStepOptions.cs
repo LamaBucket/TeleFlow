@@ -1,6 +1,6 @@
 namespace TeleFlow.Commands.Flow.Steps.Options;
 
-public class TextInputStepOptions
+public class TextInputFlowStepOptions
 {
     public required string UserPrompt { get; init; }
 

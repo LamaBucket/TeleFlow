@@ -10,7 +10,7 @@ namespace TeleFlow.Commands.Flow.Steps;
 
 public class TextInputFlowStep : IFlowStep
 {
-    private readonly TextInputStepOptions _options;
+    private readonly TextInputFlowStepOptions _options;
 
     public async Task<FlowStepResult> Handle(UpdateContext args)
     {
@@ -41,7 +41,7 @@ public class TextInputFlowStep : IFlowStep
     }
 
 
-    public TextInputFlowStep(TextInputStepOptions options)
+    public TextInputFlowStep(TextInputFlowStepOptions options)
     {
         _options = options;
     }

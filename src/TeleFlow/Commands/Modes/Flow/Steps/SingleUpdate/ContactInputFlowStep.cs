@@ -11,7 +11,7 @@ namespace TeleFlow.Commands.Flow.Steps;
 
 public class ContactInputFlowStep : IFlowStep
 {
-    private readonly ContactInputStepOptions _options;
+    private readonly ContactInputFlowStepOptions _options;
 
     public async Task<FlowStepResult> Handle(UpdateContext args)
     {
@@ -90,7 +90,7 @@ public class ContactInputFlowStep : IFlowStep
     }
 
 
-    public ContactInputFlowStep(ContactInputStepOptions options)
+    public ContactInputFlowStep(ContactInputFlowStepOptions options)
     {
         _options = options;
     }

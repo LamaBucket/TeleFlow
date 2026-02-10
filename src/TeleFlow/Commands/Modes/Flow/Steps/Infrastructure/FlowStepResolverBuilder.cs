@@ -15,14 +15,14 @@ public class FlowStepResolverBuilder
         return this;
     }
 
-    public FlowStepResolverBuilder AddTextInput(TextInputStepOptions options) 
+    public FlowStepResolverBuilder AddTextInput(TextInputFlowStepOptions options) 
         => Add(() => new TextInputFlowStep(options));
 
     public FlowStepResolverBuilder AddTextInput(string userPrompt, Func<FlowStepCommitContext, string, Task> onUserCommit) 
         => AddTextInput(new() { UserPrompt = userPrompt, OnUserCommit = onUserCommit });
 
 
-    public FlowStepResolverBuilder AddContactInput(ContactInputStepOptions options) 
+    public FlowStepResolverBuilder AddContactInput(ContactInputFlowStepOptions options) 
         => Add(() => new ContactInputFlowStep(options));
 
     public FlowStepResolverBuilder AddContactInput(string userPrompt, Func<FlowStepCommitContext, Contact, Task> onUserCommit) 

@@ -3,7 +3,7 @@ using Telegram.Bot.Types;
 namespace TeleFlow.Commands.Flow.Steps.Options;
 
 
-public class ContactInputStepOptions
+public class ContactInputFlowStepOptions
 {
     public required string UserPrompt { get; init; }
 
