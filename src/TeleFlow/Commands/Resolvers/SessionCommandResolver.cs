@@ -4,7 +4,7 @@ using TeleFlow.Models;
 
 namespace TeleFlow.Factories;
 
-public class SessionCommandRegistry : ICommandFactory<ICommandHandler, ChatSession>
+public class SessionCommandResolver : ICommandFactory<ICommandHandler, ChatSession>
 {
     private readonly ReadOnlyDictionary<string, ICommandFactory<ICommandHandler, ChatSession>> _factories;
 
@@ -18,7 +18,7 @@ public class SessionCommandRegistry : ICommandFactory<ICommandHandler, ChatSessi
         return value.Create(context);
     }
 
-    public SessionCommandRegistry(ReadOnlyDictionary<string, ICommandFactory<ICommandHandler, ChatSession>> factories)
+    public SessionCommandResolver(ReadOnlyDictionary<string, ICommandFactory<ICommandHandler, ChatSession>> factories)
     {
         _factories = factories;
     }

@@ -31,7 +31,7 @@ internal static class TeleFlowDefaultConfigInternal
         options.Interpreters.WithNavigateInterpreter(3);
     }
 
-    internal static void ConfigureCommandsDefault(CommandRegistryBuilder builder)
+    internal static void ConfigureCommandsDefault(CommandResolversBuilder builder)
     {
         builder.AddOrReplace("/start", () => new SendMessageCommand("Welcome to TeleFlow! Create your commands via options.ConfigureCommands(..)"));
     }

@@ -11,7 +11,7 @@ public class FlowCommand : ICommandHandler
 {
     private readonly ChatSessionStepSnapshot _stepState;
 
-    private readonly StepCommandFactory _stepCommandFactory;
+    private readonly FlowStepResolver _stepCommandFactory;
 
     private readonly Func<IServiceProvider, Task<CommandResult>> _onCompleted; 
 
@@ -78,7 +78,7 @@ public class FlowCommand : ICommandHandler
         };
     }
 
-    public FlowCommand(ChatSessionStepSnapshot stepState, StepCommandFactory stepCommandFactory, Func<IServiceProvider, Task<CommandResult>> onCompleted)
+    public FlowCommand(ChatSessionStepSnapshot stepState, FlowStepResolver stepCommandFactory, Func<IServiceProvider, Task<CommandResult>> onCompleted)
     {
         _stepState = stepState;
         _stepCommandFactory = stepCommandFactory;

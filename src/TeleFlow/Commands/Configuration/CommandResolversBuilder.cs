@@ -9,14 +9,14 @@ using Telegram.Bot.Requests;
 
 namespace TeleFlow.Builders;
 
-public class CommandRegistryBuilder
+public class CommandResolversBuilder
 {
     private readonly Dictionary<string, CommandDescriptor> _descriptors;
 
     private bool _built;
 
 
-    public CommandOptionsBuilder AddOrReplace(string name, ICommandFactory<ICommandHandler, ChatSession> factory)
+    public CommandInterceptorsBuilder AddOrReplace(string name, ICommandFactory<ICommandHandler, ChatSession> factory)
     {
         EnsureNotBuilt();
 
@@ -25,7 +25,7 @@ public class CommandRegistryBuilder
         if (!_descriptors.TryAdd(name, descriptor))
             _descriptors[name] = descriptor;
 
-        return new CommandOptionsBuilder(descriptor, EnsureNotBuilt);
+        return new CommandInterceptorsBuilder(descriptor, EnsureNotBuilt);
     }
 
     private void EnsureNotBuilt()
@@ -35,16 +35,16 @@ public class CommandRegistryBuilder
     }
 
 
-    public CommandOptionsBuilder AddOrReplace(string name, Func<ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
+    public CommandInterceptorsBuilder AddOrReplace(string name, Func<ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
 
 
-    public CommandOptionsBuilder AddOrReplace(string name, Func<ChatSession, ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
+    public CommandInterceptorsBuilder AddOrReplace(string name, Func<ChatSession, ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
 
-    public CommandOptionsBuilder AddMultiStep(string name, Action<StepCommandFactoryBuilder> multiStepFactoryConfig, Func<IServiceProvider, Task<CommandResult>>? onCompleted = null)
+    public CommandInterceptorsBuilder AddMultiStep(string name, Action<FlowStepResolverBuilder> multiStepFactoryConfig, Func<IServiceProvider, Task<CommandResult>>? onCompleted = null)
     {
         return AddOrReplace(name, (session) => { 
             var stepSnapshot = session.CreateSnapshot();
-            StepCommandFactoryBuilder builder = new();
+            FlowStepResolverBuilder builder = new();
 
             multiStepFactoryConfig.Invoke(builder);
 
@@ -55,7 +55,7 @@ public class CommandRegistryBuilder
     }
 
 
-    public (SessionCommandRegistry Session, NavigatedCommandRegistry Navigated) Build()
+    public (SessionCommandResolver Session, NavigatedCommandResolver Navigated) Build()
     {
         EnsureNotBuilt();
 
@@ -78,8 +78,8 @@ public class CommandRegistryBuilder
             }
         }
 
-        return (new SessionCommandRegistry(new(sessionFactories)),
-                new NavigatedCommandRegistry(new(navFactories)));
+        return (new SessionCommandResolver(new(sessionFactories)),
+                new NavigatedCommandResolver(new(navFactories)));
     }
 
     private static ICommandFactory<ICommandHandler, ChatSession> CompileSessionFactory(CommandDescriptor descriptor)
@@ -116,7 +116,7 @@ public class CommandRegistryBuilder
         });
     }
 
-    public CommandRegistryBuilder()
+    public CommandResolversBuilder()
     {
         _descriptors = [];
         _built = false;

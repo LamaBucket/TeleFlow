@@ -18,9 +18,9 @@ using Telegram.Bot.Types;
 
 namespace TeleFlow.Bootstrap;
 
-public static class TeleFlowDefaultServicesInternal
+internal static class TeleFlowDefaultServicesInternal
 {
-    public static void ConfigureServices(IServiceCollection services)
+    internal static void ConfigureServices(IServiceCollection services)
     {
         services.TryAddSingleton<IChatSessionStore, InMemoryChatSessionStore>();
 
@@ -62,19 +62,19 @@ public static class TeleFlowDefaultServicesInternal
         });
     }
 
-    public static IServiceCollection TryAddDefaultCallbackEncoder(this IServiceCollection services)
+    internal static IServiceCollection TryAddDefaultCallbackEncoder(this IServiceCollection services)
     {
-        services.TryAddSingleton<ICallbackEncoder, DefaultCallbackEncoder>();
+        services.TryAddSingleton<ICallbackCodec, DefaultCallbackEncoder>();
         return services;
     }
 
-    public static IServiceCollection TryAddInMemoryInteractiveStateStore(this IServiceCollection services)
+    internal static IServiceCollection TryAddInMemoryInteractiveStateStore(this IServiceCollection services)
     {
-        services.TryAddSingleton<IChatInteractiveStateStore, InMemoryChatInteractiveStateStore>();
+        services.TryAddSingleton<IInteractiveStateStore, InMemoryInteractiveStateStore>();
         return services;
     }
 
-    public static void ConfigureMiddlewarePipeline(this IServiceCollection services, Action<MiddlewarePipelineBuilder> options)
+    internal static void ConfigureMiddlewarePipeline(this IServiceCollection services, Action<MiddlewarePipelineBuilder> options)
     {
         services.TryAddSingleton(sp =>
         {
@@ -85,9 +85,9 @@ public static class TeleFlowDefaultServicesInternal
         });
     }
 
-    public static void ConfigureCommandRegistries(this IServiceCollection services, Action<CommandRegistryBuilder> options)
+    internal static void ConfigureCommandRegistries(this IServiceCollection services, Action<CommandResolversBuilder> options)
     {
-        var builder = new CommandRegistryBuilder();
+        var builder = new CommandResolversBuilder();
         options.Invoke(builder);
 
         var (sessionRegistry, navigatedRegistry) = builder.Build();

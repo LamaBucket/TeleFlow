@@ -5,7 +5,7 @@ using TeleFlow.Services.Callbacks;
 
 namespace TeleFlow.Services.Defaults.Callbacks;
 
-public sealed class DefaultCallbackEncoder : ICallbackEncoder
+public sealed class DefaultCallbackEncoder : ICallbackCodec
 {
     private const string Prefix = "tf1";
 

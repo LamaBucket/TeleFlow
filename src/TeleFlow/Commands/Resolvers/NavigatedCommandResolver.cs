@@ -4,7 +4,7 @@ using TeleFlow.Models.CommandResults;
 
 namespace TeleFlow.Factories;
 
-public class NavigatedCommandRegistry : ICommandFactory<ICommandHandler, NavigateCommandResult>
+public class NavigatedCommandResolver : ICommandFactory<ICommandHandler, NavigateCommandResult>
 {
     private readonly ReadOnlyDictionary<string, ICommandFactory<ICommandHandler, NavigateCommandParameters>> _factories;
 
@@ -18,7 +18,7 @@ public class NavigatedCommandRegistry : ICommandFactory<ICommandHandler, Navigat
         return factory.Create(commandArgs);
     }
 
-    public NavigatedCommandRegistry(ReadOnlyDictionary<string, ICommandFactory<ICommandHandler, NavigateCommandParameters>> factories)
+    public NavigatedCommandResolver(ReadOnlyDictionary<string, ICommandFactory<ICommandHandler, NavigateCommandParameters>> factories)
     {
         _factories = factories;
     }

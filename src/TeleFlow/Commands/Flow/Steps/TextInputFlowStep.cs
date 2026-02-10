@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using TeleFlow.Abstractions.Messaging;
+using TeleFlow.Commands.Flow.Steps.Options;
 using TeleFlow.Commands.Statefull;
 using TeleFlow.Models.Contexts;
 using TeleFlow.Models.MultiStep;
@@ -46,15 +47,4 @@ public class TextInputFlowStep : IFlowStep
     {
         _options = options;
     }
-}
-
-public class TextInputStepOptions
-{
-    public required string UserPrompt { get; init; }
-
-    public required Func<FlowStepCommitContext, string, Task> OnUserCommit { get; set; }
-
-    public string NoMessageInputMessage { get; init; } = "This Command accepts only messages";
-
-    public string NoTextProvidedMessage { get; init; } = "This command accepts only text";
 }

@@ -6,8 +6,6 @@ namespace TeleFlow.Commands.Stateless;
 
 public abstract class InstantCommand : ICommandHandler
 {
-    public event Func<Task>? CommandFinished;
-
     public async Task<CommandResult> Handle(UpdateContext update)
     {
         await ExecuteCommand(update);

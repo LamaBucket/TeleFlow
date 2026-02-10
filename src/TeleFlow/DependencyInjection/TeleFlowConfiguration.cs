@@ -10,7 +10,7 @@ public class TeleFlowConfiguration
 
     protected internal Action<MiddlewarePipelineBuilder> MiddlewareConfiguration { get; private set; }
 
-    protected internal Action<CommandRegistryBuilder> CommandRegistryConfiguration { get; private set; }
+    protected internal Action<CommandResolversBuilder> CommandRegistryConfiguration { get; private set; }
 
     public TeleFlowConfiguration ConfigureMiddlewarePipeline(Action<MiddlewarePipelineBuilder> options)
     {
@@ -25,7 +25,7 @@ public class TeleFlowConfiguration
         return this;
     }
 
-    public TeleFlowConfiguration ConfigureCommandRegistry(Action<CommandRegistryBuilder> options)
+    public TeleFlowConfiguration ConfigureCommandRegistry(Action<CommandResolversBuilder> options)
     {
         var current = CommandRegistryConfiguration;
 
@@ -38,7 +38,7 @@ public class TeleFlowConfiguration
         return this;
     }
 
-    private TeleFlowConfiguration(Action<MiddlewarePipelineBuilder> middlewareConfiguration, Action<CommandRegistryBuilder> commandRegistryConfiguration)
+    private TeleFlowConfiguration(Action<MiddlewarePipelineBuilder> middlewareConfiguration, Action<CommandResolversBuilder> commandRegistryConfiguration)
     {
         MiddlewareConfiguration = middlewareConfiguration;
         CommandRegistryConfiguration = commandRegistryConfiguration;

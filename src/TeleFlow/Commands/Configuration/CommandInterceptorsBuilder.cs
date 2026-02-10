@@ -7,21 +7,21 @@ using TeleFlow.Services;
 
 namespace TeleFlow.Builders;
 
-public class CommandOptionsBuilder
+public class CommandInterceptorsBuilder
 {
     private readonly CommandDescriptor _descriptor;
 
     private readonly Action _ensureNotBuilt;
 
 
-    public CommandOptionsBuilder EnableNavigation(Func<NavigateCommandParameters, IServiceProvider, Task>? seed = null)
+    public CommandInterceptorsBuilder EnableNavigation(Func<NavigateCommandParameters, IServiceProvider, Task>? seed = null)
     {
         _ensureNotBuilt();
         _descriptor.EnableNavigation(seed);
         return this;
     }
 
-    public CommandOptionsBuilder AddInterceptor(Func<ICommandInterceptor> interceptorFactory)
+    public CommandInterceptorsBuilder AddInterceptor(Func<ICommandInterceptor> interceptorFactory)
     {
         _ensureNotBuilt();
         _descriptor.AddInterceptor(interceptorFactory);
@@ -29,7 +29,7 @@ public class CommandOptionsBuilder
     }
 
 
-    internal CommandOptionsBuilder(CommandDescriptor descriptor, Action ensureNotBuilt)
+    internal CommandInterceptorsBuilder(CommandDescriptor descriptor, Action ensureNotBuilt)
     {
         _descriptor = descriptor;
         _ensureNotBuilt = ensureNotBuilt;

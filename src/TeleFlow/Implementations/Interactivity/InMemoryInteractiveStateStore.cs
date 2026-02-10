@@ -5,7 +5,7 @@ using TeleFlow.Services.ViewModels;
 
 namespace TeleFlow.Services.Defaults.ViewModels;
 
-public sealed class InMemoryChatInteractiveStateStore : IChatInteractiveStateStore
+public sealed class InMemoryInteractiveStateStore : IInteractiveStateStore
 {
     private sealed class Entry
     {

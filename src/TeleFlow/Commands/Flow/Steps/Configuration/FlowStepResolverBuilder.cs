@@ -1,3 +1,4 @@
+using TeleFlow.Commands.Flow.Steps.Options;
 using TeleFlow.Commands.Statefull;
 using TeleFlow.Commands.Statefull.StepCommands;
 using TeleFlow.Factories;
@@ -6,40 +7,40 @@ using Telegram.Bot.Types;
 
 namespace TeleFlow.Builders;
 
-public class StepCommandFactoryBuilder
+public class FlowStepResolverBuilder
 {
     private readonly List<Func<IFlowStep>> _stepCommandFactories;
 
-    public StepCommandFactoryBuilder Add(Func<IFlowStep> factory, bool prepend = false)
+    public FlowStepResolverBuilder Add(Func<IFlowStep> factory, bool prepend = false)
     {
         _stepCommandFactories.Insert(prepend ? 0 : _stepCommandFactories.Count, factory);
 
         return this;
     }
 
-    public StepCommandFactoryBuilder AddTextInput(TextInputStepOptions options) 
+    public FlowStepResolverBuilder AddTextInput(TextInputStepOptions options) 
         => Add(() => new TextInputFlowStep(options));
 
-    public StepCommandFactoryBuilder AddTextInput(string userPrompt, Func<FlowStepCommitContext, string, Task> onUserCommit) 
+    public FlowStepResolverBuilder AddTextInput(string userPrompt, Func<FlowStepCommitContext, string, Task> onUserCommit) 
         => AddTextInput(new() { UserPrompt = userPrompt, OnUserCommit = onUserCommit });
 
 
-    public StepCommandFactoryBuilder AddContactInput(ContactInputStepOptions options) 
+    public FlowStepResolverBuilder AddContactInput(ContactInputStepOptions options) 
         => Add(() => new ContactInputFlowStep(options));
 
-    public StepCommandFactoryBuilder AddContactInput(string userPrompt, Func<FlowStepCommitContext, Contact, Task> onUserCommit) 
+    public FlowStepResolverBuilder AddContactInput(string userPrompt, Func<FlowStepCommitContext, Contact, Task> onUserCommit) 
         => AddContactInput(new() { UserPrompt = userPrompt, OnUserCommit =  onUserCommit});
 
 
-    public StepCommandFactory Build()
+    public FlowStepResolver Build()
     {
         if(_stepCommandFactories.Count == 0)
             throw new Exception("No Step Commands Provided!");
 
-        return new StepCommandFactory([.. _stepCommandFactories]);
+        return new FlowStepResolver([.. _stepCommandFactories]);
     }
 
-    public StepCommandFactoryBuilder()
+    public FlowStepResolverBuilder()
     {
         _stepCommandFactories = [];
     }

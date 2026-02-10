@@ -2,7 +2,7 @@ using TeleFlow.Models.Callbacks;
 
 namespace TeleFlow.Services.Callbacks;
 
-public interface ICallbackEncoder
+public interface ICallbackCodec
 {
     string EncodeAction(CallbackAction action);
     bool TryDecodeAction(string data, out CallbackAction action);

@@ -2,7 +2,7 @@ using TeleFlow.Models.Interactive;
 
 namespace TeleFlow.Services.ViewModels;
 
-public interface IChatInteractiveStateStore
+public interface IInteractiveStateStore
 {
     Task SetState<TVm>(long chatId, InteractiveState<TVm> state) where TVm : class;
 

@@ -3,6 +3,7 @@ using TeleFlow.Services;
 
 namespace TeleFlow.Models.MultiStep;
 
+//This context is provided in OnCommit() Funcs for user's convenience
 public class FlowStepCommitContext
 {
     public long ChatId { get; init; }

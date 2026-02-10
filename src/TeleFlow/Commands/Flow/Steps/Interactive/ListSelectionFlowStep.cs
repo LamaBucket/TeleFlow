@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using TeleFlow.Builders.Keyboards;
+using TeleFlow.Commands.Flow.Steps.Interactive.Options;
 using TeleFlow.Models.Callbacks;
 using TeleFlow.Models.Interactive;
 using TeleFlow.Models.MultiStep;
@@ -22,7 +23,7 @@ public class ListSelectionFlowStep<T> : InteractiveFlowStepBase<ListSelectionSte
         return new(values);
     }
 
-    protected override InlineKeyboardMarkup RenderMarkup(ICallbackEncoder markupEncoder, ListSelectionStepViewModel<T> vm)
+    protected override InlineKeyboardMarkup RenderMarkup(ICallbackCodec markupEncoder, ListSelectionStepViewModel<T> vm)
     {
         IReadOnlyList<int> SelectedIndexes = vm.SelectedIndexes;
 
@@ -168,28 +169,5 @@ public class ListSelectionFlowStep<T> : InteractiveFlowStepBase<ListSelectionSte
     public ListSelectionFlowStep(ListSelectionStepOptions<T> options, InteractiveStepBaseOptions optionsBase) : base(optionsBase)
     {
         _options = options;
-    }
-}
-
-public sealed class ListSelectionStepOptions<T>
-{
-    public required Func<IServiceProvider, Task<IReadOnlyList<T>>> ValueProvider { get; init; }
-    public required Func<T, string> DisplayNameParser { get; init; }
-    public required ListSelectionMode<T> Mode { get; init; }
-
-    public int MaxItemsInRow { get; init; } = 2;
-    public int MaxRowsInPage { get; init; } = 5;
-}
-
-public abstract class ListSelectionMode<T>
-{
-    public sealed class Single : ListSelectionMode<T>
-    {
-        public required Func<FlowStepCommitContext, T, Task> OnCommit { get; init; }
-    }
-
-    public sealed class Multi : ListSelectionMode<T>
-    {
-        public required Func<FlowStepCommitContext, IReadOnlyList<T>, Task> OnCommit { get; init; }
     }
 }

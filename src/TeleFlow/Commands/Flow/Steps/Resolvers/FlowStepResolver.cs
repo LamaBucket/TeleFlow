@@ -3,7 +3,7 @@ using TeleFlow.Commands.Statefull;
 
 namespace TeleFlow.Factories;
 
-public class StepCommandFactory
+public class FlowStepResolver
 {
     public int StepCount => _stepFactories.Length;
 
@@ -22,7 +22,7 @@ public class StepCommandFactory
         return stepFactory.Invoke();
     }
 
-    public StepCommandFactory(Func<IFlowStep>[] stepFactories)
+    public FlowStepResolver(Func<IFlowStep>[] stepFactories)
     {
         _stepFactories = stepFactories;
     }
