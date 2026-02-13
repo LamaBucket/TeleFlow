@@ -2,7 +2,7 @@ using TeleFlow.Abstractions.Engine.ChatIdentity;
 using TeleFlow.Abstractions.Engine.Commands.Results.Stateful;
 using TeleFlow.Abstractions.Engine.Pipeline;
 using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
-using TeleFlow.Abstractions.State.ChatSession;
+using TeleFlow.Abstractions.State.Chat;
 using TeleFlow.Abstractions.Transport.Messaging;
 using TeleFlow.Core.Pipeline.CommandInterpreters;
 

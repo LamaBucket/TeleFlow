@@ -1,5 +1,5 @@
 using TeleFlow.Abstractions.Engine.Commands.Results;
-using TeleFlow.Abstractions.State.ChatSession;
+using TeleFlow.Abstractions.State.Chat;
 
 namespace TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 

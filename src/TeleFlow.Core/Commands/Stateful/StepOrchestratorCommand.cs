@@ -3,7 +3,7 @@ using TeleFlow.Abstractions.Engine.Commands.Results;
 using TeleFlow.Abstractions.Engine.Commands.Results.Stateful;
 using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
-using static TeleFlow.Abstractions.State.ChatSession.ChatSession;
+using static TeleFlow.Abstractions.State.Chat.ChatSession;
 
 namespace TeleFlow.Core.Commands.Stateful;
 

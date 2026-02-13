@@ -1,4 +1,4 @@
-namespace TeleFlow.Abstractions.State.ChatSession;
+namespace TeleFlow.Abstractions.State.Chat;
 
 public interface IChatSessionStore
 {

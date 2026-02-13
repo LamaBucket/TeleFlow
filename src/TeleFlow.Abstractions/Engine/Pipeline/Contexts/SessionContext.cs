@@ -1,4 +1,4 @@
-using TeleFlow.Abstractions.State.ChatSession;
+using TeleFlow.Abstractions.State.Chat;
 using Telegram.Bot.Types;
 
 namespace TeleFlow.Abstractions.Engine.Pipeline.Contexts;

@@ -1,7 +1,7 @@
 using TeleFlow.Abstractions.Engine.ChatIdentity;
 using TeleFlow.Abstractions.Engine.Pipeline;
 using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
-using TeleFlow.Abstractions.State.ChatSession;
+using TeleFlow.Abstractions.State.Chat;
 
 namespace TeleFlow.Core.Pipeline.CommandInterpreters;
 
