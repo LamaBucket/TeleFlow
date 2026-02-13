@@ -1,12 +1,12 @@
-using Microsoft.AspNetCore.Session;
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Commands;
+using TeleFlow.Abstractions.Engine.ChatIdentity;
+using TeleFlow.Abstractions.Engine.Commands;
+using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Abstractions.Engine.Pipeline;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
+using TeleFlow.Abstractions.State.ChatSession;
 using TeleFlow.Commands.Factories;
-using TeleFlow.Commands.Results;
-using TeleFlow.Pipeline;
-using TeleFlow.Pipeline.Contexts;
 
-namespace TeleFlow.Pipeline.Middlewares.CommandInterpreters;
+namespace TeleFlow.Core.Pipeline.CommandInterpreters;
 
 public class NavigateCommandMiddleware : CommandInterpreterBase<NavigateCommandResult>
 {

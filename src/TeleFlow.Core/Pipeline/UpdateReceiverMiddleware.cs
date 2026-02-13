@@ -1,10 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Pipeline;
-using TeleFlow.Pipeline.Contexts;
+using TeleFlow.Abstractions.Engine.ChatIdentity;
+using TeleFlow.Abstractions.Engine.Pipeline;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
-namespace TeleFlow.Pipeline.Middlewares;
+namespace TeleFlow.Core.Pipeline;
 
 public class UpdateReceiverMiddleware : IHandlerMiddleware<Update, UpdateContext>
 {
@@ -27,7 +28,17 @@ public class UpdateReceiverMiddleware : IHandlerMiddleware<Update, UpdateContext
 
     protected virtual long GetChatId(Update args)
     {
-        return args.GetChatId();
+        return GetChatIdDefault(args);
+    }
+
+    private static long GetChatIdDefault(Update update)
+    {
+        return update.Type switch
+        {
+            UpdateType.Message => update.Message?.Chat.Id ?? throw new NullReferenceException("Unable To Retrieve Chat Id From Message"),
+            UpdateType.CallbackQuery => update.CallbackQuery?.Message?.Chat.Id ?? throw new NullReferenceException("Unable To Retrieve Chat Id From CallbackQuery"),
+            _ => throw new InvalidOperationException("This MessageType is not supported"),
+        };
     }
 
     private IServiceScope CreateScope(long chatId)

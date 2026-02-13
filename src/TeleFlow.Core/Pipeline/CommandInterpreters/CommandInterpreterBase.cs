@@ -1,8 +1,8 @@
-using TeleFlow.Commands.Results;
-using TeleFlow.Pipeline;
-using TeleFlow.Pipeline.Contexts;
+using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Abstractions.Engine.Pipeline;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 
-namespace TeleFlow.Pipeline.Middlewares.CommandInterpreters;
+namespace TeleFlow.Core.Pipeline.CommandInterpreters;
 
 public abstract class CommandInterpreterBase<TCommandResult> : IHandlerMiddleware<CommandResultContext> where TCommandResult : CommandResult
 {

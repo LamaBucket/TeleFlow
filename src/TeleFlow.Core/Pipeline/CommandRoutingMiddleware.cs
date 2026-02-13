@@ -1,9 +1,11 @@
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Pipeline;
-using TeleFlow.Pipeline.Contexts;
+using TeleFlow.Abstractions.Engine.ChatIdentity;
+using TeleFlow.Abstractions.Engine.Pipeline;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
+using TeleFlow.Abstractions.State.ChatSession;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
-namespace TeleFlow.Pipeline.Middlewares;
+namespace TeleFlow.Core.Pipeline;
 
 public class CommandRoutingMiddleware : IHandlerMiddleware<UpdateContext, SessionContext>
 {
@@ -32,7 +34,17 @@ public class CommandRoutingMiddleware : IHandlerMiddleware<UpdateContext, Sessio
 
     protected virtual string GetCommandName(Update args)
     {
-        return args.GetCommandName() ?? throw new Exception("Command name could not be determined");
+        return GetCommandNameDefault(args) ?? throw new Exception("Command name could not be determined");
+    }
+
+    private static string? GetCommandNameDefault(Update args)
+    {
+        switch(args.Type)
+        {
+            case UpdateType.Message:
+                return args.Message?.Text;
+        }
+        throw new InvalidOperationException("Unknown update type");
     }
 
 

@@ -1,7 +1,9 @@
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Pipeline.Contexts;
+using TeleFlow.Abstractions.Engine.ChatIdentity;
+using TeleFlow.Abstractions.Engine.Pipeline;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
+using TeleFlow.Abstractions.State.ChatSession;
 
-namespace TeleFlow.Pipeline.Middlewares.CommandInterpreters;
+namespace TeleFlow.Core.Pipeline.CommandInterpreters;
 
 public class DefaultCommandInterpreter : IHandler<CommandResultContext>
 {

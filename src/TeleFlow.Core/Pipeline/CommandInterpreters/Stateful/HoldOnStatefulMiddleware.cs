@@ -1,19 +1,20 @@
-using TeleFlow.Abstractions.Messaging;
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Commands.Results.MultiStep;
-using TeleFlow.Pipeline;
-using TeleFlow.Pipeline.Contexts;
-using TeleFlow.Pipeline.Middlewares.CommandInterpreters;
+using TeleFlow.Abstractions.Engine.ChatIdentity;
+using TeleFlow.Abstractions.Engine.Commands.Results.Stateful;
+using TeleFlow.Abstractions.Engine.Pipeline;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
+using TeleFlow.Abstractions.State.ChatSession;
+using TeleFlow.Abstractions.Transport.Messaging;
+using TeleFlow.Core.Pipeline.CommandInterpreters;
 
-namespace TeleFlow.Pipeline.Middlewares.CommandInterpreters.FlowStep;
+namespace TeleFlow.Core.Pipeline.CommandInterpreters.Stateful;
 
-public class HoldOnMultiStepMiddleware : CommandInterpreterBase<HoldOnMultiStepResult>
+public class HoldOnStatefulMiddleware : CommandInterpreterBase<HoldOnStatefulResult>
 {
     private readonly IChatSessionStore _sessionStore;
 
     protected override bool ContinueAfterMatch => false;
 
-    protected override async Task Handle(CommandResultContext<HoldOnMultiStepResult> args)
+    protected override async Task Handle(CommandResultContext<HoldOnStatefulResult> args)
     {
         var holdOnReason = args.CommandResult.Reason;
 
@@ -34,7 +35,7 @@ public class HoldOnMultiStepMiddleware : CommandInterpreterBase<HoldOnMultiStepR
 
     }
 
-    public HoldOnMultiStepMiddleware(IHandler<CommandResultContext> next, IChatSessionStore sessionStore) : base(next)
+    public HoldOnStatefulMiddleware(IHandler<CommandResultContext> next, IChatSessionStore sessionStore) : base(next)
     {
         _sessionStore = sessionStore;
     }

@@ -1,9 +1,10 @@
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Commands.Results;
-using TeleFlow.Pipeline;
-using TeleFlow.Pipeline.Contexts;
+using TeleFlow.Abstractions.Engine.ChatIdentity;
+using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Abstractions.Engine.Pipeline;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
+using TeleFlow.Abstractions.State.ChatSession;
 
-namespace TeleFlow.Pipeline.Middlewares.CommandInterpreters;
+namespace TeleFlow.Core.Pipeline.CommandInterpreters;
 
 public class ExitCommandMiddleware : CommandInterpreterBase<ExitCommandResult>
 {

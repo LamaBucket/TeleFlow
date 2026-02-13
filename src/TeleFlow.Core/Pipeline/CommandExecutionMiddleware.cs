@@ -1,10 +1,10 @@
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Commands;
+using TeleFlow.Abstractions.Engine.Commands;
+using TeleFlow.Abstractions.Engine.Pipeline;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
+using TeleFlow.Abstractions.State.ChatSession;
 using TeleFlow.Commands.Factories;
-using TeleFlow.Pipeline;
-using TeleFlow.Pipeline.Contexts;
 
-namespace TeleFlow.Pipeline.Middlewares;
+namespace TeleFlow.Core.Pipeline;
 
 public class CommandExecutionMiddleware : IHandlerMiddleware<SessionContext, CommandResultContext>
 {
