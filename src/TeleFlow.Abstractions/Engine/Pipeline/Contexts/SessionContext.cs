@@ -1,7 +1,7 @@
-using TeleFlow.Abstractions.Sessions;
+using TeleFlow.Abstractions.State.ChatSession;
 using Telegram.Bot.Types;
 
-namespace TeleFlow.Pipeline.Contexts;
+namespace TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 
 public class SessionContext : UpdateContext
 {

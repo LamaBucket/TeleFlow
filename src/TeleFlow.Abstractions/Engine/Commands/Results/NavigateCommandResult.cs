@@ -1,6 +1,4 @@
-using System.Collections.ObjectModel;
-
-namespace TeleFlow.Commands.Results;
+namespace TeleFlow.Abstractions.Engine.Commands.Results;
 
 public class NavigateCommandResult : CommandResult
 {

@@ -1,4 +1,4 @@
-namespace TeleFlow.Abstractions.Sessions;
+namespace TeleFlow.Abstractions.State.ChatSession;
 
 public sealed class ChatSession
 {

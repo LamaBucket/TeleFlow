@@ -1,13 +1,13 @@
-namespace TeleFlow.Abstractions.Interactivity;
+namespace TeleFlow.Abstractions.State.Step;
 
-public sealed class InteractiveState<TVm> where TVm : class
+public sealed class StepState<TVm> where TVm : class
 {
     public int MessageId { get; init; }
     
     public TVm ViewModel { get; init; }
 
 
-    public InteractiveState(int messageId, TVm viewModel)
+    public StepState(int messageId, TVm viewModel)
     {
         MessageId = messageId;
         ViewModel = viewModel;

@@ -1,7 +1,7 @@
-using TeleFlow.Commands.Results;
-using TeleFlow.Pipeline.Contexts;
+using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 
-namespace TeleFlow.Commands.Interceptors;
+namespace TeleFlow.Abstractions.Engine.Commands.Interceptors;
 
 public interface ICommandInterceptor
 {

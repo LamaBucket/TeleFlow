@@ -1,8 +1,8 @@
-using TeleFlow.Commands.Results;
-using TeleFlow.Pipeline.Contexts;
+using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using Telegram.Bot.Types;
 
-namespace TeleFlow.Commands;
+namespace TeleFlow.Abstractions.Engine.Commands;
 
 public interface ICommandHandler
 {

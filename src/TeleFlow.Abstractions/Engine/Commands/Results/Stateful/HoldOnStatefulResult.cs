@@ -1,17 +1,15 @@
-using TeleFlow.Commands.Results;
+namespace TeleFlow.Abstractions.Engine.Commands.Results.Stateful;
 
-namespace TeleFlow.Commands.Results.MultiStep;
-
-public class HoldOnMultiStepResult : CommandResult
+public class HoldOnStatefulResult : CommandResult
 {
     public HoldOnReason Reason { get; init; }
 
     public string? HoldOnMessage { get; init; }
 
 
-    public static HoldOnMultiStepResult Initialize => new();
+    public static HoldOnStatefulResult Initialize => new();
 
-    public HoldOnMultiStepResult(HoldOnReason reason, string? holdOnMessage)
+    public HoldOnStatefulResult(HoldOnReason reason, string? holdOnMessage)
     {
         if(reason == HoldOnReason.Initialize)
             throw new Exception("Use the Initialize static property to create an initialize hold on result.");
@@ -20,7 +18,7 @@ public class HoldOnMultiStepResult : CommandResult
         HoldOnMessage = holdOnMessage;
     }
 
-    private HoldOnMultiStepResult()
+    private HoldOnStatefulResult()
     {
         Reason = HoldOnReason.Initialize;
     }

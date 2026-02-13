@@ -1,7 +1,7 @@
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Commands.Results;
+using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Abstractions.State.ChatSession;
 
-namespace TeleFlow.Pipeline.Contexts;
+namespace TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 
 public class CommandResultContext<TCommandResult> : SessionContext where TCommandResult : CommandResult
 {

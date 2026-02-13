@@ -1,4 +1,4 @@
-namespace TeleFlow.Pipeline;
+namespace TeleFlow.Abstractions.Engine.Pipeline;
 
 public interface IHandlerMiddleware<T, TNext> : IHandler<T>
 {
