@@ -6,6 +6,7 @@ using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Abstractions.Transport.Callbacks;
 using TeleFlow.Abstractions.Transport.Messaging;
+using TeleFlow.Core.Transport.Callbacks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -26,8 +27,13 @@ public abstract class CallbackCommandStepBase<TVM> : ICommandStep
 
         var sp = args.ServiceProvider;
 
+
         var encoder = sp.GetRequiredService<ICallbackCodec>();
-        if (!encoder.TryDecodeAction(data, out CallbackAction action))
+        if (!encoder.TryDecodeAction(data, out CallbackToken token))
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.UnknownCallbackQueryActionMessage);
+        
+        var actionParser = sp.GetRequiredService<ICallbackActionParser>();
+        if(!actionParser.TryParse(token, out CallbackAction action))
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.UnknownCallbackQueryActionMessage);
 
 
@@ -46,13 +52,14 @@ public abstract class CallbackCommandStepBase<TVM> : ICommandStep
     {
         var vm = await CreateDefaultViewModel(sp);
 
+        var actionParser = sp.GetRequiredService<ICallbackActionParser>();
         var markupEncoder = sp.GetRequiredService<ICallbackCodec>();
         var messageService = sp.GetRequiredService<IMessageSender>();
         
         var sent = await messageService.SendMessage(new OutgoingMessage
         {
             Text = _options.UserPrompt,
-            ReplyMarkup = RenderMarkup(markupEncoder, vm)
+            ReplyMarkup = RenderMarkup(actionParser, markupEncoder, vm)
         });
 
         var state = new StepState<TVM>(sent.MessageId, vm);
@@ -62,19 +69,20 @@ public abstract class CallbackCommandStepBase<TVM> : ICommandStep
     
     protected abstract Task<TVM> CreateDefaultViewModel(IServiceProvider sp);
 
-    protected abstract InlineKeyboardMarkup RenderMarkup(ICallbackCodec markupEncoder, TVM vm);
+    protected abstract InlineKeyboardMarkup RenderMarkup(ICallbackActionParser actionParser, ICallbackCodec markupEncoder, TVM vm);
 
-    protected abstract Task<CommandStepResult> HandleAction(IServiceProvider sp, StepState<TVM> state, CallbackAction action);
+    protected abstract Task<CommandStepResult> HandleAction(IServiceProvider sp, StepState<TVM> state, CallbackAction token);
 
 
     protected async Task UpsertAndRerender(IServiceProvider sp, StepState<TVM> state)
     {
         await UpsertState(sp, state);
 
+        var actionParser = sp.GetRequiredService<ICallbackActionParser>();
         var markupEncoder = sp.GetRequiredService<ICallbackCodec>();
         var messageService = sp.GetRequiredService<IMessageEditor>();
 
-        var markup = RenderMarkup(markupEncoder, state.ViewModel);
+        var markup = RenderMarkup(actionParser, markupEncoder, state.ViewModel);
         await messageService.EditInlineKeyboard(state.MessageId, markup);
     }
 

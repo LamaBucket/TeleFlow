@@ -4,8 +4,11 @@ using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Abstractions.Transport.Callbacks;
 using TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase;
+using TeleFlow.Core.Transport.Callbacks;
 using TeleFlow.Core.Transport.Markup;
 using Telegram.Bot.Types.ReplyMarkups;
+using static TeleFlow.Core.Transport.Callbacks.CallbackAction.Step;
+using static TeleFlow.Core.Transport.Callbacks.CallbackAction.Ui;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.ListSelection;
 
@@ -19,7 +22,7 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
         return new(values);
     }
 
-    protected override InlineKeyboardMarkup RenderMarkup(ICallbackCodec markupEncoder, ListSelectionCommandStepViewModel<T> vm)
+    protected override InlineKeyboardMarkup RenderMarkup(ICallbackActionParser actionParser, ICallbackCodec markupEncoder, ListSelectionCommandStepViewModel<T> vm)
     {
         IReadOnlyList<int> SelectedIndexes = vm.SelectedIndexes;
 
@@ -53,7 +56,8 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
                         text = '*' + text + '*';
                 }
 
-                string data = markupEncoder.EncodeAction(new ToggleIndex(idx));
+                CallbackToken token = actionParser.Parse(new ToggleIndex(idx));
+                string data = markupEncoder.EncodeAction(token);
 
                 b.ButtonCallback(text, data);
             }
@@ -67,40 +71,28 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
         if (hasPrev || hasNext)
         {
             if (hasPrev)
-                b.ButtonCallback("<-", markupEncoder.EncodeAction(new PrevPage()));
+                b.ButtonCallback("<-", markupEncoder.EncodeAction(actionParser.Parse(new PrevPage())));
             if (hasNext)
-                b.ButtonCallback("->", markupEncoder.EncodeAction(new NextPage()));
+                b.ButtonCallback("->", markupEncoder.EncodeAction(actionParser.Parse(new NextPage())));
             b.NewRow();
         }
 
         if(_options.Mode is ListSelectionMode<T>.Multi)
-            b.ButtonCallback("Done", markupEncoder.EncodeAction(new Finish()));
+            b.ButtonCallback("Done", markupEncoder.EncodeAction(actionParser.Parse(new Finish())));
 
         return b.Build();
     }
 
     protected override async Task<CommandStepResult> HandleAction(IServiceProvider sp, StepState<ListSelectionCommandStepViewModel<T>> state, CallbackAction action)
     {
-        var chatId = sp.GetRequiredService<IChatIdProvider>().GetChatId();
-        var vm = state.ViewModel;
-
-        switch (action)
+        return action switch
         {
-            case ToggleIndex toggle:
-                return await HandleToggleAsync(sp, state, toggle.Index);
-
-            case NextPage:
-                return await HandleNextPageAsync(sp, state);
-
-            case PrevPage:
-                return await HandlePrevPageAsync(sp, state);
-
-            case Finish:
-                return await HandleFinishAsync(sp, state);
-
-            default:
-                return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, "Unsupported action.");
-        }
+            ToggleIndex toggle => await HandleToggleAsync(sp, state, toggle.Index),
+            NextPage => await HandleNextPageAsync(sp, state),
+            PrevPage => await HandlePrevPageAsync(sp, state),
+            Finish => await HandleFinishAsync(sp, state),
+            _ => CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, "Unsupported action."),
+        };
     }
 
     private async Task<CommandStepResult> HandleToggleAsync(IServiceProvider sp, StepState<ListSelectionCommandStepViewModel<T>> state, int index)
