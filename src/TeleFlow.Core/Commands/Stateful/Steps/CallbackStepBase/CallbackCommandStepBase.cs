@@ -1,25 +1,26 @@
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Abstractions.Callbacks;
-using TeleFlow.Abstractions.Interactivity;
-using TeleFlow.Abstractions.Messaging;
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Commands.Flow.Steps.Interactive.Options;
-using TeleFlow.Pipeline.Contexts;
+using TeleFlow.Abstractions.Engine.ChatIdentity;
+using TeleFlow.Abstractions.Engine.Commands.Stateful;
+using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
+using TeleFlow.Abstractions.State.Step;
+using TeleFlow.Abstractions.Transport.Callbacks;
+using TeleFlow.Abstractions.Transport.Messaging;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TeleFlow.Commands.Flow.Steps.Interactive;
+namespace TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase;
 
-public abstract class InteractiveFlowStepBase<TVM> : IFlowStep
+public abstract class CallbackCommandStepBase<TVM> : ICommandStep
     where TVM : class
 {
-    private readonly InteractiveFlowStepBaseOptions _options;
+    private readonly CallbackCommandStepBaseOptions _options;
 
-    public async Task<FlowStepResult> Handle(UpdateContext args)
+    public async Task<CommandStepResult> Handle(UpdateContext args)
     {
         if(args.Update.Type != UpdateType.CallbackQuery || args.Update.CallbackQuery is null)
-            return FlowStepResult.HoldOn(FlowStepHoldOnReason.InvalidInput, _options.NoCallbackQueryMessage);
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.NoCallbackQueryMessage);
 
         var (data, callbackMessageId) = ParseCallbackQuery(args.Update.CallbackQuery);
 
@@ -27,15 +28,15 @@ public abstract class InteractiveFlowStepBase<TVM> : IFlowStep
 
         var encoder = sp.GetRequiredService<ICallbackCodec>();
         if (!encoder.TryDecodeAction(data, out CallbackAction action))
-            return FlowStepResult.HoldOn(FlowStepHoldOnReason.InvalidInput, _options.UnknownCallbackQueryActionMessage);
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.UnknownCallbackQueryActionMessage);
 
 
         var state = await LoadStateOrNull(sp);
         if (state is null)
-            return FlowStepResult.HoldOn(FlowStepHoldOnReason.InvalidInput, _options.CallbackQueryExpiredMessage);
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.CallbackQueryExpiredMessage);
 
         if (callbackMessageId != state.MessageId)
-            return FlowStepResult.HoldOn(FlowStepHoldOnReason.InvalidInput, _options.CallbackQueryExpiredMessage);
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.CallbackQueryExpiredMessage);
 
 
         return await HandleAction(sp, state, action);
@@ -54,7 +55,7 @@ public abstract class InteractiveFlowStepBase<TVM> : IFlowStep
             ReplyMarkup = RenderMarkup(markupEncoder, vm)
         });
 
-        var state = new InteractiveState<TVM>(sent.MessageId, vm);
+        var state = new StepState<TVM>(sent.MessageId, vm);
         await UpsertState(sp, state);
     }
 
@@ -63,10 +64,10 @@ public abstract class InteractiveFlowStepBase<TVM> : IFlowStep
 
     protected abstract InlineKeyboardMarkup RenderMarkup(ICallbackCodec markupEncoder, TVM vm);
 
-    protected abstract Task<FlowStepResult> HandleAction(IServiceProvider sp, InteractiveState<TVM> state, CallbackAction action);
+    protected abstract Task<CommandStepResult> HandleAction(IServiceProvider sp, StepState<TVM> state, CallbackAction action);
 
 
-    protected async Task UpsertAndRerender(IServiceProvider sp, InteractiveState<TVM> state)
+    protected async Task UpsertAndRerender(IServiceProvider sp, StepState<TVM> state)
     {
         await UpsertState(sp, state);
 
@@ -91,18 +92,18 @@ public abstract class InteractiveFlowStepBase<TVM> : IFlowStep
     }
 
 
-    private static async Task<InteractiveState<TVM>?> LoadStateOrNull(IServiceProvider sp)
+    private static async Task<StepState<TVM>?> LoadStateOrNull(IServiceProvider sp)
     {
         var chatId = sp.GetRequiredService<IChatIdProvider>().GetChatId();
-        var store = sp.GetRequiredService<IInteractiveStateStore>();
+        var store = sp.GetRequiredService<IStepStateStore>();
 
         return await store.GetState<TVM>(chatId);
     }
 
-    private static async Task UpsertState(IServiceProvider sp, InteractiveState<TVM> state)
+    private static async Task UpsertState(IServiceProvider sp, StepState<TVM> state)
     {
         var chatId = sp.GetRequiredService<IChatIdProvider>().GetChatId();
-        var store = sp.GetRequiredService<IInteractiveStateStore>();
+        var store = sp.GetRequiredService<IStepStateStore>();
 
         await store.SetState(chatId, state);
     }
@@ -110,7 +111,7 @@ public abstract class InteractiveFlowStepBase<TVM> : IFlowStep
     private static async Task RemoveState(IServiceProvider sp)
     {
         var chatId = sp.GetRequiredService<IChatIdProvider>().GetChatId();
-        var store = sp.GetRequiredService<IInteractiveStateStore>();
+        var store = sp.GetRequiredService<IStepStateStore>();
 
         await store.RemoveState(chatId);
     }
@@ -127,7 +128,7 @@ public abstract class InteractiveFlowStepBase<TVM> : IFlowStep
     }
 
 
-    public InteractiveFlowStepBase(InteractiveFlowStepBaseOptions options)
+    public CallbackCommandStepBase(CallbackCommandStepBaseOptions options)
     {
         _options = options;
     }

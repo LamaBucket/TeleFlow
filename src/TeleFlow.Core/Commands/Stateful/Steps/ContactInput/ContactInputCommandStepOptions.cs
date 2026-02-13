@@ -1,13 +1,13 @@
 using Telegram.Bot.Types;
 
-namespace TeleFlow.Commands.Flow.Steps.Options;
+namespace TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
 
 
-public class ContactInputFlowStepOptions
+public class ContactInputCommandStepOptions
 {
     public required string UserPrompt { get; init; }
 
-    public required Func<FlowStepCommitContext, Contact, Task> OnUserCommit { get; init; }
+    public required Func<CommandStepCommitContext, Contact, Task> OnUserCommit { get; init; }
 
 
     public string? ShareContactButtonText { get; init; } = null;

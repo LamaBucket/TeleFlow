@@ -1,6 +1,6 @@
-namespace TeleFlow.Commands.Flow.Steps.Interactive.Options;
+namespace TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase;
 
-public class InteractiveFlowStepBaseOptions
+public class CallbackCommandStepBaseOptions
 {
     public required string UserPrompt { get; init; }
 

@@ -1,15 +1,14 @@
-using TeleFlow.Commands;
-using TeleFlow.Commands.Flow;
+using TeleFlow.Abstractions.Engine.Commands.Stateful;
 
-namespace TeleFlow.Commands.Flow.Steps.Resolvers;
+namespace TeleFlow.Core.Commands.Stateful;
 
-public class FlowStepResolver
+public class CommandStepRouter
 {
     public int StepCount => _stepFactories.Length;
 
-    private readonly Func<IFlowStep>[] _stepFactories;
+    private readonly Func<ICommandStep>[] _stepFactories;
 
-    public IFlowStep Create(int context)
+    public ICommandStep Create(int context)
     {
         if(context < 0)
             throw new Exception("Step Number Cannot be less than 0!");
@@ -22,7 +21,7 @@ public class FlowStepResolver
         return stepFactory.Invoke();
     }
 
-    public FlowStepResolver(Func<IFlowStep>[] stepFactories)
+    public CommandStepRouter(Func<ICommandStep>[] stepFactories)
     {
         _stepFactories = stepFactories;
     }

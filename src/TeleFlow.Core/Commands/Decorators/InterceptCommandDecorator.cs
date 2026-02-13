@@ -1,8 +1,9 @@
-using TeleFlow.Commands.Interceptors;
-using TeleFlow.Commands.Results;
-using TeleFlow.Pipeline.Contexts;
+using TeleFlow.Abstractions.Engine.Commands;
+using TeleFlow.Abstractions.Engine.Commands.Interceptors;
+using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 
-namespace TeleFlow.Commands.Decorators;
+namespace TeleFlow.Core.Commands.Decorators;
 
 public class InterceptCommandDecorator : ICommandHandler
 {

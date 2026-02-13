@@ -4,7 +4,7 @@ using TeleFlow.Abstractions.Engine.Commands.Results;
 using TeleFlow.Abstractions.Engine.Pipeline;
 using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using TeleFlow.Abstractions.State.ChatSession;
-using TeleFlow.Commands.Factories;
+using TeleFlow.Core.Commands.Factories;
 
 namespace TeleFlow.Core.Pipeline.CommandInterpreters;
 

@@ -1,25 +1,25 @@
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Abstractions.Callbacks;
-using TeleFlow.Abstractions.Interactivity;
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Commands.Flow.Steps.Interactive.Options;
-using TeleFlow.Commands.Flow.Steps.Interactive.ViewModels;
-using TeleFlow.Presentation.Builders;
+using TeleFlow.Abstractions.Engine.ChatIdentity;
+using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
+using TeleFlow.Abstractions.State.Step;
+using TeleFlow.Abstractions.Transport.Callbacks;
+using TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase;
+using TeleFlow.Core.Transport.Markup;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TeleFlow.Commands.Flow.Steps.Interactive;
+namespace TeleFlow.Core.Commands.Stateful.Steps.ListSelection;
 
-public class ListSelectionFlowStep<T> : InteractiveFlowStepBase<ListSelectionStepViewModel<T>>
+public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelectionCommandStepViewModel<T>>
 {
-    private readonly ListSelectionFlowStepOptions<T> _options;
+    private readonly ListSelectionCommandStepOptions<T> _options;
     
-    protected override async Task<ListSelectionStepViewModel<T>> CreateDefaultViewModel(IServiceProvider sp)
+    protected override async Task<ListSelectionCommandStepViewModel<T>> CreateDefaultViewModel(IServiceProvider sp)
     {
         var values = await _options.ValueProvider.Invoke(sp);
         return new(values);
     }
 
-    protected override InlineKeyboardMarkup RenderMarkup(ICallbackCodec markupEncoder, ListSelectionStepViewModel<T> vm)
+    protected override InlineKeyboardMarkup RenderMarkup(ICallbackCodec markupEncoder, ListSelectionCommandStepViewModel<T> vm)
     {
         IReadOnlyList<int> SelectedIndexes = vm.SelectedIndexes;
 
@@ -79,7 +79,7 @@ public class ListSelectionFlowStep<T> : InteractiveFlowStepBase<ListSelectionSte
         return b.Build();
     }
 
-    protected override async Task<FlowStepResult> HandleAction(IServiceProvider sp, InteractiveState<ListSelectionStepViewModel<T>> state, CallbackAction action)
+    protected override async Task<CommandStepResult> HandleAction(IServiceProvider sp, StepState<ListSelectionCommandStepViewModel<T>> state, CallbackAction action)
     {
         var chatId = sp.GetRequiredService<IChatIdProvider>().GetChatId();
         var vm = state.ViewModel;
@@ -99,34 +99,34 @@ public class ListSelectionFlowStep<T> : InteractiveFlowStepBase<ListSelectionSte
                 return await HandleFinishAsync(sp, state);
 
             default:
-                return FlowStepResult.HoldOn(FlowStepHoldOnReason.InvalidInput, "Unsupported action.");
+                return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, "Unsupported action.");
         }
     }
 
-    private async Task<FlowStepResult> HandleToggleAsync(IServiceProvider sp, InteractiveState<ListSelectionStepViewModel<T>> state, int index)
+    private async Task<CommandStepResult> HandleToggleAsync(IServiceProvider sp, StepState<ListSelectionCommandStepViewModel<T>> state, int index)
     {
         var vm = state.ViewModel;
 
         if (index < 0 || index >= vm.Values.Count)
-            return FlowStepResult.HoldOn(FlowStepHoldOnReason.InvalidInput, "Invalid item.");
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, "Invalid item.");
 
         if (_options.Mode is ListSelectionMode<T>.Single singleSelectMode)
         {
             await singleSelectMode.OnCommit(new(sp), vm.Values[index]);
             await FinalizeStep(sp);
-            return FlowStepResult.Next;
+            return CommandStepResult.Next;
         }
         else if (_options.Mode is ListSelectionMode<T>.Multi)
         {
             vm.Toggle(index);
             await UpsertAndRerender(sp, state);
-            return FlowStepResult.HoldOn(FlowStepHoldOnReason.Other);
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.Other);
         }
 
         throw new Exception("Mode Unknown!");
     }
 
-    private async Task<FlowStepResult> HandleNextPageAsync(IServiceProvider sp, InteractiveState<ListSelectionStepViewModel<T>> state)
+    private async Task<CommandStepResult> HandleNextPageAsync(IServiceProvider sp, StepState<ListSelectionCommandStepViewModel<T>> state)
     {
         var vm = state.ViewModel;
 
@@ -136,33 +136,33 @@ public class ListSelectionFlowStep<T> : InteractiveFlowStepBase<ListSelectionSte
         if (vm.Page < maxPage) vm.Page++;
 
         await UpsertAndRerender(sp, state);
-        return FlowStepResult.HoldOn(FlowStepHoldOnReason.Other);
+        return CommandStepResult.HoldOn(CommandStepHoldOnReason.Other);
     }
 
-    private async Task<FlowStepResult> HandlePrevPageAsync(IServiceProvider sp, InteractiveState<ListSelectionStepViewModel<T>> state)
+    private async Task<CommandStepResult> HandlePrevPageAsync(IServiceProvider sp, StepState<ListSelectionCommandStepViewModel<T>> state)
     {
         var vm = state.ViewModel;
 
         if (vm.Page > 0) vm.Page--;
 
         await UpsertAndRerender(sp, state);
-        return FlowStepResult.HoldOn(FlowStepHoldOnReason.Other);
+        return CommandStepResult.HoldOn(CommandStepHoldOnReason.Other);
     }
 
-    private async Task<FlowStepResult> HandleFinishAsync(IServiceProvider sp, InteractiveState<ListSelectionStepViewModel<T>> state)
+    private async Task<CommandStepResult> HandleFinishAsync(IServiceProvider sp, StepState<ListSelectionCommandStepViewModel<T>> state)
     {
         if(_options.Mode is ListSelectionMode<T>.Multi multiSelectMode)
         {
             await multiSelectMode.OnCommit(new(sp), state.ViewModel.SelectedValues);
             await FinalizeStep(sp);
-            return FlowStepResult.Next;
+            return CommandStepResult.Next;
         }
         
         throw new Exception("There should be no finish buttons!");
     }
 
 
-    public ListSelectionFlowStep(ListSelectionFlowStepOptions<T> options, InteractiveFlowStepBaseOptions optionsBase) : base(optionsBase)
+    public ListSelectionCommandStep(ListSelectionCommandStepOptions<T> options, CallbackCommandStepBaseOptions optionsBase) : base(optionsBase)
     {
         _options = options;
     }

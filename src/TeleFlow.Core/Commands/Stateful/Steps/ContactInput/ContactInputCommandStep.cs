@@ -1,42 +1,43 @@
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Abstractions.Messaging;
-using TeleFlow.Commands.Flow.Steps.Options;
-using TeleFlow.Pipeline.Contexts;
-using TeleFlow.Presentation.Builders;
+using TeleFlow.Abstractions.Engine.Commands.Stateful;
+using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
+using TeleFlow.Abstractions.Transport.Messaging;
+using TeleFlow.Core.Transport.Markup;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TeleFlow.Commands.Flow.Steps;
+namespace TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
 
-public class ContactInputFlowStep : IFlowStep
+public class ContactInputCommandStep : ICommandStep
 {
-    private readonly ContactInputFlowStepOptions _options;
+    private readonly ContactInputCommandStepOptions _options;
 
-    public async Task<FlowStepResult> Handle(UpdateContext args)
+    public async Task<CommandStepResult> Handle(UpdateContext args)
     {
         var update = args.Update;
 
         if(update.Type != UpdateType.Message || update.Message is null)
-            return FlowStepResult.HoldOn(FlowStepHoldOnReason.InvalidInput, _options.NoMessageInputMessage);
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.NoMessageInputMessage);
         
         Contact? contact = update.Message.Contact;
 
         if(contact is null)
         {
             if(_options.TryParseContactFromText is null)
-                return FlowStepResult.HoldOn(FlowStepHoldOnReason.InvalidInput, _options.NoContactProvidedMessage);
+                return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.NoContactProvidedMessage);
             
             if(update.Message.Text is null)
-                return FlowStepResult.HoldOn(FlowStepHoldOnReason.InvalidInput, _options.NoTextProvidedMessage);
+                return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.NoTextProvidedMessage);
             
             contact = _options.TryParseContactFromText.Invoke(update.Message.Text);
 
             if(contact is null)
-                return FlowStepResult.HoldOn(FlowStepHoldOnReason.InvalidInput, _options.InvalidTextContactMessage);
+                return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidTextContactMessage);
         }
 
-        FlowStepCommitContext context = new(args.ServiceProvider);
+        CommandStepCommitContext context = new(args.ServiceProvider);
         await _options.OnUserCommit.Invoke(context, contact);
 
         await RemoveReplyMarkupButton(args.ServiceProvider);
@@ -59,9 +60,9 @@ public class ContactInputFlowStep : IFlowStep
         await msgEditService.Delete(msg.MessageId);
     }
 
-    public virtual FlowStepResult GetSuccessStepResult()
+    public virtual CommandStepResult GetSuccessStepResult()
     {
-        return FlowStepResult.Next;
+        return CommandStepResult.Next;
     }
 
 
@@ -90,7 +91,7 @@ public class ContactInputFlowStep : IFlowStep
     }
 
 
-    public ContactInputFlowStep(ContactInputFlowStepOptions options)
+    public ContactInputCommandStep(ContactInputCommandStepOptions options)
     {
         _options = options;
     }

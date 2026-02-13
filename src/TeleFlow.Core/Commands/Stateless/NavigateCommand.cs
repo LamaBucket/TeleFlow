@@ -1,7 +1,8 @@
-using TeleFlow.Commands.Results;
-using TeleFlow.Pipeline.Contexts;
+using TeleFlow.Abstractions.Engine.Commands;
+using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 
-namespace TeleFlow.Commands.Instant;
+namespace TeleFlow.Core.Commands.Stateless;
 
 public class NavigateCommand : ICommandHandler
 {

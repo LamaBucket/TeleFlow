@@ -1,6 +1,6 @@
-namespace TeleFlow.Commands.Flow.Steps.Interactive.ViewModels;
+namespace TeleFlow.Core.Commands.Stateful.Steps.ListSelection;
 
-public sealed class ListSelectionStepViewModel<T>
+public sealed class ListSelectionCommandStepViewModel<T>
 {
     public IReadOnlyList<T> Values { get; init; }
 
@@ -22,7 +22,7 @@ public sealed class ListSelectionStepViewModel<T>
             _selectedIndexes.Add(index);
     }
 
-    public ListSelectionStepViewModel(IReadOnlyList<T> values, int page = 0, List<int>? selectedIndexes = null)
+    public ListSelectionCommandStepViewModel(IReadOnlyList<T> values, int page = 0, List<int>? selectedIndexes = null)
     {
         Values = values;
         Page = page;

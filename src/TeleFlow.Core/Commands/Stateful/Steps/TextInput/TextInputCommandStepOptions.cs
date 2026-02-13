@@ -1,10 +1,10 @@
-namespace TeleFlow.Commands.Flow.Steps.Options;
+namespace TeleFlow.Core.Commands.Stateful.Steps.TextInput;
 
-public class TextInputFlowStepOptions
+public class TextInputCommandStepOptions
 {
     public required string UserPrompt { get; init; }
 
-    public required Func<FlowStepCommitContext, string, Task> OnUserCommit { get; set; }
+    public required Func<CommandStepCommitContext, string, Task> OnUserCommit { get; set; }
 
     public string NoMessageInputMessage { get; init; } = "This Command accepts only messages";
 

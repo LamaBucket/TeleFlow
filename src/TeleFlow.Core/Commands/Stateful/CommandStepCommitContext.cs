@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Abstractions.Sessions;
+using TeleFlow.Abstractions.Engine.ChatIdentity;
 
-namespace TeleFlow.Commands.Flow;
+namespace TeleFlow.Core.Commands.Stateful;
 
 //This context is provided in OnCommit() Funcs for user's convenience
-public class FlowStepCommitContext
+public class CommandStepCommitContext
 {
     public long ChatId { get; init; }
 
@@ -12,7 +12,7 @@ public class FlowStepCommitContext
 
     public T GetRequired<T>() where T : notnull => ServiceProvider.GetRequiredService<T>();
 
-    public FlowStepCommitContext(IServiceProvider serviceProvider)
+    public CommandStepCommitContext(IServiceProvider serviceProvider)
     {
         ServiceProvider = serviceProvider;
         ChatId = ServiceProvider.GetRequiredService<IChatIdProvider>().GetChatId();

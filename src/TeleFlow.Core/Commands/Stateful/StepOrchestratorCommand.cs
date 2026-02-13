@@ -1,17 +1,17 @@
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Commands.Flow.Steps.Resolvers;
-using TeleFlow.Commands.Results;
-using TeleFlow.Commands.Results.MultiStep;
-using TeleFlow.Pipeline.Contexts;
-using static TeleFlow.Abstractions.Sessions.ChatSession;
+using TeleFlow.Abstractions.Engine.Commands;
+using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Abstractions.Engine.Commands.Results.Stateful;
+using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
+using static TeleFlow.Abstractions.State.ChatSession.ChatSession;
 
-namespace TeleFlow.Commands.Flow;
+namespace TeleFlow.Core.Commands.Stateful;
 
-public class FlowCommand : ICommandHandler
+public class StepOrchestratorCommand : ICommandHandler
 {
     private readonly ChatSessionStepSnapshot _stepState;
 
-    private readonly FlowStepResolver _stepCommandFactory;
+    private readonly CommandStepRouter _stepCommandFactory;
 
     private readonly Func<IServiceProvider, Task<CommandResult>> _onCompleted; 
 
@@ -27,16 +27,16 @@ public class FlowCommand : ICommandHandler
         {
             await stepCommand.OnEnter(update.ServiceProvider);
 
-            return HoldOnMultiStepResult.Initialize;
+            return HoldOnStatefulResult.Initialize;
         }
 
         var result = await stepCommand.Handle(update);
 
-        if(result.Action == FlowStepAction.HoldOn)
+        if(result.Action == CommandStepAction.HoldOn)
         {
             var holdOnReason = GetMiddlewareReasonFromStepReason(result.HoldOnReason);
 
-            return new HoldOnMultiStepResult(holdOnReason, result.HoldOnMessage);
+            return new HoldOnStatefulResult(holdOnReason, result.HoldOnMessage);
         }   
 
         var nextStepNum = CalculateNextStepNum(result);
@@ -54,31 +54,31 @@ public class FlowCommand : ICommandHandler
             await next.OnEnter(update.ServiceProvider);
         }
         
-        return new GoToMultiStepResult(nextStepNum, InitializeNextStep);
+        return new GoToStatefulResult(nextStepNum, InitializeNextStep);
     }
 
-    private int CalculateNextStepNum(FlowStepResult result)
+    private int CalculateNextStepNum(CommandStepResult result)
     {
         return result.Action switch
         {
-            FlowStepAction.MoveNext => _stepState.CurrentCommandStep + 1,
-            FlowStepAction.MovePrevious => _stepState.CurrentCommandStep - 1,
-            FlowStepAction.GoTo => result.GoToStepNumber,
+            CommandStepAction.MoveNext => _stepState.CurrentCommandStep + 1,
+            CommandStepAction.MovePrevious => _stepState.CurrentCommandStep - 1,
+            CommandStepAction.GoTo => result.GoToStepNumber,
             _ => -1
         };
     }
 
-    private HoldOnReason GetMiddlewareReasonFromStepReason(FlowStepHoldOnReason reason)
+    private HoldOnReason GetMiddlewareReasonFromStepReason(CommandStepHoldOnReason reason)
     {
         return reason switch
         {
-            FlowStepHoldOnReason.InvalidInput => HoldOnReason.InvalidInput,
-            FlowStepHoldOnReason.Other => HoldOnReason.Other,
+            CommandStepHoldOnReason.InvalidInput => HoldOnReason.InvalidInput,
+            CommandStepHoldOnReason.Other => HoldOnReason.Other,
             _ => throw new Exception("Reason not supported")
         };
     }
 
-    public FlowCommand(ChatSessionStepSnapshot stepState, FlowStepResolver stepCommandFactory, Func<IServiceProvider, Task<CommandResult>> onCompleted)
+    public StepOrchestratorCommand(ChatSessionStepSnapshot stepState, CommandStepRouter stepCommandFactory, Func<IServiceProvider, Task<CommandResult>> onCompleted)
     {
         _stepState = stepState;
         _stepCommandFactory = stepCommandFactory;
