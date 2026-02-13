@@ -4,7 +4,7 @@ using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 
 namespace TeleFlow.Core.Commands.Decorators;
 
-internal class NavigateCommandDecorator : ICommandHandler 
+public class NavigateCommandDecorator : ICommandHandler 
 //Command is wrapped in NavigatedCommandWrapper ONLY on navigation, further updates are being handled by the main Middleware.
 //Thats why we DO NOT check for paramHandler being already handled here.
 {
@@ -23,7 +23,7 @@ internal class NavigateCommandDecorator : ICommandHandler
         return await _inner.Handle(update);
     }
 
-    internal NavigateCommandDecorator(ICommandHandler inner, NavigateCommandParameters args, Func<NavigateCommandParameters, IServiceProvider, Task>? paramHandler = null)
+    public NavigateCommandDecorator(ICommandHandler inner, NavigateCommandParameters args, Func<NavigateCommandParameters, IServiceProvider, Task>? paramHandler = null)
     {
         _inner = inner;
         _args = args;
