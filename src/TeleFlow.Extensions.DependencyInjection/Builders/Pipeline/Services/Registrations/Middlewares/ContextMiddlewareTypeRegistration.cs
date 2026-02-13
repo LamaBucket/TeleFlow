@@ -1,9 +1,7 @@
-
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Pipeline;
-using TeleFlow.Pipeline.Configuration.Services;
+using TeleFlow.Abstractions.Engine.Pipeline;
 
-namespace TeleFlow.Pipeline.Configuration.Services.Registrations.Middlewares;
+namespace TeleFlow.Extensions.DependencyInjection.Builders.Pipeline.Services.Registrations.Middlewares;
 
 public sealed class ContextMiddlewareTypeRegistration<TContext> : IContextMiddlewareRegistration<TContext>
 {

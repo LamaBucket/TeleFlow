@@ -1,6 +1,6 @@
-using TeleFlow.Abstractions.Sessions;
+using TeleFlow.Abstractions.Engine.ChatIdentity;
 
-namespace TeleFlow.Implementations.Sessions;
+namespace TeleFlow.Extensions.DependencyInjection.Implementations.Engine;
 
 public class InMemoryChatIdManager : IChatIdSetter, IChatIdProvider
 {

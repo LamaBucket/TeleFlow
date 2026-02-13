@@ -1,21 +1,23 @@
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Commands.Decorators;
+using TeleFlow.Abstractions.Engine.Commands;
+using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Abstractions.State.Chat;
 using TeleFlow.Commands.Factories;
-using TeleFlow.Commands.Flow;
-using TeleFlow.Commands.Flow.Steps.Configuration;
-using TeleFlow.Commands.Resolvers;
-using TeleFlow.Commands.Results;
+using TeleFlow.Core.Commands.Decorators;
+using TeleFlow.Core.Commands.Factories;
+using TeleFlow.Core.Commands.Stateful;
+using TeleFlow.Extensions.DependencyInjection.Builders.Commands.Stateful;
+using TeleFlow.Extensions.DependencyInjection.CommandFactories.Routers;
 
-namespace TeleFlow.Commands.Configuration;
+namespace TeleFlow.Extensions.DependencyInjection.Builders.Commands;
 
-public class CommandResolversBuilder
+public class CommandRouterBuilder
 {
     private readonly Dictionary<string, CommandDescriptor> _descriptors;
 
     private bool _built;
 
 
-    public CommandInterceptorsBuilder AddOrReplace(string name, ICommandFactory<ICommandHandler, ChatSession> factory)
+    public CommandInterceptorBuilder AddOrReplace(string name, ICommandFactory<ICommandHandler, ChatSession> factory)
     {
         EnsureNotBuilt();
 
@@ -24,7 +26,7 @@ public class CommandResolversBuilder
         if (!_descriptors.TryAdd(name, descriptor))
             _descriptors[name] = descriptor;
 
-        return new CommandInterceptorsBuilder(descriptor, EnsureNotBuilt);
+        return new CommandInterceptorBuilder(descriptor, EnsureNotBuilt);
     }
 
     private void EnsureNotBuilt()
@@ -34,22 +36,22 @@ public class CommandResolversBuilder
     }
 
 
-    public CommandInterceptorsBuilder AddOrReplace(string name, Func<ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
+    public CommandInterceptorBuilder AddOrReplace(string name, Func<ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
 
 
-    public CommandInterceptorsBuilder AddOrReplace(string name, Func<ChatSession, ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
+    public CommandInterceptorBuilder AddOrReplace(string name, Func<ChatSession, ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
 
-    public CommandInterceptorsBuilder AddMultiStep(string name, Action<FlowStepResolverBuilder> multiStepFactoryConfig, Func<IServiceProvider, Task<CommandResult>>? onCompleted = null)
+    public CommandInterceptorBuilder AddMultiStep(string name, Action<CommandStepRouterBuilder> multiStepFactoryConfig, Func<IServiceProvider, Task<CommandResult>>? onCompleted = null)
     {
         return AddOrReplace(name, (session) => { 
             var stepSnapshot = session.CreateSnapshot();
-            FlowStepResolverBuilder builder = new();
+            CommandStepRouterBuilder builder = new();
 
             multiStepFactoryConfig.Invoke(builder);
 
             onCompleted ??= async (serviceProvider) => { return CommandResult.Exit; };
 
-            return new FlowCommand(stepSnapshot, builder.Build(), onCompleted);
+            return new StepOrchestratorCommand(stepSnapshot, builder.Build(), onCompleted);
         });
     }
 
@@ -115,7 +117,7 @@ public class CommandResolversBuilder
         });
     }
 
-    public CommandResolversBuilder()
+    public CommandRouterBuilder()
     {
         _descriptors = [];
         _built = false;

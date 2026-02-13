@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Concurrent;
-using TeleFlow.Abstractions.Interactivity;
+using TeleFlow.Abstractions.State.Step;
 
-namespace TeleFlow.Implementations.Interactivity;
+namespace TeleFlow.Extensions.DependencyInjection.Implementations.State.Step;
 
-public sealed class InMemoryInteractiveStateStore : IInteractiveStateStore
+public sealed class InMemoryStepStateStore : IStepStateStore
 {
     private sealed class Entry
     {
@@ -15,21 +15,21 @@ public sealed class InMemoryInteractiveStateStore : IInteractiveStateStore
 
     private readonly ConcurrentDictionary<long, Entry> _states = new();
 
-    public Task<InteractiveState<TVm>?> GetState<TVm>(long chatId) where TVm : class
+    public Task<StepState<TVm>?> GetState<TVm>(long chatId) where TVm : class
     {
         if (!_states.TryGetValue(chatId, out var entry))
-            return Task.FromResult<InteractiveState<TVm>?>(null);
+            return Task.FromResult<StepState<TVm>?>(null);
 
         if (entry.VmType != typeof(TVm))
-            return Task.FromResult<InteractiveState<TVm>?>(null);
+            return Task.FromResult<StepState<TVm>?>(null);
 
         var typed = (TVm)entry.ViewModel;
 
-        InteractiveState<TVm> state = new(entry.MessageId, typed);
-        return Task.FromResult<InteractiveState<TVm>?>(state);
+        StepState<TVm> state = new(entry.MessageId, typed);
+        return Task.FromResult<StepState<TVm>?>(state);
     }
 
-    public Task SetState<TVm>(long chatId, InteractiveState<TVm> state) where TVm : class
+    public Task SetState<TVm>(long chatId, StepState<TVm> state) where TVm : class
     {
         if (state is null) throw new ArgumentNullException(nameof(state));
         if (state.ViewModel is null) throw new ArgumentException("ViewModel must not be null.", nameof(state));

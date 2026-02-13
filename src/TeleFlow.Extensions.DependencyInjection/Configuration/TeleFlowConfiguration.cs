@@ -1,8 +1,8 @@
-using TeleFlow.Commands.Configuration;
-using TeleFlow.DependencyInjection.Internal;
-using TeleFlow.Pipeline.Configuration;
+using TeleFlow.Extensions.DependencyInjection.Builders.Commands;
+using TeleFlow.Extensions.DependencyInjection.Builders.Pipeline;
+using TeleFlow.Extensions.DependencyInjection.Configuration.Default;
 
-namespace TeleFlow.DependencyInjection;
+namespace TeleFlow.Extensions.DependencyInjection.Configuration;
 
 public class TeleFlowConfiguration
 {
@@ -12,7 +12,7 @@ public class TeleFlowConfiguration
 
     protected internal Action<MiddlewarePipelineBuilder> MiddlewareConfiguration { get; private set; }
 
-    protected internal Action<CommandResolversBuilder> CommandRegistryConfiguration { get; private set; }
+    protected internal Action<CommandRouterBuilder> CommandRegistryConfiguration { get; private set; }
 
     public TeleFlowConfiguration ConfigureMiddlewarePipeline(Action<MiddlewarePipelineBuilder> options)
     {
@@ -27,7 +27,7 @@ public class TeleFlowConfiguration
         return this;
     }
 
-    public TeleFlowConfiguration ConfigureCommandRegistry(Action<CommandResolversBuilder> options)
+    public TeleFlowConfiguration ConfigureCommandRegistry(Action<CommandRouterBuilder> options)
     {
         var current = CommandRegistryConfiguration;
 
@@ -40,7 +40,7 @@ public class TeleFlowConfiguration
         return this;
     }
 
-    private TeleFlowConfiguration(Action<MiddlewarePipelineBuilder> middlewareConfiguration, Action<CommandResolversBuilder> commandRegistryConfiguration)
+    private TeleFlowConfiguration(Action<MiddlewarePipelineBuilder> middlewareConfiguration, Action<CommandRouterBuilder> commandRegistryConfiguration)
     {
         MiddlewareConfiguration = middlewareConfiguration;
         CommandRegistryConfiguration = commandRegistryConfiguration;

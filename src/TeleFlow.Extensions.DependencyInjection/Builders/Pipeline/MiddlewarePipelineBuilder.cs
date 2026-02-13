@@ -1,10 +1,11 @@
-using TeleFlow.Pipeline.Configuration.Services;
-using TeleFlow.Pipeline.Configuration.Services.Registrations.Middlewares;
-using TeleFlow.Pipeline.Configuration.Services.Registrations.Transformers;
-using TeleFlow.Pipeline.Contexts;
+using TeleFlow.Abstractions.Engine.Pipeline;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
+using TeleFlow.Extensions.DependencyInjection.Builders.Pipeline.Services;
+using TeleFlow.Extensions.DependencyInjection.Builders.Pipeline.Services.Registrations.Middlewares;
+using TeleFlow.Extensions.DependencyInjection.Builders.Pipeline.Services.Registrations.Transformers;
 using Telegram.Bot.Types;
 
-namespace TeleFlow.Pipeline.Configuration;
+namespace TeleFlow.Extensions.DependencyInjection.Builders.Pipeline;
 
 public class MiddlewarePipelineBuilder
 {

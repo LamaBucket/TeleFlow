@@ -1,8 +1,8 @@
-using TeleFlow.Abstractions.Sessions;
+using TeleFlow.Abstractions.State.Chat;
 
-namespace TeleFlow.Implementations.Sessions;
+namespace TeleFlow.Extensions.DependencyInjection.Implementations.State.Chat;
 
-public class InMemoryChatSessionStore : IChatSessionStore
+public class InMemoryChatSessionStore : IChatSessionStateStore
 {
     private readonly Dictionary<long, ChatSession> _sessions = [];
 

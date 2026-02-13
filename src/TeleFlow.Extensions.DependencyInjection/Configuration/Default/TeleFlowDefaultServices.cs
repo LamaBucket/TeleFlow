@@ -1,27 +1,29 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using TeleFlow.Abstractions.Callbacks;
-using TeleFlow.Abstractions.Interactivity;
-using TeleFlow.Abstractions.Messaging;
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Commands;
-using TeleFlow.Commands.Configuration;
-using TeleFlow.Commands.Factories;
-using TeleFlow.Commands.Results;
-using TeleFlow.Implementations.Callbacks;
-using TeleFlow.Implementations.Interactivity;
+using TeleFlow.Abstractions.Engine.ChatIdentity;
+using TeleFlow.Abstractions.Engine.Commands;
+using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Abstractions.State.Chat;
+using TeleFlow.Abstractions.State.Step;
+using TeleFlow.Abstractions.Transport.Callbacks;
+using TeleFlow.Abstractions.Transport.Messaging;
+using TeleFlow.Core.Commands.Factories;
+using TeleFlow.Extensions.DependencyInjection.Builders.Commands;
+using TeleFlow.Extensions.DependencyInjection.Builders.Pipeline;
+using TeleFlow.Extensions.DependencyInjection.Implementations.Engine;
+using TeleFlow.Extensions.DependencyInjection.Implementations.State.Chat;
+using TeleFlow.Extensions.DependencyInjection.Implementations.State.Step;
+using TeleFlow.Extensions.DependencyInjection.Implementations.Transport.Callbacks;
 using TeleFlow.Implementations.Messaging;
-using TeleFlow.Implementations.Sessions;
-using TeleFlow.Pipeline.Configuration;
 using Telegram.Bot;
 
-namespace TeleFlow.DependencyInjection.Internal;
+namespace TeleFlow.Extensions.DependencyInjection.Configuration.Default;
 
 internal static class TeleFlowDefaultServicesInternal
 {
     internal static void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddSingleton<IChatSessionStore, InMemoryChatSessionStore>();
+        services.TryAddSingleton<IChatSessionStateStore, InMemoryChatSessionStore>();
 
         services.TryAddDefaultChatIdManager();
 
@@ -69,7 +71,7 @@ internal static class TeleFlowDefaultServicesInternal
 
     internal static IServiceCollection TryAddInMemoryInteractiveStateStore(this IServiceCollection services)
     {
-        services.TryAddSingleton<IInteractiveStateStore, InMemoryInteractiveStateStore>();
+        services.TryAddSingleton<IStepStateStore, InMemoryStepStateStore>();
         return services;
     }
 
@@ -84,9 +86,9 @@ internal static class TeleFlowDefaultServicesInternal
         });
     }
 
-    internal static void ConfigureCommandRegistries(this IServiceCollection services, Action<CommandResolversBuilder> options)
+    internal static void ConfigureCommandRegistries(this IServiceCollection services, Action<CommandRouterBuilder> options)
     {
-        var builder = new CommandResolversBuilder();
+        var builder = new CommandRouterBuilder();
         options.Invoke(builder);
 
         var (sessionRegistry, navigatedRegistry) = builder.Build();

@@ -1,9 +1,9 @@
 using System.Collections.ObjectModel;
-using TeleFlow.Commands;
-using TeleFlow.Commands.Factories;
-using TeleFlow.Commands.Results;
+using TeleFlow.Abstractions.Engine.Commands;
+using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Core.Commands.Factories;
 
-namespace TeleFlow.Commands.Resolvers;
+namespace TeleFlow.Extensions.DependencyInjection.CommandFactories.Routers;
 
 public class NavigatedCommandResolver : ICommandFactory<ICommandHandler, NavigateCommandResult>
 {

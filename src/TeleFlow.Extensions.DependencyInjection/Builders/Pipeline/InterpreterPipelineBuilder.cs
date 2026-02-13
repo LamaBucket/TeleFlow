@@ -1,8 +1,9 @@
-using TeleFlow.Pipeline.Configuration.Services;
-using TeleFlow.Pipeline.Configuration.Services.Registrations.Middlewares;
-using TeleFlow.Pipeline.Contexts;
+using TeleFlow.Abstractions.Engine.Pipeline;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
+using TeleFlow.Extensions.DependencyInjection.Builders.Pipeline.Services;
+using TeleFlow.Extensions.DependencyInjection.Builders.Pipeline.Services.Registrations.Middlewares;
 
-namespace TeleFlow.Pipeline.Configuration;
+namespace TeleFlow.Extensions.DependencyInjection.Builders.Pipeline;
 
 public class InterpreterPipelineBuilder
 {

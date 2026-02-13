@@ -1,7 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.DependencyInjection.Internal;
+using TeleFlow.Extensions.DependencyInjection.Configuration;
+using TeleFlow.Extensions.DependencyInjection.Configuration.Default;
 
-namespace TeleFlow.DependencyInjection;
+namespace TeleFlow.Extensions.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {

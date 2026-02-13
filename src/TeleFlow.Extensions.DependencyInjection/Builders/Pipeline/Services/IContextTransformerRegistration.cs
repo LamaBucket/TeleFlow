@@ -1,6 +1,6 @@
-using TeleFlow.Pipeline;
+using TeleFlow.Abstractions.Engine.Pipeline;
 
-namespace TeleFlow.Pipeline.Configuration.Services;
+namespace TeleFlow.Extensions.DependencyInjection.Builders.Pipeline.Services;
 
 public interface IContextTransformerRegistration<TContext, TNextContext>
 {

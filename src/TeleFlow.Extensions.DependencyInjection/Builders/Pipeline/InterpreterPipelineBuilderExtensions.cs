@@ -1,11 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Commands;
-using TeleFlow.Commands.Factories;
-using TeleFlow.Commands.Results;
-using TeleFlow.Pipeline.Middlewares.CommandInterpreters;
+using TeleFlow.Abstractions.Engine.Commands;
+using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Abstractions.State.Chat;
+using TeleFlow.Core.Commands.Factories;
+using TeleFlow.Core.Pipeline.CommandInterpreters;
 
-namespace TeleFlow.Pipeline.Configuration;
+namespace TeleFlow.Extensions.DependencyInjection.Builders.Pipeline;
 
 public static class InterpreterPipelineBuilderExtensions
 {
@@ -22,7 +22,7 @@ public static class InterpreterPipelineBuilderExtensions
             builder.WithInterpreterMiddleware((sp, next) =>
             {
                 var cmdFactory                  = sp.GetRequiredService<ICommandFactory<ICommandHandler, NavigateCommandResult>>(); 
-                var store                       = sp.GetRequiredService<IChatSessionStore>();
+                var store                       = sp.GetRequiredService<IChatSessionStateStore>();
                 var navigatedCommandInterpreter = navigatedCommandInterpreterBuilder.Build(sp);
 
                 return new NavigateCommandMiddleware(next, navigatedCommandInterpreter, cmdFactory, store);

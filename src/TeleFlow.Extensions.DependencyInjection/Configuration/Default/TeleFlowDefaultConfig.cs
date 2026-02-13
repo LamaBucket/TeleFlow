@@ -1,13 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Commands.Configuration;
-using TeleFlow.Commands.Instant;
-using TeleFlow.Pipeline.Configuration;
-using TeleFlow.Pipeline.Middlewares;
-using TeleFlow.Pipeline.Middlewares.CommandInterpreters;
-using TeleFlow.Pipeline.Middlewares.CommandInterpreters.FlowStep;
+using TeleFlow.Abstractions.State.Chat;
+using TeleFlow.Core.Commands.Stateless;
+using TeleFlow.Core.Pipeline;
+using TeleFlow.Core.Pipeline.CommandInterpreters;
+using TeleFlow.Core.Pipeline.CommandInterpreters.Stateful;
+using TeleFlow.Extensions.DependencyInjection.Builders.Commands;
+using TeleFlow.Extensions.DependencyInjection.Builders.Pipeline;
 
-namespace TeleFlow.DependencyInjection.Internal;
+namespace TeleFlow.Extensions.DependencyInjection.Configuration.Default;
 
 internal static class TeleFlowDefaultConfigInternal
 {
@@ -21,17 +21,17 @@ internal static class TeleFlowDefaultConfigInternal
         
         options.Interpreters
         .WithInterpreterMiddleware<ExitCommandMiddleware>()
-        .WithInterpreterMiddleware<GoToMultiStepMiddleware>()
-        .WithInterpreterMiddleware<HoldOnMultiStepMiddleware>()
+        .WithInterpreterMiddleware<GoToStatefulMiddleware>()
+        .WithInterpreterMiddleware<HoldOnStatefulMiddleware>()
         .UseTerminalCommandInterpreter((sp) => {
-            var store = sp.GetRequiredService<IChatSessionStore>();
+            var store = sp.GetRequiredService<IChatSessionStateStore>();
             return new DefaultCommandInterpreter(store);
         });
         
         options.Interpreters.WithNavigateInterpreter(3);
     }
 
-    internal static void ConfigureCommandsDefault(CommandResolversBuilder builder)
+    internal static void ConfigureCommandsDefault(CommandRouterBuilder builder)
     {
         builder.AddOrReplace("/start", () => new SendMessageCommand("Welcome to TeleFlow! Create your commands via options.ConfigureCommands(..)"));
     }

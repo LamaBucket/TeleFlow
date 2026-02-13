@@ -1,9 +1,9 @@
 using System.Collections.ObjectModel;
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Commands;
-using TeleFlow.Commands.Factories;
+using TeleFlow.Abstractions.Engine.Commands;
+using TeleFlow.Abstractions.State.Chat;
+using TeleFlow.Core.Commands.Factories;
 
-namespace TeleFlow.Commands.Resolvers;
+namespace TeleFlow.Extensions.DependencyInjection.CommandFactories.Routers;
 
 public class SessionCommandResolver : ICommandFactory<ICommandHandler, ChatSession>
 {

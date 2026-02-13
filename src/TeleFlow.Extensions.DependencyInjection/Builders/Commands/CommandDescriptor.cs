@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TeleFlow.Abstractions.Sessions;
-using TeleFlow.Commands;
-using TeleFlow.Commands.Factories;
-using TeleFlow.Commands.Interceptors;
-using TeleFlow.Commands.Results;
+using TeleFlow.Abstractions.Engine.Commands;
+using TeleFlow.Abstractions.Engine.Commands.Interceptors;
+using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Abstractions.State.Chat;
+using TeleFlow.Core.Commands.Factories;
 
-namespace TeleFlow.Commands.Configuration;
+namespace TeleFlow.Extensions.DependencyInjection.Builders.Commands;
 
 internal class CommandDescriptor
 {
