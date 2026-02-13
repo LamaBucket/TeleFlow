@@ -11,7 +11,7 @@ public class CommandRoutingMiddleware : IHandlerMiddleware<UpdateContext, Sessio
 {
     public IHandler<SessionContext> Next { get; init; }
 
-    private readonly IChatSessionStore _sessionStore;
+    private readonly IChatSessionStateStore _sessionStore;
 
     public async Task Handle(UpdateContext args)
     {
@@ -48,7 +48,7 @@ public class CommandRoutingMiddleware : IHandlerMiddleware<UpdateContext, Sessio
     }
 
 
-    public CommandRoutingMiddleware(IHandler<SessionContext> next, IChatSessionStore sessionStore)
+    public CommandRoutingMiddleware(IHandler<SessionContext> next, IChatSessionStateStore sessionStore)
     {
         Next = next;
         _sessionStore = sessionStore;

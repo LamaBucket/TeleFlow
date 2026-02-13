@@ -14,7 +14,7 @@ public class NavigateCommandMiddleware : CommandInterpreterBase<NavigateCommandR
 
     private readonly ICommandFactory<ICommandHandler, NavigateCommandResult> _navigatorCommandFactory;
 
-    private readonly IChatSessionStore _sessionStore;
+    private readonly IChatSessionStateStore _sessionStore;
 
 
     protected override bool ContinueAfterMatch => false;
@@ -65,7 +65,7 @@ public class NavigateCommandMiddleware : CommandInterpreterBase<NavigateCommandR
     public NavigateCommandMiddleware(IHandler<CommandResultContext> nextInMiddleware,
                                      IHandler<CommandResultContext> navigatedCommandInterpreter,
                                      ICommandFactory<ICommandHandler, NavigateCommandResult> navigatorCommandFactory,
-                                     IChatSessionStore sessionStore) : base(nextInMiddleware)
+                                     IChatSessionStateStore sessionStore) : base(nextInMiddleware)
     {
         _navigatedCommandInterpreter = navigatedCommandInterpreter;
         _navigatorCommandFactory = navigatorCommandFactory;
