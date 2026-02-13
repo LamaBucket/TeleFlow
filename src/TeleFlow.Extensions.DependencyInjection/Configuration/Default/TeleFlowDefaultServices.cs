@@ -8,13 +8,14 @@ using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Abstractions.Transport.Callbacks;
 using TeleFlow.Abstractions.Transport.Messaging;
 using TeleFlow.Core.Commands.Factories;
+using TeleFlow.Core.Transport.Callbacks;
 using TeleFlow.Extensions.DependencyInjection.Builders.Commands;
 using TeleFlow.Extensions.DependencyInjection.Builders.Pipeline;
 using TeleFlow.Extensions.DependencyInjection.Implementations.Engine;
 using TeleFlow.Extensions.DependencyInjection.Implementations.State.Chat;
 using TeleFlow.Extensions.DependencyInjection.Implementations.State.Step;
 using TeleFlow.Extensions.DependencyInjection.Implementations.Transport.Callbacks;
-using TeleFlow.Implementations.Messaging;
+using TeleFlow.Extensions.DependencyInjection.Implementations.Transport.Messaging;
 using Telegram.Bot;
 
 namespace TeleFlow.Extensions.DependencyInjection.Configuration.Default;
@@ -65,7 +66,8 @@ internal static class TeleFlowDefaultServicesInternal
 
     internal static IServiceCollection TryAddDefaultCallbackEncoder(this IServiceCollection services)
     {
-        services.TryAddSingleton<ICallbackCodec, DefaultCallbackEncoder>();
+        services.TryAddSingleton<ICallbackCodec, DefaultCallbackCodec>();
+        services.TryAddSingleton<ICallbackActionParser, DefaultCallbackActionParser>();
         return services;
     }
 
