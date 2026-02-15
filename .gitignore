@@ -58,3 +58,8 @@ nunit-*.xml
 bot-token.txt
 
 trash
+
+
+#Docs
+.venv
+docs/build
