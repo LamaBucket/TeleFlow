@@ -9,10 +9,23 @@ namespace TeleFlow.Extensions.DI.Polling;
 
 public static class ServiceCollectionExtensions
 {
-    public static void AddTeleFlowPolling(this IServiceCollection services, TeleFlowPollingConfiguration pollingOptions, Action<TeleFlowConfiguration> options)
+    public static void AddTeleFlowPolling(this IServiceCollection services, string botToken)
+    {        
+        static void noActionsTeleFlowSetup(TeleFlowConfiguration options) { }
+        
+        services.AddTeleFlowPolling(botToken, noActionsTeleFlowSetup);
+    }
+
+    public static void AddTeleFlowPolling(this IServiceCollection services, string botToken, Action<TeleFlowConfiguration> teleFlow)
     {
-        services.AddTeleFlowServices(options);
-        services.TryAddTeleFlowTelegramClient(pollingOptions);
+        TeleFlowPollingConfiguration polling = new(){ BotToken = botToken };
+        services.AddTeleFlowPolling(polling, teleFlow);
+    }
+
+    public static void AddTeleFlowPolling(this IServiceCollection services, TeleFlowPollingConfiguration polling, Action<TeleFlowConfiguration> teleFlow)
+    {
+        services.AddTeleFlowServices(teleFlow);
+        services.TryAddTeleFlowTelegramClient(polling);
 
         services.TryAddSingleton<TeleFlowPollingConfiguration>();
 
