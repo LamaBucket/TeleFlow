@@ -1,10 +1,10 @@
 using Microsoft.Extensions.Logging;
-using TeleFlow.Extensions.DependencyInjection.Polling.Configuration.Internal;
+using TeleFlow.Extensions.DI.Polling.Configuration.Internal;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TeleFlow.Extensions.DependencyInjection.Polling.Configuration;
+namespace TeleFlow.Extensions.DI.Polling.Configuration;
 
 public class TeleFlowPollingConfiguration
 {

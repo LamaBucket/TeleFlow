@@ -4,7 +4,7 @@ using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 
-namespace TeleFlow.Extensions.DependencyInjection.Polling.Services;
+namespace TeleFlow.Extensions.DI.Polling.Services;
 
 internal class UpdateHandler : IUpdateHandler
 {

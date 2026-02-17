@@ -1,17 +1,17 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using TeleFlow.Extensions.DependencyInjection.Configuration;
-using TeleFlow.Extensions.DependencyInjection.Polling.Configuration;
-using TeleFlow.Extensions.DependencyInjection.Polling.Services;
+using TeleFlow.Extensions.DI.Configuration;
+using TeleFlow.Extensions.DI.Polling.Configuration;
+using TeleFlow.Extensions.DI.Polling.Services;
 using Telegram.Bot;
 
-namespace TeleFlow.Extensions.DependencyInjection.Polling;
+namespace TeleFlow.Extensions.DI.Polling;
 
 public static class ServiceCollectionExtensions
 {
     public static void AddTeleFlowPolling(this IServiceCollection services, TeleFlowPollingConfiguration pollingOptions, Action<TeleFlowConfiguration> options)
     {
-        services.AddTeleFlow(options);
+        services.AddTeleFlowServices(options);
         services.TryAddTeleFlowTelegramClient(pollingOptions);
 
         services.TryAddSingleton<TeleFlowPollingConfiguration>();

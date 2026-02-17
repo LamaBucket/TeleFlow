@@ -1,12 +1,12 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TeleFlow.Abstractions.Engine.Pipeline;
-using TeleFlow.Extensions.DependencyInjection.Polling.Configuration;
+using TeleFlow.Extensions.DI.Polling.Configuration;
 using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 
-namespace TeleFlow.Extensions.DependencyInjection.Polling.Services;
+namespace TeleFlow.Extensions.DI.Polling.Services;
 
 internal sealed class TeleFlowPollingHostedService : BackgroundService
 {
