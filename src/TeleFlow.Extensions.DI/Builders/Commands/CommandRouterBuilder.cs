@@ -4,6 +4,7 @@ using TeleFlow.Abstractions.State.Chat;
 using TeleFlow.Core.Commands.Decorators;
 using TeleFlow.Core.Commands.Factories;
 using TeleFlow.Core.Commands.Stateful;
+using TeleFlow.Core.Commands.Stateless;
 using TeleFlow.Extensions.DI.Builders.Commands.Stateful;
 using TeleFlow.Extensions.DI.CommandFactories;
 using TeleFlow.Extensions.DI.CommandFactories.Routers;
@@ -40,6 +41,9 @@ public class CommandRouterBuilder
 
 
     public CommandInterceptorBuilder AddOrReplace(string name, Func<ChatSession, ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
+
+    public CommandInterceptorBuilder AddSendText(string name, string message) 
+        => AddOrReplace(name, (sp) => new SendMessageCommand(message));
 
     public CommandInterceptorBuilder AddMultiStep(string name, Action<CommandStepRouterBuilder> multiStepFactoryConfig, Func<IServiceProvider, Task<CommandResult>>? onCompleted = null)
     {
