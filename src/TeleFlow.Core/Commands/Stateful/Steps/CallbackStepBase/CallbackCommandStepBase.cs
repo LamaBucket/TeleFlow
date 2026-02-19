@@ -56,10 +56,16 @@ public abstract class CallbackCommandStepBase<TVM> : ICommandStep
         var markupEncoder = sp.GetRequiredService<ICallbackCodec>();
         var messageService = sp.GetRequiredService<IMessageSender>();
         
+        var markupButtonActionCodec = (CallbackAction action) =>
+        {
+            var token = actionParser.Parse(action);
+            return markupEncoder.EncodeAction(token);
+        };
+
         var sent = await messageService.SendMessage(new OutgoingMessage
         {
             Text = _options.UserPrompt,
-            ReplyMarkup = RenderMarkup(actionParser, markupEncoder, vm)
+            ReplyMarkup = RenderMarkup(markupButtonActionCodec, vm)
         });
 
         var state = new StepState<TVM>(sent.MessageId, vm);
@@ -69,9 +75,9 @@ public abstract class CallbackCommandStepBase<TVM> : ICommandStep
     
     protected abstract Task<TVM> CreateDefaultViewModel(IServiceProvider sp);
 
-    protected abstract InlineKeyboardMarkup RenderMarkup(ICallbackActionParser actionParser, ICallbackCodec markupEncoder, TVM vm);
+    protected abstract InlineKeyboardMarkup RenderMarkup(Func<CallbackAction, string> markupButtonActionCodec, TVM vm);
 
-    protected abstract Task<CommandStepResult> HandleAction(IServiceProvider sp, StepState<TVM> state, CallbackAction token);
+    protected abstract Task<CommandStepResult> HandleAction(IServiceProvider sp, StepState<TVM> state, CallbackAction action);
 
 
     protected async Task UpsertAndRerender(IServiceProvider sp, StepState<TVM> state)
@@ -82,7 +88,13 @@ public abstract class CallbackCommandStepBase<TVM> : ICommandStep
         var markupEncoder = sp.GetRequiredService<ICallbackCodec>();
         var messageService = sp.GetRequiredService<IMessageEditor>();
 
-        var markup = RenderMarkup(actionParser, markupEncoder, state.ViewModel);
+        var markupButtonActionCodec = (CallbackAction action) =>
+        {
+            var token = actionParser.Parse(action);
+            return markupEncoder.EncodeAction(token);
+        };
+
+        var markup = RenderMarkup(markupButtonActionCodec, state.ViewModel);
         await messageService.EditInlineKeyboard(state.MessageId, markup);
     }
 

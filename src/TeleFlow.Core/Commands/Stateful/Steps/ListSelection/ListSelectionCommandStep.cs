@@ -22,7 +22,7 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
         return new(values);
     }
 
-    protected override InlineKeyboardMarkup RenderMarkup(ICallbackActionParser actionParser, ICallbackCodec markupEncoder, ListSelectionCommandStepViewModel<T> vm)
+    protected override InlineKeyboardMarkup RenderMarkup(Func<CallbackAction, string> markupButtonActionCodec, ListSelectionCommandStepViewModel<T> vm)
     {
         IReadOnlyList<int> SelectedIndexes = vm.SelectedIndexes;
 
@@ -56,10 +56,7 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
                         text = '*' + text + '*';
                 }
 
-                CallbackToken token = actionParser.Parse(new SelectIndex(idx));
-                string data = markupEncoder.EncodeAction(token);
-
-                b.ButtonCallback(text, data);
+                b.ButtonCallback(text, markupButtonActionCodec(new SelectIndex(idx)));
             }
 
             b.NewRow();
@@ -71,14 +68,14 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
         if (hasPrev || hasNext)
         {
             if (hasPrev)
-                b.ButtonCallback("<-", markupEncoder.EncodeAction(actionParser.Parse(new PrevPage())));
+                b.ButtonCallback("<-", markupButtonActionCodec(new PrevPage()));
             if (hasNext)
-                b.ButtonCallback("->", markupEncoder.EncodeAction(actionParser.Parse(new NextPage())));
+                b.ButtonCallback("->", markupButtonActionCodec(new NextPage()));
             b.NewRow();
         }
 
         if(_options.Mode is ListSelectionMode<T>.Multi)
-            b.ButtonCallback("Done", markupEncoder.EncodeAction(actionParser.Parse(new Finish())));
+            b.ButtonCallback("Done", markupButtonActionCodec(new Finish()));
 
         return b.Build();
     }
