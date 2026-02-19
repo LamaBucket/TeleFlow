@@ -11,7 +11,7 @@ public class StepOrchestratorCommand : ICommandHandler
 {
     private readonly ChatSessionStepSnapshot _stepState;
 
-    private readonly CommandStepRouter _stepCommandFactory;
+    private readonly CommandStepRouter _stepRouter;
 
     private readonly Func<IServiceProvider, Task<CommandResult>> _onCompleted; 
 
@@ -21,7 +21,7 @@ public class StepOrchestratorCommand : ICommandHandler
 
     public async Task<CommandResult> Handle(UpdateContext update)
     {
-        var stepCommand = _stepCommandFactory.Create(_stepState.CurrentCommandStep);
+        var stepCommand = _stepRouter.Create(_stepState.CurrentCommandStep);
 
         if (!_stepState.IsStepInitialized)
         {
@@ -44,12 +44,12 @@ public class StepOrchestratorCommand : ICommandHandler
         if(nextStepNum < 0)
             throw new Exception("Step Number Cannot be less than 0!");
 
-        if(nextStepNum >= _stepCommandFactory.StepCount)
+        if(nextStepNum >= _stepRouter.StepCount)
             return await _onCompleted.Invoke(update.ServiceProvider);
 
         if (InitializeNextStep)
         {
-            var next = _stepCommandFactory.Create(nextStepNum);
+            var next = _stepRouter.Create(nextStepNum);
 
             await next.OnEnter(update.ServiceProvider);
         }
@@ -78,10 +78,10 @@ public class StepOrchestratorCommand : ICommandHandler
         };
     }
 
-    public StepOrchestratorCommand(ChatSessionStepSnapshot stepState, CommandStepRouter stepCommandFactory, Func<IServiceProvider, Task<CommandResult>> onCompleted)
+    public StepOrchestratorCommand(ChatSessionStepSnapshot stepState, CommandStepRouter stepRouter, Func<IServiceProvider, Task<CommandResult>> onCompleted)
     {
         _stepState = stepState;
-        _stepCommandFactory = stepCommandFactory;
+        _stepRouter = stepRouter;
         _onCompleted = onCompleted;
     }
 }

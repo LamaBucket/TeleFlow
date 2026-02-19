@@ -14,7 +14,7 @@ public class NavigateCommandMiddleware : CommandInterpreterBase<NavigateCommandR
 
     private readonly ICommandFactory<ICommandHandler, NavigateCommandResult> _navigatorCommandFactory;
 
-    private readonly IChatSessionStateStore _sessionStore;
+    private readonly IChatSessionStore _sessionStore;
 
 
     protected override bool ContinueAfterMatch => false;
@@ -47,7 +47,7 @@ public class NavigateCommandMiddleware : CommandInterpreterBase<NavigateCommandR
         return navigatedCommand;
     }
 
-    private SessionContext CreateNewSessionContext(NavigateCommandResult navigateCommandResult, UpdateContext updateContext)
+    private static SessionContext CreateNewSessionContext(NavigateCommandResult navigateCommandResult, UpdateContext updateContext)
     {
         ChatSession session = new(navigateCommandResult.CommandToNavigate);
 
@@ -65,7 +65,7 @@ public class NavigateCommandMiddleware : CommandInterpreterBase<NavigateCommandR
     public NavigateCommandMiddleware(IHandler<CommandResultContext> nextInMiddleware,
                                      IHandler<CommandResultContext> navigatedCommandInterpreter,
                                      ICommandFactory<ICommandHandler, NavigateCommandResult> navigatorCommandFactory,
-                                     IChatSessionStateStore sessionStore) : base(nextInMiddleware)
+                                     IChatSessionStore sessionStore) : base(nextInMiddleware)
     {
         _navigatedCommandInterpreter = navigatedCommandInterpreter;
         _navigatorCommandFactory = navigatorCommandFactory;

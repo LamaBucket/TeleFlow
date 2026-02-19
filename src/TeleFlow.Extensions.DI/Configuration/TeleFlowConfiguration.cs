@@ -12,7 +12,7 @@ public class TeleFlowConfiguration
 
     protected internal Action<MiddlewarePipelineBuilder> MiddlewareConfiguration { get; private set; }
 
-    protected internal Action<CommandRouterBuilder> CommandRegistryConfiguration { get; private set; }
+    protected internal Action<CommandRouterBuilder> CommandRoutersConfiguration { get; private set; }
 
     public TeleFlowConfiguration ConfigureMiddlewarePipeline(Action<MiddlewarePipelineBuilder> options)
     {
@@ -27,11 +27,11 @@ public class TeleFlowConfiguration
         return this;
     }
 
-    public TeleFlowConfiguration ConfigureCommandRegistry(Action<CommandRouterBuilder> options)
+    public TeleFlowConfiguration ConfigureCommandRouters(Action<CommandRouterBuilder> options)
     {
-        var current = CommandRegistryConfiguration;
+        var current = CommandRoutersConfiguration;
 
-        CommandRegistryConfiguration = (builder) =>
+        CommandRoutersConfiguration = (builder) =>
         {
             current.Invoke(builder);
             options.Invoke(builder);    
@@ -40,9 +40,9 @@ public class TeleFlowConfiguration
         return this;
     }
 
-    private TeleFlowConfiguration(Action<MiddlewarePipelineBuilder> middlewareConfiguration, Action<CommandRouterBuilder> commandRegistryConfiguration)
+    private TeleFlowConfiguration(Action<MiddlewarePipelineBuilder> middlewareConfiguration, Action<CommandRouterBuilder> commandRoutersConfiguration)
     {
         MiddlewareConfiguration = middlewareConfiguration;
-        CommandRegistryConfiguration = commandRegistryConfiguration;
+        CommandRoutersConfiguration = commandRoutersConfiguration;
     }
 }

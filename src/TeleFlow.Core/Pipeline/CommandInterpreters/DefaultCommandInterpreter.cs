@@ -7,7 +7,7 @@ namespace TeleFlow.Core.Pipeline.CommandInterpreters;
 
 public class DefaultCommandInterpreter : IHandler<CommandResultContext>
 {
-    private readonly IChatSessionStateStore _sessionStore;
+    private readonly IChatSessionStore _sessionStore;
 
     public async Task Handle(CommandResultContext args)
     {
@@ -18,7 +18,7 @@ public class DefaultCommandInterpreter : IHandler<CommandResultContext>
         throw new Exception("No command interpreter matched the command result of type " + args.CommandResult.GetType().FullName);
     }
 
-    public DefaultCommandInterpreter(IChatSessionStateStore sessionStore)
+    public DefaultCommandInterpreter(IChatSessionStore sessionStore)
     {
         _sessionStore = sessionStore;
     }

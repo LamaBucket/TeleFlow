@@ -22,7 +22,7 @@ public static class InterpreterPipelineBuilderExtensions
             builder.WithInterpreterMiddleware((sp, next) =>
             {
                 var cmdFactory                  = sp.GetRequiredService<ICommandFactory<ICommandHandler, NavigateCommandResult>>(); 
-                var store                       = sp.GetRequiredService<IChatSessionStateStore>();
+                var store                       = sp.GetRequiredService<IChatSessionStore>();
                 var navigatedCommandInterpreter = navigatedCommandInterpreterBuilder.Build(sp);
 
                 return new NavigateCommandMiddleware(next, navigatedCommandInterpreter, cmdFactory, store);

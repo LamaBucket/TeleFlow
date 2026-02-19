@@ -60,7 +60,7 @@ public class CommandRouterBuilder
     }
 
 
-    public (SessionCommandResolver Session, NavigatedCommandResolver Navigated) Build()
+    public (SessionCommandRouter Session, NavigatedCommandRouter Navigated) Build()
     {
         EnsureNotBuilt();
 
@@ -83,8 +83,8 @@ public class CommandRouterBuilder
             }
         }
 
-        return (new SessionCommandResolver(new(sessionFactories)),
-                new NavigatedCommandResolver(new(navFactories)));
+        return (new SessionCommandRouter(new(sessionFactories)),
+                new NavigatedCommandRouter(new(navFactories)));
     }
 
     private static ICommandFactory<ICommandHandler, ChatSession> CompileSessionFactory(CommandDescriptor descriptor)

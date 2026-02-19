@@ -10,7 +10,7 @@ namespace TeleFlow.Core.Pipeline.CommandInterpreters.Stateful;
 
 public class HoldOnStatefulMiddleware : CommandInterpreterBase<HoldOnStatefulResult>
 {
-    private readonly IChatSessionStateStore _sessionStore;
+    private readonly IChatSessionStore _sessionStore;
 
     protected override bool ContinueAfterMatch => false;
 
@@ -35,7 +35,7 @@ public class HoldOnStatefulMiddleware : CommandInterpreterBase<HoldOnStatefulRes
 
     }
 
-    public HoldOnStatefulMiddleware(IHandler<CommandResultContext> next, IChatSessionStateStore sessionStore) : base(next)
+    public HoldOnStatefulMiddleware(IHandler<CommandResultContext> next, IChatSessionStore sessionStore) : base(next)
     {
         _sessionStore = sessionStore;
     }

@@ -56,7 +56,7 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
                         text = '*' + text + '*';
                 }
 
-                CallbackToken token = actionParser.Parse(new ToggleIndex(idx));
+                CallbackToken token = actionParser.Parse(new SelectIndex(idx));
                 string data = markupEncoder.EncodeAction(token);
 
                 b.ButtonCallback(text, data);
@@ -87,7 +87,7 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
     {
         return action switch
         {
-            ToggleIndex toggle => await HandleToggleAsync(sp, state, toggle.Index),
+            SelectIndex toggle => await HandleToggleAsync(sp, state, toggle.Index),
             NextPage => await HandleNextPageAsync(sp, state),
             PrevPage => await HandlePrevPageAsync(sp, state),
             Finish => await HandleFinishAsync(sp, state),

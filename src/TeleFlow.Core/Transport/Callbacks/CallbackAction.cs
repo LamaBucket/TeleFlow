@@ -16,8 +16,9 @@ public abstract record CallbackAction
 
     public abstract record Ui : CallbackAction
     {
+        public sealed record NoOperation : Ui;
         public sealed record NextPage : Ui;
         public sealed record PrevPage : Ui;
-        public sealed record ToggleIndex(int Index) : Ui;
+        public sealed record SelectIndex(int Index) : Ui;
     }
 }

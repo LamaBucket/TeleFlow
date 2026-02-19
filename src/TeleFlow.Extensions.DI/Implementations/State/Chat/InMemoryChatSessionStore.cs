@@ -2,7 +2,7 @@ using TeleFlow.Abstractions.State.Chat;
 
 namespace TeleFlow.Extensions.DI.Implementations.State.Chat;
 
-public class InMemoryChatSessionStore : IChatSessionStateStore
+public class InMemoryChatSessionStore : IChatSessionStore
 {
     private readonly Dictionary<long, ChatSession> _sessions = [];
 

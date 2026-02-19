@@ -5,7 +5,7 @@ using TeleFlow.Core.Commands.Factories;
 
 namespace TeleFlow.Extensions.DI.CommandFactories.Routers;
 
-public class SessionCommandResolver : ICommandFactory<ICommandHandler, ChatSession>
+public class SessionCommandRouter : ICommandFactory<ICommandHandler, ChatSession>
 {
     private readonly ReadOnlyDictionary<string, ICommandFactory<ICommandHandler, ChatSession>> _factories;
 
@@ -19,7 +19,7 @@ public class SessionCommandResolver : ICommandFactory<ICommandHandler, ChatSessi
         return value.Create(context);
     }
 
-    public SessionCommandResolver(ReadOnlyDictionary<string, ICommandFactory<ICommandHandler, ChatSession>> factories)
+    public SessionCommandRouter(ReadOnlyDictionary<string, ICommandFactory<ICommandHandler, ChatSession>> factories)
     {
         _factories = factories;
     }

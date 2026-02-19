@@ -7,11 +7,11 @@ using Telegram.Bot.Types.Enums;
 
 namespace TeleFlow.Core.Pipeline;
 
-public class CommandRoutingMiddleware : IHandlerMiddleware<UpdateContext, SessionContext>
+public class SessionExtractionMiddleware : IHandlerMiddleware<UpdateContext, SessionContext>
 {
     public IHandler<SessionContext> Next { get; init; }
 
-    private readonly IChatSessionStateStore _sessionStore;
+    private readonly IChatSessionStore _sessionStore;
 
     public async Task Handle(UpdateContext args)
     {
@@ -48,7 +48,7 @@ public class CommandRoutingMiddleware : IHandlerMiddleware<UpdateContext, Sessio
     }
 
 
-    public CommandRoutingMiddleware(IHandler<SessionContext> next, IChatSessionStateStore sessionStore)
+    public SessionExtractionMiddleware(IHandler<SessionContext> next, IChatSessionStore sessionStore)
     {
         Next = next;
         _sessionStore = sessionStore;

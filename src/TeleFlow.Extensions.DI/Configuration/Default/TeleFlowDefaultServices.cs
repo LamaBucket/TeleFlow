@@ -24,7 +24,7 @@ internal static class TeleFlowDefaultServicesInternal
 {
     internal static void ConfigureServices(IServiceCollection services)
     {
-        services.TryAddSingleton<IChatSessionStateStore, InMemoryChatSessionStore>();
+        services.TryAddSingleton<IChatSessionStore, InMemoryChatSessionStore>();
 
         services.TryAddDefaultChatIdManager();
 
@@ -88,14 +88,14 @@ internal static class TeleFlowDefaultServicesInternal
         });
     }
 
-    internal static void ConfigureCommandRegistries(this IServiceCollection services, Action<CommandRouterBuilder> options)
+    internal static void ConfigureCommandRouters(this IServiceCollection services, Action<CommandRouterBuilder> options)
     {
         var builder = new CommandRouterBuilder();
         options.Invoke(builder);
 
-        var (sessionRegistry, navigatedRegistry) = builder.Build();
+        var (sessionRouter, navigatedRouter) = builder.Build();
 
-        services.TryAddSingleton<ICommandFactory<ICommandHandler, ChatSession>>(sessionRegistry);
-        services.TryAddSingleton<ICommandFactory<ICommandHandler, NavigateCommandResult>>(navigatedRegistry);
+        services.TryAddSingleton<ICommandFactory<ICommandHandler, ChatSession>>(sessionRouter);
+        services.TryAddSingleton<ICommandFactory<ICommandHandler, NavigateCommandResult>>(navigatedRouter);
     }
 }

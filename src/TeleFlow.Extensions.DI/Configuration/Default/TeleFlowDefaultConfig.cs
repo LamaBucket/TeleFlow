@@ -15,7 +15,7 @@ internal static class TeleFlowDefaultConfigInternal
     {
         options
         .UseUpdateReceiver<UpdateReceiverMiddleware>()
-        .UseCommandRouter<CommandRoutingMiddleware>()
+        .UseCommandRouter<SessionExtractionMiddleware>()
         .UseCommandExecutor<CommandExecutionMiddleware>();
         
         
@@ -24,7 +24,7 @@ internal static class TeleFlowDefaultConfigInternal
         .WithInterpreterMiddleware<GoToStatefulMiddleware>()
         .WithInterpreterMiddleware<HoldOnStatefulMiddleware>()
         .UseTerminalCommandInterpreter((sp) => {
-            var store = sp.GetRequiredService<IChatSessionStateStore>();
+            var store = sp.GetRequiredService<IChatSessionStore>();
             return new DefaultCommandInterpreter(store);
         });
         

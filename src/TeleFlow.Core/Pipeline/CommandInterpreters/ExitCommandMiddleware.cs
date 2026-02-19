@@ -8,7 +8,7 @@ namespace TeleFlow.Core.Pipeline.CommandInterpreters;
 
 public class ExitCommandMiddleware : CommandInterpreterBase<ExitCommandResult>
 {
-    private readonly IChatSessionStateStore _sessionStore;
+    private readonly IChatSessionStore _sessionStore;
 
     protected override async Task Handle(CommandResultContext<ExitCommandResult> args)
     {
@@ -19,7 +19,7 @@ public class ExitCommandMiddleware : CommandInterpreterBase<ExitCommandResult>
 
     protected override bool ContinueAfterMatch => false;
 
-    public ExitCommandMiddleware(IHandler<CommandResultContext> next, IChatSessionStateStore sessionStore) : base(next)
+    public ExitCommandMiddleware(IHandler<CommandResultContext> next, IChatSessionStore sessionStore) : base(next)
     {
         _sessionStore = sessionStore;
     }

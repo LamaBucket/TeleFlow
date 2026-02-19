@@ -31,7 +31,7 @@ public sealed class DefaultCallbackActionParser : ICallbackActionParser
 
             CallbackAction.Ui.NextPage     => new CallbackToken(UiNext,   string.Empty),
             CallbackAction.Ui.PrevPage     => new CallbackToken(UiPrev,   string.Empty),
-            CallbackAction.Ui.ToggleIndex t=> new CallbackToken(UiToggle, t.Index.ToString()),
+            CallbackAction.Ui.SelectIndex t=> new CallbackToken(UiToggle, t.Index.ToString()),
 
             _ => throw new NotSupportedException($"Unsupported callback action type: {action.GetType().FullName}")
         };
@@ -79,7 +79,7 @@ public sealed class DefaultCallbackActionParser : ICallbackActionParser
             case UiToggle:
                 if (!int.TryParse(data, out var idx)) return false;
                 if (idx < 0) return false;
-                action = new CallbackAction.Ui.ToggleIndex(idx);
+                action = new CallbackAction.Ui.SelectIndex(idx);
                 return true;
 
             default:

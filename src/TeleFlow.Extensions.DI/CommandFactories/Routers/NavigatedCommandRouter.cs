@@ -5,7 +5,7 @@ using TeleFlow.Core.Commands.Factories;
 
 namespace TeleFlow.Extensions.DI.CommandFactories.Routers;
 
-public class NavigatedCommandResolver : ICommandFactory<ICommandHandler, NavigateCommandResult>
+public class NavigatedCommandRouter : ICommandFactory<ICommandHandler, NavigateCommandResult>
 {
     private readonly ReadOnlyDictionary<string, ICommandFactory<ICommandHandler, NavigateCommandParameters>> _factories;
 
@@ -19,7 +19,7 @@ public class NavigatedCommandResolver : ICommandFactory<ICommandHandler, Navigat
         return factory.Create(commandArgs);
     }
 
-    public NavigatedCommandResolver(ReadOnlyDictionary<string, ICommandFactory<ICommandHandler, NavigateCommandParameters>> factories)
+    public NavigatedCommandRouter(ReadOnlyDictionary<string, ICommandFactory<ICommandHandler, NavigateCommandParameters>> factories)
     {
         _factories = factories;
     }

@@ -16,6 +16,6 @@ public static class ServiceCollectionExtensions
 
         TeleFlowDefaultServicesInternal.ConfigureMiddlewarePipeline(services, configuration.MiddlewareConfiguration);
 
-        TeleFlowDefaultServicesInternal.ConfigureCommandRegistries(services, configuration.CommandRegistryConfiguration);
+        TeleFlowDefaultServicesInternal.ConfigureCommandRouters(services, configuration.CommandRoutersConfiguration);
     }
 }

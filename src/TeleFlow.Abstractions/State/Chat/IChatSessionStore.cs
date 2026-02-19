@@ -1,6 +1,6 @@
 namespace TeleFlow.Abstractions.State.Chat;
 
-public interface IChatSessionStateStore
+public interface IChatSessionStore
 {
     Task<ChatSession?> GetAsync(long chatId);
 
