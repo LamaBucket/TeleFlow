@@ -1,4 +1,5 @@
 using System.Globalization;
+using TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase.Internal;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.DateInput;
 
@@ -20,6 +21,25 @@ public class DateInputCommandStepOptions
     public int YearSelectionColumns { get; init; } = 3;
 
     public int MonthSelectionRows { get; init; } = 4;
+
+
+    public string PrevYearPageButtonText { get; init; } = DefaultButtonTexts.PrevPageButtonText;
+    public string NextYearPageButtonText { get; init; } = DefaultButtonTexts.NextPageButtonText;
+
+    public string PrevYearItemButtonText { get; init; } = DefaultButtonTexts.PrevItemButtonText;
+    public string NextYearItemButtonText { get; init; } = DefaultButtonTexts.NextItemButtonText;
+
+    public string PrevMonthItemButtonText { get; init; } = DefaultButtonTexts.PrevItemButtonText;
+    public string NextMonthItemButtonText { get; init; } = DefaultButtonTexts.NextItemButtonText;
+
+    public string YearMonthFormatOnDayPage { get; init; } = "MMM yyyy";
+
+    public string? LastPageMessage { get; init; } = "There is no more items";
+    public string? FirstPageMessage { get; init; } = "There is no more items";
+
+    public string InvalidYearMessage { get; init; } = "Please select the year between the minimum and maximum amount";
+    public string InvalidMonthMessage { get; init; } = "Select a month";
+    public string InvalidDayMessage { get; set; } = "Select a day";
 }
 
 

@@ -43,7 +43,7 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
             UiAction.SelectIndex act => await HandleYearSelectIndex(sp, state, act.Index),
             UiAction.NextPage        => await HandleYearNextPage(sp, state),
             UiAction.PrevPage        => await HandleYearPrevPage(sp, state),
-            UiAction.NoOperation     => CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, "Please select a year"),
+            UiAction.NoOperation     => CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidYearMessage),
             _ => throw new Exception("ploho vse")
         };
     }
@@ -67,18 +67,41 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
 
     private async Task<CommandStepResult> HandleYearNextPage(IServiceProvider sp, StepState<DateInputCommandStepViewModel> state)
     {
-        state.ViewModel.YearPageIndex += 1;
+        int newPageIndex = state.ViewModel.YearPageIndex + 1;
+
+        if(!HasAnyValidYearOnPage(state.ViewModel, newPageIndex))
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.LastPageMessage);
         
+        state.ViewModel.YearPageIndex = newPageIndex;
+
         await UpsertAndRerender(sp, state);
         return CommandStepResult.HoldOn(CommandStepHoldOnReason.Other);
     }
 
     private async Task<CommandStepResult> HandleYearPrevPage(IServiceProvider sp, StepState<DateInputCommandStepViewModel> state)
     {
-        state.ViewModel.YearPageIndex -= 1;
+        int newPageIndex = state.ViewModel.YearPageIndex - 1;
+
+        if(!HasAnyValidYearOnPage(state.ViewModel, newPageIndex))
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.LastPageMessage);
+        
+        state.ViewModel.YearPageIndex = newPageIndex;
         
         await UpsertAndRerender(sp, state);
         return CommandStepResult.HoldOn(CommandStepHoldOnReason.Other);
+    }
+
+    private bool HasAnyValidYearOnPage(DateInputCommandStepViewModel vm, int pageIndex)
+    {
+        int rows = _options.YearSelectionRows;
+        int cols = _options.YearSelectionColumns;
+
+        int pageSize = rows * cols;
+
+        int startYear = vm.InitYearDate + (pageIndex * pageSize);
+        int endYear = startYear + pageSize - 1;
+
+        return endYear >= _options.MinYear && startYear <= _options.MaxYear;
     }
 
     #endregion
@@ -93,7 +116,7 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
             UiAction.NextPage        => await HandleMonthNextPage(sp, state),
             UiAction.PrevPage        => await HandleMonthPrevPage(sp, state),
             UiAction.GoToPage goTo   => await HandleMonthGoToPage(sp, state, goTo.Page),
-            UiAction.NoOperation     => CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, "Please select a month"),
+            UiAction.NoOperation     => CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidMonthMessage),
             _ => throw new Exception("ploho vse")
         };
     }
@@ -119,6 +142,9 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
 
     private async Task<CommandStepResult> HandleMonthNextPage(IServiceProvider sp, StepState<DateInputCommandStepViewModel> state)
     {
+        if(_options.MaxYear <= state.ViewModel.YearSelected)
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidYearMessage);
+
         state.ViewModel.YearSelected += 1;
         
         await UpsertAndRerender(sp, state);
@@ -127,6 +153,9 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
 
     private async Task<CommandStepResult> HandleMonthPrevPage(IServiceProvider sp, StepState<DateInputCommandStepViewModel> state)
     {
+        if(_options.MinYear >= state.ViewModel.YearSelected)
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidYearMessage);
+            
         state.ViewModel.YearSelected -= 1;
         
         await UpsertAndRerender(sp, state);
@@ -156,7 +185,7 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
             UiAction.NextPage        => await HandleDayNextPage(sp, state),
             UiAction.PrevPage        => await HandleDayPrevPage(sp, state),
             UiAction.GoToPage goTo   => await HandleDayGoToPage(sp, state, goTo.Page),
-            UiAction.NoOperation     => CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, "Please select a month"),
+            UiAction.NoOperation     => CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidDayMessage),
             _ => throw new Exception("ploho vse")
         };
     }
@@ -189,8 +218,13 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
         }
         else
         {
+            int newYear = state.ViewModel.YearSelected + 1;
+            
+            if(_options.MaxYear <= newYear)
+                return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidYearMessage);
+
             state.ViewModel.MonthSelected = 1;
-            state.ViewModel.YearSelected += 1;
+            state.ViewModel.YearSelected = newYear;
         }
         
         await UpsertAndRerender(sp, state);
@@ -205,8 +239,13 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
         }
         else
         {
+            int newYear = state.ViewModel.YearSelected - 1;
+            
+            if(_options.MinYear >= newYear)
+                return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidYearMessage);
+
             state.ViewModel.MonthSelected = 12;
-            state.ViewModel.YearSelected -= 1;
+            state.ViewModel.YearSelected = newYear;
         }
         
         await UpsertAndRerender(sp, state);

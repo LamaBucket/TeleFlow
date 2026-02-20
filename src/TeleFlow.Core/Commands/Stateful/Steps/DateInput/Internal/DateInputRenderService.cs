@@ -1,3 +1,4 @@
+using TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase.Internal;
 using TeleFlow.Core.Transport.Callbacks;
 using TeleFlow.Core.Transport.Markup;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -61,10 +62,10 @@ internal static class DateInputRenderService
         }
 
         var navAction = CallbackActions.Ui.PrevPage;
-        builder.ButtonCallback("<-", markupButtonActionCodec(navAction));
+        builder.ButtonCallback(config.PrevYearPageButtonText, markupButtonActionCodec(navAction));
 
         navAction = CallbackActions.Ui.NextPage;
-        builder.ButtonCallback("->", markupButtonActionCodec(navAction));
+        builder.ButtonCallback(config.NextYearPageButtonText, markupButtonActionCodec(navAction));
 
         return builder.Build();
     }
@@ -78,9 +79,9 @@ internal static class DateInputRenderService
 
         var b = new InlineKeyboardBuilder();
 
-        b.ButtonCallback("<-", markupButtonActionCodec(CallbackActions.Ui.PrevPage));
+        b.ButtonCallback(config.PrevYearItemButtonText, markupButtonActionCodec(CallbackActions.Ui.PrevPage));
         b.ButtonCallback(vm.YearSelected.ToString(), markupButtonActionCodec(CallbackActions.Ui.GoToPage(0)));
-        b.ButtonCallback("->", markupButtonActionCodec(CallbackActions.Ui.NextPage));
+        b.ButtonCallback(config.NextYearItemButtonText, markupButtonActionCodec(CallbackActions.Ui.NextPage));
         b.NewRow();
 
         int totalCells = rows * cols;
@@ -99,11 +100,9 @@ internal static class DateInputRenderService
             }
             else
             {
-                // padding cell
-                b.ButtonCallback(" ", markupButtonActionCodec(CallbackActions.Ui.Noop));
+                b.ButtonCallback(DefaultButtonTexts.EmptyButtonText, markupButtonActionCodec(CallbackActions.Ui.Noop));
             }
 
-            // new row after each full row of cols
             if ((cell + 1) % cols == 0 && cell != totalCells - 1)
                 b.NewRow();
         }
@@ -124,12 +123,12 @@ internal static class DateInputRenderService
         
         int daysInMonth = DateTime.DaysInMonth(year, month);
 
-        b.ButtonCallback("<<", markupButtonActionCodec(CallbackActions.Ui.PrevPage));
+        b.ButtonCallback(config.PrevMonthItemButtonText, markupButtonActionCodec(CallbackActions.Ui.PrevPage));
 
-        string headerText = new DateOnly(year, month, 1).ToString("MMM yyyy", culture);
+        string headerText = new DateOnly(year, month, 1).ToString(config.YearMonthFormatOnDayPage, culture);
         b.ButtonCallback(headerText, markupButtonActionCodec(CallbackActions.Ui.GoToPage(1)));
 
-        b.ButtonCallback(">>", markupButtonActionCodec(CallbackActions.Ui.NextPage));
+        b.ButtonCallback(config.NextMonthItemButtonText, markupButtonActionCodec(CallbackActions.Ui.NextPage));
         b.NewRow();
         
         for (int i = 0; i < DaysInWeek; i++)
@@ -153,7 +152,7 @@ internal static class DateInputRenderService
 
                 if (day < 1 || day > daysInMonth)
                 {
-                    b.ButtonCallback(" ", markupButtonActionCodec(CallbackActions.Ui.Noop));
+                    b.ButtonCallback(DefaultButtonTexts.EmptyButtonText, markupButtonActionCodec(CallbackActions.Ui.Noop));
                     continue;
                 }
 
