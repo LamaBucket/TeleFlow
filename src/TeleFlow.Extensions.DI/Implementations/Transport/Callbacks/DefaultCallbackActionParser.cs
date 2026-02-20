@@ -15,7 +15,9 @@ public sealed class DefaultCallbackActionParser : ICallbackActionParser
 
     private const string UiNext    = "ui.next";
     private const string UiPrev    = "ui.prev";
-    private const string UiToggle  = "ui.tgl";
+    private const string UiNoop    = "ui.noop";
+    private const string UiGoTo    = "ui.goto";
+    private const string UiSelect  = "ui.sel";
 
     public CallbackToken Parse(CallbackAction action)
     {
@@ -23,15 +25,35 @@ public sealed class DefaultCallbackActionParser : ICallbackActionParser
 
         return action switch
         {
-            CallbackAction.Command.Execute e => new CallbackToken(CmdExec, RequireNonEmpty(e.CommandKey, nameof(e.CommandKey))),
+            // ----- Command -----
+            CallbackAction.CommandAction.Execute e
+                => new CallbackToken(CmdExec, RequireNonEmpty(e.CommandKey, nameof(e.CommandKey))),
 
-            CallbackAction.Step.Back       => new CallbackToken(StepBack, string.Empty),
-            CallbackAction.Step.Finish     => new CallbackToken(StepFin,  string.Empty),
-            CallbackAction.Step.GoTo g     => new CallbackToken(StepGoTo, RequireNonEmpty(g.StepId, nameof(g.StepId))),
+            // ----- Step -----
+            CallbackAction.StepAction.Back
+                => new CallbackToken(StepBack, string.Empty),
 
-            CallbackAction.Ui.NextPage     => new CallbackToken(UiNext,   string.Empty),
-            CallbackAction.Ui.PrevPage     => new CallbackToken(UiPrev,   string.Empty),
-            CallbackAction.Ui.SelectIndex t=> new CallbackToken(UiToggle, t.Index.ToString()),
+            CallbackAction.StepAction.Finish
+                => new CallbackToken(StepFin, string.Empty),
+
+            CallbackAction.StepAction.GoTo g
+                => new CallbackToken(StepGoTo, RequireNonEmpty(g.StepId, nameof(g.StepId))),
+
+            // ----- UI -----
+            CallbackAction.UiAction.NextPage
+                => new CallbackToken(UiNext, string.Empty),
+
+            CallbackAction.UiAction.PrevPage
+                => new CallbackToken(UiPrev, string.Empty),
+
+            CallbackAction.UiAction.NoOperation
+                => new CallbackToken(UiNoop, string.Empty),
+
+            CallbackAction.UiAction.GoToPage p
+                => new CallbackToken(UiGoTo, p.Page.ToString()),
+
+            CallbackAction.UiAction.SelectIndex s
+                => new CallbackToken(UiSelect, s.Index.ToString()),
 
             _ => throw new NotSupportedException($"Unsupported callback action type: {action.GetType().FullName}")
         };
@@ -45,41 +67,54 @@ public sealed class DefaultCallbackActionParser : ICallbackActionParser
             return false;
 
         // Kind/Data могут прилететь null из чужой реализации
-        var kind = token.Kind ?? string.Empty;
-        var data = token.Data ?? string.Empty;
+        string kind = token.Kind ?? string.Empty;
+        string data = token.Data ?? string.Empty;
 
         switch (kind)
         {
+            // ----- Command -----
             case CmdExec:
                 if (string.IsNullOrWhiteSpace(data)) return false;
-                action = new CallbackAction.Command.Execute(data);
+                action = new CallbackAction.CommandAction.Execute(data);
                 return true;
 
+            // ----- Step -----
             case StepBack:
-                action = new CallbackAction.Step.Back();
+                action = new CallbackAction.StepAction.Back();
                 return true;
 
             case StepFin:
-                action = new CallbackAction.Step.Finish();
+                action = new CallbackAction.StepAction.Finish();
                 return true;
 
             case StepGoTo:
                 if (string.IsNullOrWhiteSpace(data)) return false;
-                action = new CallbackAction.Step.GoTo(data);
+                action = new CallbackAction.StepAction.GoTo(data);
                 return true;
 
+            // ----- UI -----
             case UiNext:
-                action = new CallbackAction.Ui.NextPage();
+                action = new CallbackAction.UiAction.NextPage();
                 return true;
 
             case UiPrev:
-                action = new CallbackAction.Ui.PrevPage();
+                action = new CallbackAction.UiAction.PrevPage();
                 return true;
 
-            case UiToggle:
-                if (!int.TryParse(data, out var idx)) return false;
-                if (idx < 0) return false;
-                action = new CallbackAction.Ui.SelectIndex(idx);
+            case UiNoop:
+                action = new CallbackAction.UiAction.NoOperation();
+                return true;
+
+            case UiGoTo:
+                if (!int.TryParse(data, out int page)) return false;
+                action = new CallbackAction.UiAction.GoToPage(page);
+                return true;
+
+            case UiSelect:
+                // ВАЖНО: не запрещаем отрицательные индексы.
+                // Это позволяет шагам использовать SelectIndex как локальный протокол (например -1/-2) при необходимости.
+                if (!int.TryParse(data, out int idx)) return false;
+                action = new CallbackAction.UiAction.SelectIndex(idx);
                 return true;
 
             default:

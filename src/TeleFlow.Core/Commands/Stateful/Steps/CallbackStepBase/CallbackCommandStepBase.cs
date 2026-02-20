@@ -120,7 +120,7 @@ public abstract class CallbackCommandStepBase<TVM> : ICommandStep
         return await store.GetState<TVM>(chatId);
     }
 
-    private static async Task UpsertState(IServiceProvider sp, StepState<TVM> state)
+    public static async Task UpsertState(IServiceProvider sp, StepState<TVM> state)
     {
         var chatId = sp.GetRequiredService<IChatIdProvider>().GetChatId();
         var store = sp.GetRequiredService<IStepStateStore>();
