@@ -2,23 +2,24 @@ namespace TeleFlow.Core.Transport.Callbacks;
 
 public abstract record CallbackAction
 {
-    public abstract record Command : CallbackAction
+    public abstract record CommandAction : CallbackAction
     {
-        public sealed record Execute(string CommandKey) : Command;
+        public sealed record Execute(string CommandKey) : CommandAction;
     }
 
-    public abstract record Step : CallbackAction
+    public abstract record StepAction : CallbackAction
     {
-        public sealed record Back : Step;
-        public sealed record Finish : Step;
-        public sealed record GoTo(string StepId) : Step;
+        public sealed record Back : StepAction;
+        public sealed record Finish : StepAction;
+        public sealed record GoTo(string StepId) : StepAction;
     }
 
-    public abstract record Ui : CallbackAction
+    public abstract record UiAction : CallbackAction
     {
-        public sealed record NoOperation : Ui;
-        public sealed record NextPage : Ui;
-        public sealed record PrevPage : Ui;
-        public sealed record SelectIndex(int Index) : Ui;
+        public sealed record GoToPage(int Page) : UiAction;
+        public sealed record NoOperation : UiAction;
+        public sealed record NextPage : UiAction;
+        public sealed record PrevPage : UiAction;
+        public sealed record SelectIndex(int Index) : UiAction;
     }
 }

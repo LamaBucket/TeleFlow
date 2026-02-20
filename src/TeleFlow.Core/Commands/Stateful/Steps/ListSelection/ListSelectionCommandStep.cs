@@ -1,15 +1,11 @@
-using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Abstractions.Engine.ChatIdentity;
 using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.State.Step;
-using TeleFlow.Abstractions.Transport.Callbacks;
 using TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase;
 using TeleFlow.Core.Commands.Stateful.Steps.ListSelection.Internal;
 using TeleFlow.Core.Transport.Callbacks;
-using TeleFlow.Core.Transport.Markup;
 using Telegram.Bot.Types.ReplyMarkups;
-using static TeleFlow.Core.Transport.Callbacks.CallbackAction.Step;
-using static TeleFlow.Core.Transport.Callbacks.CallbackAction.Ui;
+using static TeleFlow.Core.Transport.Callbacks.CallbackAction.StepAction;
+using static TeleFlow.Core.Transport.Callbacks.CallbackAction.UiAction;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.ListSelection;
 

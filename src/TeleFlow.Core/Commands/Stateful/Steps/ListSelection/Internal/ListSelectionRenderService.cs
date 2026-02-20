@@ -1,8 +1,8 @@
 using TeleFlow.Core.Transport.Callbacks;
 using TeleFlow.Core.Transport.Markup;
 using Telegram.Bot.Types.ReplyMarkups;
-using static TeleFlow.Core.Transport.Callbacks.CallbackAction.Step;
-using static TeleFlow.Core.Transport.Callbacks.CallbackAction.Ui;
+using static TeleFlow.Core.Transport.Callbacks.CallbackAction.StepAction;
+using static TeleFlow.Core.Transport.Callbacks.CallbackAction.UiAction;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.ListSelection.Internal;
 
@@ -42,7 +42,7 @@ internal static class ListSelectionRenderService
                         text = '*' + text + '*';
                 }
 
-                b.ButtonCallback(text, markupButtonActionCodec(new SelectIndex(idx)));
+                b.ButtonCallback(text, markupButtonActionCodec(CallbackActions.Ui.Select(idx)));
             }
 
             b.NewRow();
@@ -54,9 +54,9 @@ internal static class ListSelectionRenderService
         if (hasPrev || hasNext)
         {
             if (hasPrev)
-                b.ButtonCallback("<-", markupButtonActionCodec(new PrevPage()));
+                b.ButtonCallback("<-", markupButtonActionCodec(CallbackActions.Ui.PrevPage));
             if (hasNext)
-                b.ButtonCallback("->", markupButtonActionCodec(new NextPage()));
+                b.ButtonCallback("->", markupButtonActionCodec(CallbackActions.Ui.NextPage));
             b.NewRow();
         }
 
