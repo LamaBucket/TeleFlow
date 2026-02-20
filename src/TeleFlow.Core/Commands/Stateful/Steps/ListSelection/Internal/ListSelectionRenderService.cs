@@ -1,4 +1,5 @@
 using TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase.Internal;
+using TeleFlow.Core.Commands.Stateful.Steps.ListSelection.Configuration;
 using TeleFlow.Core.Transport.Callbacks;
 using TeleFlow.Core.Transport.Markup;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -7,122 +8,95 @@ namespace TeleFlow.Core.Commands.Stateful.Steps.ListSelection.Internal;
 
 internal static class ListSelectionRenderService
 {
-    internal static InlineKeyboardMarkup RenderMarkup<T>(ListSelectionCommandStepOptions<T> config,
-                                                         Func<CallbackAction, string> codec,
-                                                         ListSelectionCommandStepViewModel<T> vm)
+    internal static InlineKeyboardMarkup RenderMarkup<T>(ListSelectionOptions<T> config, Func<CallbackAction, string> codec, ListSelectionCommandStepViewModel<T> vm)
     {
         return config.Mode switch
         {
             ListSelectionMode.SingleSelect<T>    => RenderSingle(config, codec, vm),
-            ListSelectionMode.MultiSelect<T> ms  => RenderMulti(config, ms.FinishButtonText, codec, vm),
+            ListSelectionMode.MultiSelect<T>     => RenderMulti(config, codec, vm),
             _ => throw new NotSupportedException($"Unknown mode: {config.Mode.GetType().FullName}")
         };
     }
 
-    #region SingleSelect
-    
-    private static InlineKeyboardMarkup RenderSingle<T>(ListSelectionCommandStepOptions<T> config,
-                                                        Func<CallbackAction, string> codec,
-                                                        ListSelectionCommandStepViewModel<T> vm)
+    private static InlineKeyboardMarkup RenderSingle<T>(ListSelectionOptions<T> config, Func<CallbackAction, string> codec, ListSelectionCommandStepViewModel<T> vm)
     {
         var builder = new InlineKeyboardBuilder();
 
         AppendItemsGrid(config, codec, vm, builder);
-        AppendNavigation(config, codec, builder);
+        
+        builder.NewRow();
+        AppendNavigation(config.ButtonTextOptions, codec, builder);
 
         return builder.Build();
     }
-    
-    #endregion
 
-    #region MultiSelect
-
-    private static InlineKeyboardMarkup RenderMulti<T>(ListSelectionCommandStepOptions<T> config,
-                                                       string finishButtonText,
-                                                       Func<CallbackAction, string> codec,
-                                                       ListSelectionCommandStepViewModel<T> vm)
+    private static InlineKeyboardMarkup RenderMulti<T>(ListSelectionOptions<T> config, Func<CallbackAction, string> codec, ListSelectionCommandStepViewModel<T> vm)
     {
         var builder = new InlineKeyboardBuilder();
 
         AppendItemsGrid(config, codec, vm, builder);
-        AppendNavigation(config, codec, builder);
 
         builder.NewRow();
-        builder.ButtonCallback(finishButtonText, codec(CallbackActions.Step.Finish));
+        AppendNavigation(config.ButtonTextOptions, codec, builder);
+
+        builder.NewRow();
+        builder.ButtonCallback(config.ButtonTextOptions.MultiSelectFinishButtonText, codec(CallbackActions.Step.Finish));
 
         return builder.Build();
     }
 
-    #endregion
 
-    private static void AppendItemsGrid<T>(ListSelectionCommandStepOptions<T> config,
-                                           Func<CallbackAction, string> codec,
-                                           ListSelectionCommandStepViewModel<T> vm,
-                                           InlineKeyboardBuilder b)
+    private static void AppendItemsGrid<T>(ListSelectionOptions<T> config, Func<CallbackAction, string> codec, ListSelectionCommandStepViewModel<T> vm, InlineKeyboardBuilder builder)
     {
-        int cols = config.MaxItemsInRow;
-        int rows = config.MaxRowsInPage;
-        int pageSize = cols * rows;
+        var pageConfig = config.PageSizeOptions;
 
-        int pageStart = vm.Page * pageSize;
-        int itemsCount = vm.Values.Count;
+        int pageSize = ListSelectionPagingHelper.CalculatePageSize(pageConfig);
 
-        if (pageStart < 0) pageStart = 0;
-        if (pageStart > itemsCount) pageStart = itemsCount;
+        int pageStartIndex = vm.Page * pageSize;
+        int currentItemIndex = pageStartIndex;
 
-        int remaining = itemsCount - pageStart;
-        int take = Math.Min(pageSize, remaining);
-
-        bool isLastPage = (pageStart + take) >= itemsCount;
-        bool pad = config.FitItemsOnLastPage && isLastPage;
-
-        for (int i = 0; i < take; i++)
+        for(int row = 0; row < pageConfig.MaxRowsInPage; row++)
         {
-            int idx = pageStart + i;
-            var item = vm.Values[idx];
+            bool rowHasButtons = false;
 
-            string text = config.DisplayNameParser(item);
-            if (IsSelected(vm, idx))
-                text = $"*{text}*";
-
-            b.ButtonCallback(text, codec(CallbackActions.Ui.Select(idx)));
-
-            if ((i + 1) % cols == 0 && i != take - 1)
-                b.NewRow();
-        }
-
-        if (pad)
-        {
-            int cellsOnPage = take;
-            int totalCells = pageSize;
-            int padCount = totalCells - cellsOnPage;
-
-            if (padCount > 0)
+            for(int col = 0; col < pageConfig.MaxItemsInRow; col++)
             {
-                for (int p = 0; p < padCount; p++)
+                if(currentItemIndex > vm.Values.Count - 1)
                 {
-                    int posInRow = (cellsOnPage + p) % cols;
-                    if (cellsOnPage > 0 && posInRow == 0)
-                        b.NewRow();
-
-                    b.ButtonCallback(DefaultButtonTexts.EmptyButtonText, codec(CallbackActions.Ui.Noop));
+                    if (pageConfig.FitItemsOnLastPage)
+                    {
+                        builder.ButtonCallback(DefaultButtonTexts.EmptyButtonText, codec(CallbackActions.Ui.Noop));
+                        rowHasButtons = true;
+                    }
+                    else break;
                 }
+                else
+                {
+                    var item = vm.Values[currentItemIndex];
+                    var text = config.DisplayNameParser(item);
+
+                    if (vm.IsSelected(currentItemIndex))
+                        text = $"*{text}*";
+                    
+                    builder.ButtonCallback(text, codec(CallbackActions.Ui.Select(currentItemIndex)));
+                    rowHasButtons = true;
+                }
+
+                currentItemIndex += 1;
             }
+
+            if (!pageConfig.FitItemsOnLastPage && !rowHasButtons)
+                break;
+            
+            if (rowHasButtons && row != pageConfig.MaxRowsInPage - 1)
+                builder.NewRow();
         }
     }
 
-    private static void AppendNavigation<T>(ListSelectionCommandStepOptions<T> config,
-                                            Func<CallbackAction, string> codec,
-                                            InlineKeyboardBuilder b)
+    private static void AppendNavigation(ListSelectionButtonTextOptions config, Func<CallbackAction, string> codec, InlineKeyboardBuilder b)
     {
-        b.NewRow();
         b.ButtonCallback(config.PrevPageButtonText, codec(CallbackActions.Ui.PrevPage));
         b.ButtonCallback(config.NextPageButtonText, codec(CallbackActions.Ui.NextPage));
-    }
-
-    private static bool IsSelected<T>(ListSelectionCommandStepViewModel<T> vm, int idx)
-    {
-        return vm.SelectedIndexes.Contains(idx);
     }
 
 }

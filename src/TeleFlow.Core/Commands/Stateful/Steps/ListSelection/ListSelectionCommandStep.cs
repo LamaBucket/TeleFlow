@@ -1,17 +1,18 @@
 using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase;
+using TeleFlow.Core.Commands.Stateful.Steps.ListSelection.Configuration;
 using TeleFlow.Core.Commands.Stateful.Steps.ListSelection.Internal;
 using TeleFlow.Core.Transport.Callbacks;
 using Telegram.Bot.Types.ReplyMarkups;
-using static TeleFlow.Core.Commands.Stateful.Steps.ListSelection.ListSelectionMode;
+using static TeleFlow.Core.Commands.Stateful.Steps.ListSelection.Configuration.ListSelectionMode;
 using static TeleFlow.Core.Transport.Callbacks.CallbackAction.UiAction;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.ListSelection;
 
 public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelectionCommandStepViewModel<T>>
 {
-    private readonly ListSelectionCommandStepOptions<T> _options;
+    private readonly ListSelectionOptions<T> _options;
     
     protected override async Task<ListSelectionCommandStepViewModel<T>> CreateDefaultViewModel(IServiceProvider sp)
         => new(await _options.ValueProvider.Invoke(sp));
@@ -46,7 +47,13 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
 
     private async Task<CommandStepResult> HandleSingleSelectSelect(IServiceProvider sp, SingleSelect<T> mode, StepState<ListSelectionCommandStepViewModel<T>> state, int index)
     {
-        var item = state.ViewModel.Values[index];
+        if(!ListSelectionViewModelEditor.Toggle(state.ViewModel, index))
+        {
+            var errors = _options.ErrorMessageOptions;
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, errors.IndexOutOfRangeMessage);
+        }
+
+        var item = state.ViewModel.SelectedValue;
         await mode.OnCommit(new(sp), item);
 
         await FinalizeStep(sp);
@@ -71,7 +78,11 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
 
     private async Task<CommandStepResult> HandleMultiSelectSelect(IServiceProvider sp, StepState<ListSelectionCommandStepViewModel<T>> state, int index)
     {
-        state.ViewModel.Toggle(index);
+        if(!ListSelectionViewModelEditor.Toggle(state.ViewModel, index))
+        {
+            var errors = _options.ErrorMessageOptions;
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, errors.IndexOutOfRangeMessage);
+        }
         
         await UpsertAndRerender(sp, state);
         return CommandStepResult.HoldOn(CommandStepHoldOnReason.Other);
@@ -91,15 +102,11 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
     
     private async Task<CommandStepResult> HandleNextPageAsync(IServiceProvider sp, StepState<ListSelectionCommandStepViewModel<T>> state)
     {
-        var vm = state.ViewModel;
-
-        int pageSize = _options.MaxItemsInRow * _options.MaxRowsInPage;
-        int maxPage = vm.Values.Count == 0 ? 0 : (vm.Values.Count - 1) / pageSize;
-
-        if (vm.Page > maxPage) 
-            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.LastPageMessage);
-        
-        vm.Page += 1;
+        if (!ListSelectionViewModelEditor.NextPage(state.ViewModel, _options.PageSizeOptions))
+        {
+            var errors = _options.ErrorMessageOptions;
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, errors.LastPageMessage);
+        }
 
         await UpsertAndRerender(sp, state);
         return CommandStepResult.HoldOn(CommandStepHoldOnReason.Other);
@@ -107,12 +114,11 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
 
     private async Task<CommandStepResult> HandlePrevPageAsync(IServiceProvider sp, StepState<ListSelectionCommandStepViewModel<T>> state)
     {
-        var vm = state.ViewModel;
-
-        if (vm.Page < 0) 
-            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.FirstPageMessage);
-
-        vm.Page -= 1;
+        if (!ListSelectionViewModelEditor.PrevPage(state.ViewModel))
+        {
+            var errors = _options.ErrorMessageOptions;
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, errors.FirstPageMessage);
+        }
 
         await UpsertAndRerender(sp, state);
         return CommandStepResult.HoldOn(CommandStepHoldOnReason.Other);
@@ -121,7 +127,7 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
     #endregion
 
 
-    public ListSelectionCommandStep(ListSelectionCommandStepOptions<T> options, CallbackCommandStepBaseOptions optionsBase) : base(optionsBase)
+    public ListSelectionCommandStep(ListSelectionOptions<T> options, CallbackCommandStepBaseOptions optionsBase) : base(optionsBase)
     {
         _options = options;
     }
