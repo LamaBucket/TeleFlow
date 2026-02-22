@@ -1,7 +1,9 @@
 using TeleFlow.Abstractions.Engine.Commands.Stateful;
+using TeleFlow.Abstractions.Transport.Files;
 using TeleFlow.Core.Commands.Stateful;
 using TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase;
 using TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
+using TeleFlow.Core.Commands.Stateful.Steps.FileInput;
 using TeleFlow.Core.Commands.Stateful.Steps.ListSelection;
 using TeleFlow.Core.Commands.Stateful.Steps.ListSelection.Configuration;
 using TeleFlow.Core.Commands.Stateful.Steps.TextInput;
@@ -86,6 +88,16 @@ public class CommandStepRouterBuilder
         );
 
     
+    #endregion
+
+    #region File
+    
+    public CommandStepRouterBuilder AddFile(FileInputCommandStepOptions options)
+        => Add(() => new FileInputCommandStep(options));
+    
+    public CommandStepRouterBuilder AddFile(string userPrompt, Func<CommandStepCommitContext, FileReference, Task> onUserCommit)
+        => AddFile(new(){ UserPrompt = userPrompt, OnUserCommit = onUserCommit });
+
     #endregion
 
     public CommandStepRouter Build()
