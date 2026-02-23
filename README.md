@@ -1,341 +1,215 @@
-# 🧠 **TeleFlow (Telegram.Bot.Extensions.Handlers)**
+# TeleFlow
 
-*A modern, extensible Telegram bot framework for .NET — built for structured conversations, FSM-driven flows, and developer joy.*
----
+**TeleFlow** is a Telegram bot framework for .NET focused on **structured conversations**:  
+an update pipeline + commands + chat sessions + multi-step flows (FSM-like) — without “state spaghetti”.
 
-## ✨ Key Features
-
-* **Multi-Step Commands (FSM)** – build rich conversational flows without state spaghetti.
-* **Built-in DatePicker** – interactive inline calendar, no more “enter date in DD/MM/YYYY.”
-* **Interceptor & Validator pipeline** – plug checks or transformations before handlers.
-* **Navigation between commands** – move seamlessly through dialog stages.
-* **Async first** – fully asynchronous execution pipeline.
-* **Fluent configuration via lambdas** – ASP.NET-Core-style setup for familiarity.
-* **Photo and Media support** – receive, process, and send images out of the box.
+[![Docs](https://img.shields.io/badge/docs-online-blue)](https://lamabucket.github.io/TeleFlow/)
+[![Release](https://img.shields.io/github/v/release/LamaBucket/TeleFlow)](https://github.com/LamaBucket/TeleFlow/releases)
+[![Stars](https://img.shields.io/github/stars/LamaBucket/TeleFlow?style=social)](https://github.com/LamaBucket/TeleFlow)
 
 ---
 
-## 🚀 Quick Start
+## Why TeleFlow?
 
-### 1️⃣ Install
+When bots grow, you usually end up with:
+- scattered handlers,
+- implicit state in random places,
+- hard-to-debug flows.
+
+TeleFlow makes the conversation model explicit:
+
+- **Update pipeline** (middleware-style processing)
+- **Commands** for application logic
+- **ChatSession** as dialog state between updates
+- **Stateful multi-step flows** built from reusable steps
+- **CommandResult interpreters** controlling navigation, step transitions, and “hold on input”
+- **Interceptors** for command-scoped cross-cutting concerns (auth, validation, logging)
+
+---
+
+## Quick Start (Polling)
+
+### Prerequisites
+- .NET 8 SDK
+- Telegram bot token (via `@BotFather`)
+
+### Install
 
 ```bash
+dotnet new console -n MyTeleFlowBot
+cd MyTeleFlowBot
 dotnet add package TeleFlow
 ```
 
-### 2️⃣ Create your bot entry point
+### Configure your token
 
-```csharp
+Set environment variable `TELEGRAM_BOT_TOKEN`.
 
-using demo.Services;
-using TeleFlow.Factories;
-using TeleFlow.Models;
-using TeleFlow.Services;
-using Telegram.Bot;
-using TeleFlow.Services.Markup;
-using TeleFlow.Services.Messaging;
-using Telegram.Bot.Types;
-using Telegram.Bot.Types.ReplyMarkups;
-
-string BOT_TOKEN = System.IO.File.ReadAllText("bot-token.txt");
-
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddSingleton<IMessageServiceFactory<IMessageServiceWithEdit<Message>, Message>, UniversalMessageServiceFactory>();
-builder.Services.AddSingleton<IMessageServiceFactory<string>, UniversalMessageServiceFactory>();
-builder.Services.AddSingleton<IMessageServiceFactory<ImageMessageServiceMessage>, UniversalMessageServiceFactory>();
-
-
-
-builder.Services.AddSingleton<IReplyMarkupManagerFactory, ReplyMarkupManagerFactory>();
-builder.Services.AddSingleton<InlineMarkupManagerFactory, DemoInlineMarkupManagerFactory>();
-
-builder.Services.AddSingleton<IMediaDownloaderServiceFactory, MediaDownloaderServiceFactory>();
-
-builder.Services.AddSingleton<IUpdateDistributorArgsBuilder<UpdateDistributorNextHandlerBuildArgs>, UpdateDistributorArgsBuilder>();
-
-builder.Services.AddSingleton<UpdateDistributorFactory<UpdateDistributorNextHandlerBuildArgs>, DemoUpdateDistributorFactory>();
-
-builder.Services.AddHttpClient("tgwebhook")
-                .RemoveAllLoggers()
-                .AddTypedClient<ITelegramBotClient>(httpClient => new TelegramBotClient(BOT_TOKEN, httpClient));
-
-builder.Services.ConfigureTelegramBotMvc();
-
-var app = builder.Build();
-
-app.UseHttpsRedirection();
-
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.Run();
-
-
+**Linux/macOS**
+```bash
+export TELEGRAM_BOT_TOKEN="123456:ABCDEF..."
 ```
 
-### 3️⃣ Define your first command
-
-```csharp
-using TeleFlow.Builders;
-using TeleFlow.Factories;
-using TeleFlow.Models;
-using TeleFlow.Services;
-
-namespace demo;
-
-public class DemoUpdateDistributorFactory : UpdateDistributorFactory<UpdateDistributorNextHandlerBuildArgs>
-{
-
-    protected override void SetupUpdateListenerFactoryBuilder(UpdateListenerCommandFactoryBuilder<UpdateDistributorNextHandlerBuildArgs> builder)
-    {
-        builder.WithLambda("/start", (args) => {
-            return new SendTextCommand(args.BuildTimeArgs.FromUpdateDistributorArgs.MessageServiceString, "Welcome to the bot!");
-        });
-    }
-
-    public DemoUpdateDistributorFactory(IUpdateDistributorArgsBuilder<UpdateDistributorNextHandlerBuildArgs> updateDistributorArgsBuilder) : base(updateDistributorArgsBuilder)
-    {
-    }
-}
+**Windows (PowerShell)**
+```powershell
+setx TELEGRAM_BOT_TOKEN "123456:ABCDEF..."
 ```
 
----
+### Program.cs (copy/paste)
 
-## 🧩 Building Multi-Step Commands (FSM)
-
-TeleFlow lets you model interactive dialogs as **state machines**:
+This demo adds:
+- `/start` → “Hello, World!”
+- `/test`  → asks your name → asks rating (1..5) → prints the result
 
 ```csharp
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
-public class DemoUpdateDistributorFactory : UpdateDistributorFactory<UpdateDistributorNextHandlerBuildArgs>
-{
+using TeleFlow.Extensions.DI.Polling;
 
-    protected override void SetupUpdateListenerFactoryBuilder(UpdateListenerCommandFactoryBuilder<UpdateDistributorNextHandlerBuildArgs> builder)
+using TeleFlow.Abstractions.Engine.ChatIdentity;
+using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Abstractions.Transport.Messaging;
+
+var token = Environment.GetEnvironmentVariable("TELEGRAM_BOT_TOKEN");
+if (string.IsNullOrWhiteSpace(token))
+    throw new InvalidOperationException("Environment variable TELEGRAM_BOT_TOKEN is not set.");
+
+// WARNING: demo in-memory storage (for the first example).
+// In production, use a proper ChatSession store / your DB / distributed cache.
+Dictionary<long, string> names = new();
+Dictionary<long, int> rates = new();
+
+var host = Host.CreateDefaultBuilder()
+    .ConfigureLogging(logging =>
     {
-        builder
-        .WithMultiStep<DemoViewModel>("/multistep", options =>
-        {
-            options
-            .SetDefaultStateValue(new())
-            .WithValidation(options =>
+        logging.AddFilter((category, level) => level >= LogLevel.Error);
+    })
+    .ConfigureServices(services =>
+        services.AddTeleFlowPolling(
+            botToken: token,
+            teleFlow: options => options.ConfigureCommandRouters(commands =>
             {
-                options
-                .WithStepWithValidationLambdaFactory((args, next) =>
-                {
-                    return new ContactShareStepCommand(args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.ReplyMarkupManager, (userInput) =>
-                    {
-                        args.State.CurrentValue.PhoneNumber = userInput.PhoneNumber;
-                    }, "Please Share Your Phone. This will NOT go anywhere", "Share My Phone",
-                    new PhoneNumberBelongsToUserValidator(args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.MessageServiceString, args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.ChatIdProvider, "The input was invalid", "The phone number does not belong to you."),
-                    next);
-                }, "Phone Number")
-                .WithStepWithValidationLambdaFactoryGoBackButton((args, next, validator) =>
-                {
-                    return new TextInputStepCommand(args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.MessageServiceString, "Please enter your full name", async (message) =>
-                    {
-                        args.State.CurrentValue.UserFullName = message;
-                    }, next, validator);
-                }, "User Full Name")
-                .WithStepWithValidationLambdaFactory((args, next) =>
-                {
-                    return new EnumValueSelectionStepCommand<DemoEnum>(args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.MessageService, "Please select one of the values",
-                    async (userInput) =>
-                    {
-                        args.State.CurrentValue.LibraryRating = userInput;
-                    },
-                    (enumValue) =>
-                    {
-                        if (enumValue == DemoEnum.None)
-                            return null;
+                commands.AddSendText("/start", "Hello, World!");
 
-                        return enumValue.ToString();
-                    }, new(), next);
-                }, "Library Rating")
-                .WithStepWithValidationLambdaFactory((args, next) =>
+                commands.AddMultiStep("/test", flow =>
                 {
-                    return new ListValueSelectionStepCommand<DemoListObject>(args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.MessageService, "Please select the value.",
-                    async (userInput) =>
-                    {
-                        args.State.CurrentValue.ListObject = userInput;
-                    },
-                    new(3),
-                    async () =>
-                    {
-                        return new List<DemoListObject>() { new() { DisplayName = "List Object 1", Value = "Value 1" }, new() { DisplayName = "List Object 2", Value = "Value 2" } };
-                    },
-                    (listObject) =>
-                    {
-                        return listObject.DisplayName;
-                    }, next);
-                }, "List Object Selection");
-            })
-            .WithLambdaResult(args =>
-            {
-                return new LambdaHandler<DemoViewModel>(async (vm) =>
+                    flow
+                        .AddTextInput(
+                            "Hey there! Please tell us your name.",
+                            async (context, name) =>
+                            {
+                                var chatId = context.ChatId;
+                                names[chatId] = name;
+                            })
+                        .AddSingleSelect(
+                            "Please rate our library!",
+                            new[] { 1, 2, 3, 4, 5 },
+                            star => star.ToString(),
+                            async (context, star) =>
+                            {
+                                var chatId = context.ChatId;
+                                rates[chatId] = star;
+                            });
+
+                }, onCompleted: async sp =>
                 {
-                    StringBuilder sb = new();
+                    // Finalization runs inside the current update scope.
+                    var chatId = sp.GetRequiredService<IChatIdProvider>().GetChatId();
 
-                    sb.AppendLine("You have successfully completed the multi step command. Here is the data you entered:");
-                    sb.AppendLine($"Full Name: {vm.UserFullName}");
-                    sb.AppendLine($"Library Rating: {vm.LibraryRating}");
-                    sb.AppendLine($"List Object: {vm.ListObject.DisplayName} with value {vm.ListObject.Value}");
-                    sb.AppendLine($"Phone: {vm.PhoneNumber}");
+                    var name = names[chatId];
+                    var star = rates[chatId];
 
-                    await args.BuildTimeArgs.FromUpdateDistributorArgs.MessageServiceString.SendMessage(sb.ToString());
-                    await args.BuildTimeArgs.Navigator.Handle("/start");
+                    var msg = $"Your name is {name} and you rated us {star} star(s)!";
+
+                    var sender = sp.GetRequiredService<IMessageSender>();
+                    await sender.SendMessage(msg);
+
+                    return CommandResult.Exit;
                 });
-            });
-        })
-    }
-
-    public DemoUpdateDistributorFactory(IUpdateDistributorArgsBuilder<UpdateDistributorNextHandlerBuildArgs> updateDistributorArgsBuilder) : base(updateDistributorArgsBuilder)
-    {
-    }
-}
-
-```
----
-
-## 📅 Using the DatePicker
-
-Inline calendar selection is as simple as:
-
-```csharp
-
-public class DemoUpdateDistributorFactory : UpdateDistributorFactory<UpdateDistributorNextHandlerBuildArgs>
-{
-
-    protected override void SetupUpdateListenerFactoryBuilder(UpdateListenerCommandFactoryBuilder<UpdateDistributorNextHandlerBuildArgs> builder)
-    {
-        builder
-        .WithMultiStep<DemoViewModel>("/multistep", options =>
-        {
-            options
-            .SetDefaultStateValue(new())
-            .WithValidation(options =>
-            {
-                options
-                .WithStepWithValidationLambdaFactory((args, next) =>
-                {
-                    return new DateSelectionStepCommand(next, args.UpdateListenerBuilderArgs.BuildTimeArgs.FromUpdateDistributorArgs.MessageService, (date) =>
-                    {
-                        args.State.CurrentValue.SelectedDate = date;
-                    }, "Pick a date", new(DateOnly.FromDateTime(DateTime.Today).AddYears(-18), TeleFlow.Services.DateSelectionView.YearSelection), null, new(DateOnly.FromDateTime(DateTime.Today).AddYears(-14), "You are too young!"));
-                }, "Date");
             })
-            .WithLambdaResult(args =>
-            {
-                return new LambdaHandler<DemoViewModel>(async (vm) =>
-                {
-                    StringBuilder sb = new();
+        )
+    )
+    .Build();
 
-                    sb.AppendLine("You have successfully completed the multi step command. Here is the data you entered:");
-                    sb.AppendLine($"Date: {vm.SelectedDate.ToShortDateString()}");
+await host.RunAsync();
+```
 
-                    await args.BuildTimeArgs.FromUpdateDistributorArgs.MessageServiceString.SendMessage(sb.ToString());
-                    await args.BuildTimeArgs.Navigator.Handle("/start");
-                });
-            });
-        })
-    }
-
-    public DemoUpdateDistributorFactory(IUpdateDistributorArgsBuilder<UpdateDistributorNextHandlerBuildArgs> updateDistributorArgsBuilder) : base(updateDistributorArgsBuilder)
-    {
-    }
-}
-
+Run it:
+```bash
+dotnet run
 ```
 
 ---
 
-## 🧭 Navigation & Interceptors
+## Built-in steps (Stateful flows)
 
-Interceptors run **before** your handler executes — useful for auth, validation, or logging.
-
----
-
-
-## 🧠 Concepts in TeleFlow
-
-| Concept                       | Purpose                                                |
-| ----------------------------- | ------------------------------------------------------ |
-| **Command Handler**           | Encapsulates single user action.                       |
-| **MultiStep Command**         | Defines sequential interaction with user state.        |
-| **Navigator**                 | Moves user between commands/states.                    |
-| **Interceptors / Validators** | Pre-processing logic.                                  |
-| **DatePicker**                | Inline UI component for dates.                         |
-| **Factory Builder**           | Internal system creating command handlers dynamically. |
-
-![alt text](diag.png)
----
-
-
-## 🧰 Advanced Topics
-
-* **Error Handling & Retry Policies**
-* **Dependency Injection**
-* **Custom Interceptors**
-* **Testing Command Flows**
+TeleFlow ships with reusable steps you can compose in any order:
+- `TextInput` — text input
+- `ContactInput` — contact input
+- `DateInput` — date selection (year / year-month / full date)
+- `ListSelection` — list selection (`SingleSelect` / `MultiSelect`)
 
 ---
 
-## 📦 Roadmap
+## Concepts at a glance
 
-* [ ] Inline Keyboards API V2
-* [ ] JSON-based Dialog Serialization
-* [ ] Redis state storage extension (`TeleFlow.Redis`)
-* [ ] Admin Panel Toolkit
+### Commands
+
+A command processes a single `Update` and returns a `CommandResult`.  
+Commands are created per update; dialog state lives in `ChatSession`.
+
+- **Stateless**: no session persistence, good for `/help`, simple `/start`
+- **Stateful**: stores `ChatSession`, good for dialogs and multi-step flows
+
+### ChatSession
+
+`ChatSession` represents current dialog state (current command, current step, step initialization flag).  
+This is what lets TeleFlow resume conversations across updates.
+
+### CommandResult & interpreters
+
+Commands do not mutate the session directly.  
+Instead, they return a `CommandResult`, and a chain of interpreters applies the actual behavior:
+- exit command
+- navigate to another command
+- move between steps
+- hold on current step (invalid input / retry / initialization)
+
+### Interceptors
+
+Interceptors are command-scoped (similar to ASP.NET filters):  
+authorization, validation, logging, expected error handling — without touching global middleware.
 
 ---
 
-## 💬 Community
+## Documentation
 
-* Telegram: [@TeleFlowDev](https://t.me/TeleFlowDev)
-* GitHub Discussions: [github.com/lamabucket/TeleFlow/discussions](https://github.com/yourusername/TeleFlow/discussions)
+Full docs: https://lamabucket.github.io/TeleFlow/
+
+Suggested reading order:
+1. Quick Start
+2. Update pipeline & middleware
+3. Command interpreters
+4. Commands & chat session
+5. Steps & step results
+6. Interceptors
 
 ---
 
-## 🧩 Contributing
+## Contributing
 
+PRs are welcome:
 1. Fork the repo
-2. Create your feature branch (`git checkout -b feature/foo`)
-3. Commit changes (`git commit -m 'Add foo'`)
-4. Push (`git push origin feature/foo`)
-5. Open a PR
+2. Create a branch
+3. Commit changes
+4. Open a PR
+
+If you want to propose an API change, please open an issue first.
 
 ---
 
-## 🧠 License
+## Notes on stability
 
-MIT © 2025 — Created by Gleb Bannyy
-
----
-
-## 🪄 One-Sentence Pitch (for NuGet and socials)
-
-> **TeleFlow** — Fluent and async Telegram bot framework for .NET with FSM, interceptors & built-in DatePicker.
-
----
-
-### ✅ Summary of what you need to add
-
-| Placeholder                 | What to include                                     |
-| --------------------------- | --------------------------------------------------- |
-| **Program.cs snapshot**     | Minimal bot initialization & configuration pipeline |
-| **StartCommand**            | Simplest `ICommandHandler` example                  |
-| **MultiStep example**       | Step-by-step FSM collecting data                    |
-| **DatePicker example**      | Show inline calendar interaction                    |
-| **Interceptor example**     | Auth or validation interceptor                      |
-| **Config snapshot**         | Real lambda setup using your builder                |
-| **Flow diagram (optional)** | How Update → Factory → Handler pipeline works       |
-| **Custom Interceptor + DI** | Example of advanced extensibility                   |
-| **CONTRIBUTING excerpt**    | How to run/test locally                             |
+TeleFlow is actively evolving. If you rely on it in production, pin versions and review release notes.
