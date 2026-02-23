@@ -2,60 +2,66 @@
    sphinx-quickstart on Sun Feb 15 13:37:15 2026.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
-
 TeleFlow
 ========
 
-**TeleFlow** is a structured command & flow framework for building scalable Telegram bots in C#.
+**TeleFlow** — это фреймворк для построения разговорных Telegram-ботов на C# поверх Telegram.Bot.
 
-It extends `Telegram.Bot`_ with a predictable execution pipeline, per-chat session management, and composable multi-step commands — designed for developers who care about architecture, testability, and clean separation of concerns.
+Он решает главную проблему «сырых» update-хендлеров — отсутствие управляемого,
+расширяемого и предсказуемого потока обработки обновлений.
 
-Architecture Overview
----------------------
+TeleFlow превращает Telegram-бота из набора разрозненных обработчиков
+в архитектурно целостную систему с явным pipeline и управлением состоянием диалога.
 
-TeleFlow is built around several core concepts:
+---
 
-**Update Handling Pipeline**
-    Every ``Update`` from `Telegram.Bot`_ passes through a structured middleware pipeline with extensible points.  
-    You can plug custom behaviors before, after, or around command execution.
+Почему TeleFlow
+----------------
 
-**Per-Chat Session**
-    Each chat has its own session state.  
-    TeleFlow automatically restores the active command from the session store via middleware.
+В Telegram.Bot апдейты просто приходят в виде `Update`, и разработчик сам решает,
+как их маршрутизировать, хранить состояние и управлять логикой диалога.
 
-**State Isolated from Runtime**
-    Commands do not live between updates.  
-    All persistent data is stored explicitly in session stores, keeping runtime stateless and predictable.
+TeleFlow предоставляет:
 
-**Composable Commands**
-    TeleFlow supports both:
+- Четкий **Pipeline обработки обновлений**
+- Управляемые **Stateless и Stateful команды**
+- Поддержку диалогов через `ChatSession`
+- Расширяемость через Middleware
+- Возможность собирать бота как конструктор из готовых блоков
 
-    - Stateless (single-step) commands  
-    - Stateful (multi-step) flow commands  
+Бот собирается из кирпичиков — команд, шагов, интерсепторов —
+а инфраструктура обработки апдейтов уже продумана.
 
-    Flow commands are composed from reusable steps — like building blocks.
+---
 
-**Interceptors**
-    Commands can define interceptors — pre-execution handlers that validate or transform incoming updates before the command logic runs.
+Философия TeleFlow
+-------------------
 
-When to Use TeleFlow
---------------------
+TeleFlow создавался как фреймворк для:
 
-TeleFlow is a good fit when:
+- построения conversation-ботов
+- управления состоянием диалога
+- структурирования сложной логики
+- расширяемости через middleware
+- сборки бота как из Lego-конструктора
 
-- Your bot contains multi-step conversational flows
-- You need reliable per-chat state restoration
-- You want a middleware pipeline similar to ASP.NET Core
-- You care about maintainable architecture instead of handler spaghetti
+Главная цель — сделать поток обработки обновлений явным,
+предсказуемым и расширяемым.
 
-If you're building a minimal one-handler bot, plain `Telegram.Bot`_ may be enough.
+---
 
+Кому подойдёт TeleFlow
+-----------------------
+
+- Разработчикам, создающим многошаговые боты
+- Тем, кто устал от ручного управления Update-хендлерами
+- Тем, кому важна архитектурная чистота
+- Тем, кто хочет масштабируемый подход к Telegram-ботам
+
+---
 
 .. toctree::
+   :maxdepth: 1
 
-   :caption: Getting started
-
-   getting-started/installation
-   getting-started/first-bot
-
-.. _Telegram.Bot: https://github.com/TelegramBots/Telegram.Bot
+   01-quickstart/00-index.rst
+   02-basic-concepts/00-index.rst
