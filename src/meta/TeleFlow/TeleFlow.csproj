@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IsPackable>true</IsPackable>
+
+    <PackageId>TeleFlow</PackageId>
+    <Description>TeleFlow meta-package: core + DI (no transport).</Description>
+    <PackageTags>telegram;telegram-bot;bot;update-handling;command-pattern;state-management;csharp;dotnet</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="TeleFlow.Abstractions" />
+    <PackageReference Include="TeleFlow.Core" />
+    <PackageReference Include="TeleFlow.Extensions.DI" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>

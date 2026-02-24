@@ -1,0 +1,26 @@
+<Project>
+  <PropertyGroup>
+    <!-- One version to rule them all -->
+    <Version>$(TeleFlowVersion)</Version>
+
+    <!-- Build defaults -->
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+    <!-- Central Package Management -->
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+
+    <!-- NuGet metadata (shared) -->
+    <Authors>Gleb Bannyy</Authors>
+    <Company>Gleb Bannyy</Company>
+    <RepositoryUrl>https://github.com/LamaBucket/TeleFlow</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+
+    <!-- Symbols -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+</Project>

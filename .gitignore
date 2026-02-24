@@ -63,3 +63,11 @@ trash
 #Docs
 .venv
 docs/build
+
+#Packaging and Smoke Tests
+.artifacts
+.smoke
+
+
+.env
+.env.*

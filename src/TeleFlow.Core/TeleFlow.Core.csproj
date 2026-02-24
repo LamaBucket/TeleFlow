@@ -1,13 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\TeleFlow.Abstractions\TeleFlow.Abstractions.csproj" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <PackageId>TeleFlow.Core</PackageId>
+    <Description>TeleFlow core engine: pipeline, commands, sessions, step orchestration.</Description>
+    <PackageTags>telegram;bot;pipeline;command-pattern;state-management;csharp;dotnet</PackageTags>
+
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TeleFlow.Abstractions\TeleFlow.Abstractions.csproj" />
+  </ItemGroup>
 
 </Project>
