@@ -12,7 +12,7 @@ public class HoldOnStatefulResult : CommandResult
     public HoldOnStatefulResult(HoldOnReason reason, string? holdOnMessage)
     {
         if(reason == HoldOnReason.Initialize)
-            throw new Exception("Use the Initialize static property to create an initialize hold on result.");
+            throw new ArgumentException("HoldOnReason.Initialize must be created using HoldOnStatefulResult.Initialize.", nameof(reason));
 
         Reason = reason;
         HoldOnMessage = holdOnMessage;

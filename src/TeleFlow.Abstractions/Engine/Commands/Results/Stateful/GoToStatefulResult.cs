@@ -8,8 +8,7 @@ public class GoToStatefulResult : CommandResult
 
     public GoToStatefulResult(int goToStepNumber, bool initializeNextStep)
     {
-        if (goToStepNumber < 0)
-            throw new Exception("");
+        ArgumentOutOfRangeException.ThrowIfNegative(goToStepNumber, nameof(goToStepNumber));
 
         GoToStepNumber = goToStepNumber;
         InitializeNextStep = initializeNextStep;

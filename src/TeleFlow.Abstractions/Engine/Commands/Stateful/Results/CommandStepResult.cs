@@ -23,17 +23,16 @@ public class CommandStepResult
     private CommandStepResult(CommandStepAction action)
     {
         if(action == CommandStepAction.GoTo)
-            throw new Exception("Use another constructor to go to a specific step");
+            throw new ArgumentException("Use CommandStepResult.GoTo(stepNumber) to create a GoTo result.", nameof(action));
         else if(action == CommandStepAction.HoldOn)
-            throw new Exception("Use another constructor to hold on a step");
+            throw new ArgumentException("Use CommandStepResult.HoldOn(reason, message) to create a HoldOn result.", nameof(action));
         
         Action = action;
     }
 
     private CommandStepResult(int goToStepNumber)
     {
-        if(goToStepNumber < 0)
-            throw new Exception("");
+        ArgumentOutOfRangeException.ThrowIfNegative(goToStepNumber, nameof(goToStepNumber));
 
         Action = CommandStepAction.GoTo;
         GoToStepNumber = goToStepNumber;
@@ -42,7 +41,7 @@ public class CommandStepResult
     private CommandStepResult(CommandStepHoldOnReason reason, string? holdOnMessage)
     {
         if(reason == CommandStepHoldOnReason.None)
-            throw new Exception("");
+            throw new ArgumentException("HoldOn requires a specific reason. Use CommandStepHoldOnReason.InvalidInput or CommandStepHoldOnReason.Other.", nameof(reason));
 
         Action = CommandStepAction.HoldOn;
         HoldOnReason = reason;

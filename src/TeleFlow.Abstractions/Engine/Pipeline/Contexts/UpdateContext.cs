@@ -10,8 +10,9 @@ public class UpdateContext
     public IServiceProvider ServiceProvider { get; init; }
 
     public TService GetService<TService>()
+        where TService : notnull
     {
-        return ServiceProvider.GetService<TService>() ?? throw new InvalidOperationException();
+        return ServiceProvider.GetRequiredService<TService>();
     }
 
     public UpdateContext(Update update, IServiceProvider serviceProvider)

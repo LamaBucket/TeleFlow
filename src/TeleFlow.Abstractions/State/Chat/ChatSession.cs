@@ -19,8 +19,7 @@ public sealed class ChatSession
 
     public void GoToStep(int step)
     {
-        if (step < 0)
-            throw new ArgumentOutOfRangeException(nameof(step), step, "Step cannot be less than 0.");
+        ArgumentOutOfRangeException.ThrowIfNegative(step, nameof(step));
 
         _currentCommandStep = step;
         _isStepInitialized = false;
@@ -33,12 +32,10 @@ public sealed class ChatSession
 
     public ChatSession(string currentCommand, int currentCommandStep)
     {
-        if (string.IsNullOrWhiteSpace(currentCommand))
-            throw new ArgumentException("Command name cannot be null or whitespace.", nameof(currentCommand));
+        ArgumentException.ThrowIfNullOrWhiteSpace(currentCommand, nameof(currentCommand));
 
-        if (currentCommandStep < 0)
-            throw new ArgumentOutOfRangeException(nameof(currentCommandStep), currentCommandStep, "Step cannot be less than 0.");
-
+        ArgumentOutOfRangeException.ThrowIfNegative(currentCommandStep, nameof(currentCommandStep));
+        
         CurrentCommand = currentCommand;
         _currentCommandStep = currentCommandStep;
         _isStepInitialized = false;
