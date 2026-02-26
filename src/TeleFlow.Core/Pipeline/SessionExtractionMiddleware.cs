@@ -2,6 +2,8 @@ using TeleFlow.Abstractions.Engine.ChatIdentity;
 using TeleFlow.Abstractions.Engine.Pipeline;
 using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using TeleFlow.Abstractions.State.Chat;
+using TeleFlow.Abstractions.Transport.Callbacks;
+using TeleFlow.Core.Transport.Callbacks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
@@ -17,7 +19,7 @@ public class SessionExtractionMiddleware : IHandlerMiddleware<UpdateContext, Ses
     {
         var session = await GetCurrentSession(args);
 
-        session ??= new(GetCommandName(args.Update));
+        session ??= new(GetCommandName(args));
 
         SessionContext context = new(session, args);
 
@@ -31,28 +33,53 @@ public class SessionExtractionMiddleware : IHandlerMiddleware<UpdateContext, Ses
         return await _sessionStore.GetAsync(chatId);
     }
 
-    protected virtual string GetCommandName(Update args)
+    protected virtual string GetCommandName(UpdateContext args)
     {
+        var update = args.Update;
         var name = GetCommandNameDefault(args);
 
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new InvalidOperationException(
                 $"Unable to determine command name for a new chat session. " +
-                $"UpdateType: {args.Type}. " +
-                $"Expected a message update with non-empty text.");
+                $"UpdateType: {update.Type}. ");
         }
 
         return name;
     }
 
-    private static string? GetCommandNameDefault(Update args)
+    private static string? GetCommandNameDefault(UpdateContext args)
     {
-        return args.Type switch
+        var update = args.Update;
+
+        return update.Type switch
         {
-            UpdateType.Message => args.Message?.Text,
-            _ => throw new NotSupportedException($"Update type '{args.Type}' is not supported for command extraction.")
+            UpdateType.Message => update.Message?.Text,
+            UpdateType.CallbackQuery => GetCommandNameFromCallbackQuery(args),
+            _ => throw new NotSupportedException($"Update type '{update.Type}' is not supported for command extraction.")
         };
+    }
+
+    private static string? GetCommandNameFromCallbackQuery(UpdateContext args)
+    {
+        var update = args.Update;
+
+        if(update.CallbackQuery is null || update.CallbackQuery.Data is null)
+            return null;
+        
+        var codec = args.GetService<ICallbackCodec>();
+        var actionParser = args.GetService<ICallbackActionParser>();
+
+        if(!codec.TryDecodeAction(update.CallbackQuery.Data, out var token))
+            return null;
+        
+        if(!actionParser.TryParse(token, out var action))
+            return null;
+        
+        if(action is not CallbackAction.CommandAction.Execute execute)
+            return null;
+        
+        return execute.CommandKey;
     }
 
 
