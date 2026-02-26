@@ -5,13 +5,13 @@ namespace TeleFlow.Core.Commands.Stateless;
 
 public class SendMessageCommand : StatelessCommandBase
 {
-    private readonly Func<Task<OutgoingMessage>> _message;
+    private readonly Func<IServiceProvider, Task<OutgoingMessage>> _message;
 
     protected override async Task ExecuteCommand(UpdateContext context)
     {
         var messageService = context.GetService<IMessageSender>();
 
-        var message = await _message.Invoke();
+        var message = await _message.Invoke(context.ServiceProvider);
         await messageService.SendMessage(message);
     }
 
@@ -24,7 +24,11 @@ public class SendMessageCommand : StatelessCommandBase
     {
     }
 
-    public SendMessageCommand(Func<Task<OutgoingMessage>> message)
+    public SendMessageCommand(Func<Task<OutgoingMessage>> message) : this((sp) => message.Invoke())
+    {
+    }
+
+    public SendMessageCommand(Func<IServiceProvider, Task<OutgoingMessage>> message)
     {
         _message = message;
     }
