@@ -1,3 +1,4 @@
+using TeleFlow.Abstractions.Engine.Commands.Results.Stateful;
 using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase;
@@ -27,7 +28,7 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
         {
             SingleSelect<T> singleSelect => await HandleSingleSelectAction(sp, singleSelect, state, action),
             MultiSelect<T> multiSelect   => await HandleMultiSelectAction(sp, multiSelect, state, action),
-            _ => throw new Exception("Unsupported Mode")
+            _ => throw new NotSupportedException($"Unsupported list selection mode: {_options.Mode.GetType()}. Expected {typeof(SingleSelect<T>).FullName} or {typeof(MultiSelect<T>).FullName}.")
         };
     }
 
@@ -41,7 +42,7 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
             SelectIndex act => await HandleSingleSelectSelect(sp, mode, state, act.Index),
             PrevPage        => await HandlePrevPageAsync(sp, state),
             NextPage        => await HandleNextPageAsync(sp, state),
-            _               => throw new Exception("Unknown action")
+            _               => CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.ErrorMessageOptions.IndexOutOfRangeMessage)
         };
     }
 
@@ -72,7 +73,7 @@ public class ListSelectionCommandStep<T> : CallbackCommandStepBase<ListSelection
             PrevPage        => await HandlePrevPageAsync(sp, state),
             NextPage        => await HandleNextPageAsync(sp, state),
             Finish          => await HandleMultiSelectFinish(sp, mode, state),
-            _               => throw new Exception("Unknown action")
+            _               => CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.ErrorMessageOptions.IndexOutOfRangeMessage)
         };
     }
 

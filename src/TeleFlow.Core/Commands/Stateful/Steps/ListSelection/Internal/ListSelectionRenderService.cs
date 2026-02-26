@@ -14,7 +14,7 @@ internal static class ListSelectionRenderService
         {
             ListSelectionMode.SingleSelect<T>    => RenderSingle(config, codec, vm),
             ListSelectionMode.MultiSelect<T>     => RenderMulti(config, codec, vm),
-            _ => throw new NotSupportedException($"Unknown mode: {config.Mode.GetType().FullName}")
+            _ => throw new NotSupportedException($"Unsupported list selection mode: {config.Mode.GetType()}. Expected {typeof(ListSelectionMode.SingleSelect<T>).FullName} or {typeof(ListSelectionMode.MultiSelect<T>).FullName}.")
         };
     }
 

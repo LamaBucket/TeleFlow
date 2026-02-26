@@ -42,7 +42,7 @@ public class StepOrchestratorCommand : ICommandHandler
         var nextStepNum = CalculateNextStepNum(result);
 
         if(nextStepNum < 0)
-            throw new Exception("Step Number Cannot be less than 0!");
+            throw new InvalidOperationException($"Invalid step transition. Current step: {_stepState.CurrentCommandStep}, action: {result.Action}.");
 
         if(nextStepNum >= _stepRouter.StepCount)
             return await _onCompleted.Invoke(update.ServiceProvider);
@@ -74,7 +74,7 @@ public class StepOrchestratorCommand : ICommandHandler
         {
             CommandStepHoldOnReason.InvalidInput => HoldOnReason.InvalidInput,
             CommandStepHoldOnReason.Other => HoldOnReason.Other,
-            _ => throw new Exception("Reason not supported")
+            _ => throw new NotSupportedException($"Unsupported {nameof(CommandStepHoldOnReason)} value: {reason}.")
         };
     }
 

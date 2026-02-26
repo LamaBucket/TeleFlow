@@ -10,12 +10,11 @@ public class CommandStepRouter
 
     public ICommandStep Create(int context)
     {
-        if(context < 0)
-            throw new Exception("Step Number Cannot be less than 0!");
-
-        if(context >= StepCount)
-            throw new Exception("Step Number is Higher than step factory count!");
-
+        var stepIndex = context;
+        
+        ArgumentOutOfRangeException.ThrowIfNegative(stepIndex, nameof(stepIndex));
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(stepIndex, StepCount, nameof(stepIndex));
+        
         var stepFactory = _stepFactories[context];
 
         return stepFactory.Invoke();

@@ -18,11 +18,10 @@ public class UpdateReceiverMiddleware : IHandlerMiddleware<Update, UpdateContext
     {
         var chatId = GetChatId(args);
 
-        using(var scope = CreateScope(chatId))
-        {
-            UpdateContext context = new(args, scope.ServiceProvider);
-            await (Next?.Handle(context) ?? throw new InvalidOperationException());
-        }
+        using var scope = CreateScope(chatId);
+
+        UpdateContext context = new(args, scope.ServiceProvider);
+        await Next.Handle(context);
     }
 
 
@@ -35,16 +34,35 @@ public class UpdateReceiverMiddleware : IHandlerMiddleware<Update, UpdateContext
     {
         return update.Type switch
         {
-            UpdateType.Message => update.Message?.Chat.Id ?? throw new NullReferenceException("Unable To Retrieve Chat Id From Message"),
-            UpdateType.CallbackQuery => update.CallbackQuery?.Message?.Chat.Id ?? throw new NullReferenceException("Unable To Retrieve Chat Id From CallbackQuery"),
-            _ => throw new InvalidOperationException("This MessageType is not supported"),
+            UpdateType.Message => GetChatIdFromMessage(update),
+            UpdateType.CallbackQuery => GetChatIdFromCallbackQuery(update),
+            _ => throw new NotSupportedException(
+                $"Update type '{update.Type}' is not supported for chat id extraction.")
         };
     }
+
+    private static long GetChatIdFromMessage(Update update)
+    {
+        var chat = (update.Message?.Chat) ?? throw new InvalidOperationException("Unable to extract chat id: update is of type 'Message' but Message.Chat is missing.");
+        return chat.Id;
+    }
+
+    private static long GetChatIdFromCallbackQuery(Update update)
+    {
+        var chat = update.CallbackQuery?.Message?.Chat;
+        
+        if (chat is null)
+            throw new NotSupportedException("Unable to extract chat id from CallbackQuery. TeleFlow requires callback queries with Message.Chat (inline mode is not supported).");
+
+        return chat.Id;
+    }
+
 
     private IServiceScope CreateScope(long chatId)
     {
         var scope = _serviceScopeFactory.CreateScope();
-        var chatIdSetter = scope.ServiceProvider.GetService<IChatIdSetter>() ?? throw new InvalidOperationException();
+        
+        var chatIdSetter = scope.ServiceProvider.GetRequiredService<IChatIdSetter>();
         chatIdSetter.SetChatId(chatId);
 
         return scope;

@@ -15,7 +15,9 @@ public class DefaultCommandInterpreter : IHandler<CommandResultContext>
 
         await _sessionStore.RemoveAsync(chatId);
 
-        throw new Exception("No command interpreter matched the command result of type " + args.CommandResult.GetType().FullName);
+        throw new InvalidOperationException(
+            $"No command interpreter matched command result type '{args.CommandResult.GetType()}'. " +
+            "Configure an interpreter for this CommandResult (InterpreterPipelineBuilder) or remove the result from the command.");
     }
 
     public DefaultCommandInterpreter(IChatSessionStore sessionStore)

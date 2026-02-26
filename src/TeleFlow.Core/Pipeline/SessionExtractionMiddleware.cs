@@ -17,8 +17,7 @@ public class SessionExtractionMiddleware : IHandlerMiddleware<UpdateContext, Ses
     {
         var session = await GetCurrentSession(args);
 
-        if(session is null)
-            session = new(GetCommandName(args.Update));
+        session ??= new(GetCommandName(args.Update));
 
         SessionContext context = new(session, args);
 
@@ -34,17 +33,26 @@ public class SessionExtractionMiddleware : IHandlerMiddleware<UpdateContext, Ses
 
     protected virtual string GetCommandName(Update args)
     {
-        return GetCommandNameDefault(args) ?? throw new Exception("Command name could not be determined");
+        var name = GetCommandNameDefault(args);
+
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new InvalidOperationException(
+                $"Unable to determine command name for a new chat session. " +
+                $"UpdateType: {args.Type}. " +
+                $"Expected a message update with non-empty text.");
+        }
+
+        return name;
     }
 
     private static string? GetCommandNameDefault(Update args)
     {
-        switch(args.Type)
+        return args.Type switch
         {
-            case UpdateType.Message:
-                return args.Message?.Text;
-        }
-        throw new InvalidOperationException("Unknown update type");
+            UpdateType.Message => args.Message?.Text,
+            _ => throw new NotSupportedException($"Update type '{args.Type}' is not supported for command extraction.")
+        };
     }
 
 

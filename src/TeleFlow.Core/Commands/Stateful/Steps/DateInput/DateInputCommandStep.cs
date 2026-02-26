@@ -29,7 +29,7 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
             DateInputCommandStepPage.YearSelection  => HandleYearPageAction(sp, state, token),
             DateInputCommandStepPage.MonthSelection => HandleMonthPageAction(sp, state, token),
             DateInputCommandStepPage.DateSelection  => HandleDatePageAction(sp, state, token),
-            _ => throw new Exception("Unknown page state")
+            _ => throw new InvalidOperationException($"Unexpected DateInputCommandStepPage value: {state.ViewModel.Page}. The step is in an invalid state.")
         };
     }
 
@@ -43,8 +43,7 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
             UiAction.SelectIndex act => await HandleYearSelectIndex(sp, state, act.Index),
             UiAction.NextPage        => await HandleYearNextPage(sp, state),
             UiAction.PrevPage        => await HandleYearPrevPage(sp, state),
-            UiAction.NoOperation     => CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidYearMessage),
-            _ => throw new Exception("ploho vse")
+            _ => CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidYearMessage)
         };
     }
 
@@ -116,8 +115,7 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
             UiAction.NextPage        => await HandleMonthNextPage(sp, state),
             UiAction.PrevPage        => await HandleMonthPrevPage(sp, state),
             UiAction.GoToPage goTo   => await HandleMonthGoToPage(sp, state, goTo.Page),
-            UiAction.NoOperation     => CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidMonthMessage),
-            _ => throw new Exception("ploho vse")
+            _ => CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidMonthMessage)
         };
     }
 
@@ -164,8 +162,7 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
 
     private async Task<CommandStepResult> HandleMonthGoToPage(IServiceProvider sp, StepState<DateInputCommandStepViewModel> state, int page)
     {
-        if(page != 0)
-            throw new Exception("Invalid Page State");
+        ArgumentOutOfRangeException.ThrowIfNotEqual(page, (int)DateInputCommandStepPage.YearSelection, nameof(page));
 
         state.ViewModel.Page = DateInputCommandStepPage.YearSelection;
         
@@ -185,8 +182,7 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
             UiAction.NextPage        => await HandleDayNextPage(sp, state),
             UiAction.PrevPage        => await HandleDayPrevPage(sp, state),
             UiAction.GoToPage goTo   => await HandleDayGoToPage(sp, state, goTo.Page),
-            UiAction.NoOperation     => CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidDayMessage),
-            _ => throw new Exception("ploho vse")
+            _ => CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidDayMessage)
         };
     }
 
@@ -194,20 +190,18 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
     {
         state.ViewModel.DaySelected = index;
 
-        if(_options.Mode is YearMonthDay mode)
-        {
-            var year = state.ViewModel.YearSelected;
-            var month = state.ViewModel.MonthSelected;
-            var day = state.ViewModel.DaySelected;
+        if (_options.Mode is not YearMonthDay mode)
+            throw new InvalidOperationException($"Date selection page requires '{nameof(YearMonthDay)}' mode, but current mode is '{_options.Mode?.GetType().Name ?? "null"}'.");
 
-            var date = new DateOnly(year, month, day);
+        var year = state.ViewModel.YearSelected;
+        var month = state.ViewModel.MonthSelected;
+        var day = state.ViewModel.DaySelected;
 
-            await mode.OnCommit(new(sp), date);
-            await FinalizeStep(sp);
-            return CommandStepResult.Next;
-        }
+        var date = new DateOnly(year, month, day);
 
-        throw new Exception("Invalid state");
+        await mode.OnCommit(new(sp), date);
+        await FinalizeStep(sp);
+        return CommandStepResult.Next;
     }
 
     private async Task<CommandStepResult> HandleDayNextPage(IServiceProvider sp, StepState<DateInputCommandStepViewModel> state)
@@ -254,8 +248,7 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
 
     private async Task<CommandStepResult> HandleDayGoToPage(IServiceProvider sp, StepState<DateInputCommandStepViewModel> state, int page)
     {
-        if(page != 1)
-            throw new Exception("Invalid Page State");
+        ArgumentOutOfRangeException.ThrowIfNotEqual(page, (int)DateInputCommandStepPage.MonthSelection, nameof(page));
 
         state.ViewModel.Page = DateInputCommandStepPage.MonthSelection;
         

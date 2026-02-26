@@ -28,7 +28,7 @@ public class FileInputCommandStep : ICommandStep
         var extractors = args.ServiceProvider.GetServices<IFileReferenceExtractor>().ToList();
 
         if(extractors.Count == 0)
-            throw new Exception("No Extractors registred!");
+            throw new InvalidOperationException($"No {nameof(IFileReferenceExtractor)} services were registered. Register at least one extractor to enable file input handling.");
 
         foreach (var extractor in extractors)
         {
@@ -99,6 +99,6 @@ public class FileInputCommandStep : ICommandStep
 
     public FileInputCommandStep(FileInputCommandStepOptions options)
     {
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = options;
     }
 }

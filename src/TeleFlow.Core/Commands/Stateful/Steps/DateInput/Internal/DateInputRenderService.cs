@@ -21,7 +21,7 @@ internal static class DateInputRenderService
             DateInputCommandStepPage.YearSelection => RenderYearSelectionPage(config, markupButtonActionCodec, vm),
             DateInputCommandStepPage.MonthSelection => RenderMonthSelectionPage(config, markupButtonActionCodec, vm),
             DateInputCommandStepPage.DateSelection => RenderDaySelectionPage(config, markupButtonActionCodec, vm),
-            _ => throw new Exception("Unknown page state")
+            _ =>  throw new InvalidOperationException($"Unsupported date input page: {vm.Page}. This indicates an invalid internal state.")
         };
     }
 
@@ -80,7 +80,7 @@ internal static class DateInputRenderService
         var b = new InlineKeyboardBuilder();
 
         b.ButtonCallback(config.PrevYearItemButtonText, markupButtonActionCodec(CallbackActions.Ui.PrevPage));
-        b.ButtonCallback(vm.YearSelected.ToString(), markupButtonActionCodec(CallbackActions.Ui.GoToPage(0)));
+        b.ButtonCallback(vm.YearSelected.ToString(), markupButtonActionCodec(CallbackActions.Ui.GoToPage((int)DateInputCommandStepPage.YearSelection)));
         b.ButtonCallback(config.NextYearItemButtonText, markupButtonActionCodec(CallbackActions.Ui.NextPage));
         b.NewRow();
 
@@ -126,7 +126,7 @@ internal static class DateInputRenderService
         b.ButtonCallback(config.PrevMonthItemButtonText, markupButtonActionCodec(CallbackActions.Ui.PrevPage));
 
         string headerText = new DateOnly(year, month, 1).ToString(config.YearMonthFormatOnDayPage, culture);
-        b.ButtonCallback(headerText, markupButtonActionCodec(CallbackActions.Ui.GoToPage(1)));
+        b.ButtonCallback(headerText, markupButtonActionCodec(CallbackActions.Ui.GoToPage((int)DateInputCommandStepPage.MonthSelection)));
 
         b.ButtonCallback(config.NextMonthItemButtonText, markupButtonActionCodec(CallbackActions.Ui.NextPage));
         b.NewRow();

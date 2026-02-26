@@ -139,10 +139,10 @@ public abstract class CallbackCommandStepBase<TVM> : ICommandStep
     private static (string data, int messageId) ParseCallbackQuery(CallbackQuery query)
     {
         if(query.Data is null)
-            throw new Exception("Fatal Error (PIZDEC)");
+            throw new InvalidOperationException("CallbackQuery.Data is null. TeleFlow expects callback queries produced by inline keyboards with non-empty callback data.");
 
         if(query.Message is null)
-            throw new Exception("TeleFlow does not support InlineMode");
+            throw new NotSupportedException("CallbackQuery.Message is null. TeleFlow requires callback queries bound to a chat message (inline mode is not supported).");
 
         return (query.Data, query.Message.MessageId);
     }
