@@ -18,7 +18,7 @@ public class CommandRouterBuilder
     private bool _built;
 
 
-    public CommandInterceptorBuilder AddOrReplace(string name, ICommandFactory<ICommandHandler, ChatSession> factory)
+    public CommandFilterBuilder AddOrReplace(string name, ICommandFactory<ICommandHandler, ChatSession> factory)
     {
         EnsureNotBuilt();
 
@@ -27,7 +27,7 @@ public class CommandRouterBuilder
         if (!_descriptors.TryAdd(name, descriptor))
             _descriptors[name] = descriptor;
 
-        return new CommandInterceptorBuilder(descriptor, EnsureNotBuilt);
+        return new CommandFilterBuilder(this, descriptor, EnsureNotBuilt);
     }
 
     private void EnsureNotBuilt()
@@ -39,15 +39,15 @@ public class CommandRouterBuilder
     }
 
 
-    public CommandInterceptorBuilder AddOrReplace(string name, Func<ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
+    public CommandFilterBuilder AddOrReplace(string name, Func<ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
 
 
-    public CommandInterceptorBuilder AddOrReplace(string name, Func<ChatSession, ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
+    public CommandFilterBuilder AddOrReplace(string name, Func<ChatSession, ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
 
-    public CommandInterceptorBuilder AddSendText(string name, string message) 
+    public CommandFilterBuilder AddSendText(string name, string message) 
         => AddOrReplace(name, (sp) => new SendMessageCommand(message));
 
-    public CommandInterceptorBuilder AddMultiStep(string name, Action<CommandStepRouterBuilder> multiStepFactoryConfig, Func<IServiceProvider, Task<CommandResult>>? onCompleted = null)
+    public CommandFilterBuilder AddMultiStep(string name, Action<CommandStepRouterBuilder> multiStepFactoryConfig, Func<IServiceProvider, Task<CommandResult>>? onCompleted = null)
     {
         return AddOrReplace(name, (session) => { 
             var stepSnapshot = session.CreateSnapshot();
@@ -91,18 +91,18 @@ public class CommandRouterBuilder
 
     private static ICommandFactory<ICommandHandler, ChatSession> CompileSessionFactory(CommandDescriptor descriptor)
     {
-        if (descriptor.Interceptors.Count == 0)
+        if (descriptor.Filters.Count == 0)
             return descriptor.CommandFactory;
 
         return new LambdaCommandFactory<ChatSession>(session =>
         {
             ICommandHandler handler = descriptor.CommandFactory.Create(session);
 
-            foreach(var interceptorFactory in descriptor.Interceptors)
+            foreach(var filterFactory in descriptor.Filters)
             {
-                var interceptor = interceptorFactory.Invoke();
+                var filter = filterFactory.Invoke();
 
-                handler = new InterceptCommandDecorator(handler, interceptor);
+                handler = new FilterCommandDecorator(handler, filter);
             }
 
             return handler;

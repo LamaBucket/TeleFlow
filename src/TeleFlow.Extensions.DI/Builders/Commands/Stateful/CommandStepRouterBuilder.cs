@@ -16,42 +16,43 @@ public class CommandStepRouterBuilder
 {
     private readonly List<StepDescriptor> _stepDescriptors;
 
-    public StepInterceptorBuilder Add(Func<ICommandStep> factory, bool prepend = false)
+
+    public CommandStepFilterBuilder Add(Func<ICommandStep> factory, bool prepend = false)
     {
         StepDescriptor descriptor = new(factory);
 
         _stepDescriptors.Insert(prepend ? 0 : _stepDescriptors.Count, descriptor);
 
-        return new StepInterceptorBuilder(descriptor, this);
+        return new CommandStepFilterBuilder(descriptor, this);
     }
 
     #region  Text
     
-    public StepInterceptorBuilder AddTextInput(TextInputCommandStepOptions options) 
+    public CommandStepFilterBuilder AddTextInput(TextInputCommandStepOptions options) 
         => Add(() => new TextInputCommandStep(options));
 
-    public StepInterceptorBuilder AddTextInput(string userPrompt, Func<CommandStepCommitContext, string, Task> onUserCommit) 
+    public CommandStepFilterBuilder AddTextInput(string userPrompt, Func<CommandStepCommitContext, string, Task> onUserCommit) 
         => AddTextInput(new() { UserPrompt = userPrompt, OnUserCommit = onUserCommit });
     
     #endregion
 
     #region  Contact
     
-    public StepInterceptorBuilder AddContactInput(ContactInputCommandStepOptions options) 
+    public CommandStepFilterBuilder AddContactInput(ContactInputCommandStepOptions options) 
         => Add(() => new ContactInputCommandStep(options));
 
-    public StepInterceptorBuilder AddContactInput(string userPrompt, Func<CommandStepCommitContext, Contact, Task> onUserCommit) 
+    public CommandStepFilterBuilder AddContactInput(string userPrompt, Func<CommandStepCommitContext, Contact, Task> onUserCommit) 
         => AddContactInput(new() { UserPrompt = userPrompt, OnUserCommit =  onUserCommit});
     
     #endregion
 
     #region  List
     
-    public StepInterceptorBuilder AddListSelect<T>(ListSelectionOptions<T> options, CallbackCommandStepBaseOptions optionsBase)
+    public CommandStepFilterBuilder AddListSelect<T>(ListSelectionOptions<T> options, CallbackCommandStepBaseOptions optionsBase)
         => Add(() => new ListSelectionCommandStep<T>(options, optionsBase));
     
     
-    public StepInterceptorBuilder AddSingleSelect<T>(string userPrompt, Func<IServiceProvider, Task<IReadOnlyList<T>>> valueProvider, Func<T, string> displayName, Func<CommandStepCommitContext, T, Task> onCommit)
+    public CommandStepFilterBuilder AddSingleSelect<T>(string userPrompt, Func<IServiceProvider, Task<IReadOnlyList<T>>> valueProvider, Func<T, string> displayName, Func<CommandStepCommitContext, T, Task> onCommit)
         => AddListSelect<T>(
             options: new() 
             { 
@@ -62,7 +63,7 @@ public class CommandStepRouterBuilder
             optionsBase: new() { UserPrompt = userPrompt }
         );
 
-    public StepInterceptorBuilder AddSingleSelect<T>(string userPrompt, IEnumerable<T> items, Func<T, string> displayName, Func<CommandStepCommitContext, T, Task> onCommit)
+    public CommandStepFilterBuilder AddSingleSelect<T>(string userPrompt, IEnumerable<T> items, Func<T, string> displayName, Func<CommandStepCommitContext, T, Task> onCommit)
         => AddSingleSelect(
             valueProvider: async (sp) => items.ToList(),
             displayName: displayName,
@@ -71,7 +72,7 @@ public class CommandStepRouterBuilder
         );
 
 
-    public StepInterceptorBuilder AddMultiSelect<T>(string userPrompt, Func<IServiceProvider, Task<IReadOnlyList<T>>> valueProvider, Func<T, string> displayName, Func<CommandStepCommitContext, IReadOnlyList<T>, Task> onCommit)
+    public CommandStepFilterBuilder AddMultiSelect<T>(string userPrompt, Func<IServiceProvider, Task<IReadOnlyList<T>>> valueProvider, Func<T, string> displayName, Func<CommandStepCommitContext, IReadOnlyList<T>, Task> onCommit)
         => AddListSelect<T>(
             options: new() 
             { 
@@ -82,7 +83,7 @@ public class CommandStepRouterBuilder
             optionsBase: new() { UserPrompt = userPrompt }
         );
 
-    public StepInterceptorBuilder AddMultiSelect<T>(string userPrompt, IEnumerable<T> items, Func<T, string> displayName, Func<CommandStepCommitContext, IReadOnlyList<T>, Task> onCommit)
+    public CommandStepFilterBuilder AddMultiSelect<T>(string userPrompt, IEnumerable<T> items, Func<T, string> displayName, Func<CommandStepCommitContext, IReadOnlyList<T>, Task> onCommit)
         => AddMultiSelect(
             valueProvider: async (sp) => items.ToList(),
             displayName: displayName,
@@ -95,10 +96,10 @@ public class CommandStepRouterBuilder
 
     #region File
     
-    public StepInterceptorBuilder AddFile(FileInputCommandStepOptions options)
+    public CommandStepFilterBuilder AddFile(FileInputCommandStepOptions options)
         => Add(() => new FileInputCommandStep(options));
     
-    public StepInterceptorBuilder AddFile(string userPrompt, Func<CommandStepCommitContext, FileReference, Task> onUserCommit)
+    public CommandStepFilterBuilder AddFile(string userPrompt, Func<CommandStepCommitContext, FileReference, Task> onUserCommit)
         => AddFile(new(){ UserPrompt = userPrompt, OnUserCommit = onUserCommit });
 
     #endregion
@@ -124,18 +125,18 @@ public class CommandStepRouterBuilder
 
     private static Func<ICommandStep> CompileStepFactory(StepDescriptor descriptor)
     {
-        if(descriptor.Interceptors.Count == 0)
+        if(descriptor.Filters.Count == 0)
             return descriptor.StepFactory;
         
         return () =>
         {
             ICommandStep step = descriptor.StepFactory();
 
-            foreach(var interceptorFactory in descriptor.Interceptors)
+            foreach(var filterFactory in descriptor.Filters)
             {
-                var interceptor = interceptorFactory.Invoke();
+                var filter = filterFactory.Invoke();
 
-                step = new InterceptCommandStepDecorator(step, interceptor);
+                step = new FilterCommandStepDecorator(step, filter);
             }
 
             return step;

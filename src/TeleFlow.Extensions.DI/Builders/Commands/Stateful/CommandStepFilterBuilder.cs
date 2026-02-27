@@ -1,8 +1,8 @@
-using TeleFlow.Abstractions.Engine.Commands.Interceptors;
+using TeleFlow.Abstractions.Engine.Commands.Filters;
 
 namespace TeleFlow.Extensions.DI.Builders.Commands.Stateful;
 
-public class StepInterceptorBuilder
+public class CommandStepFilterBuilder
 {
     private readonly StepDescriptor _descriptor;
 
@@ -13,14 +13,14 @@ public class StepInterceptorBuilder
         => _builder;
 
 
-    public StepInterceptorBuilder AddInterceptor(Func<ICommandStepInterceptor> interceptor)
+    public CommandStepFilterBuilder AddFilter(Func<ICommandStepFilter> filter)
     {
-        _descriptor.AddInterceptor(interceptor);
+        _descriptor.AddFilter(filter);
 
         return this;
     }
 
-    internal StepInterceptorBuilder(StepDescriptor descriptor, CommandStepRouterBuilder builder)
+    internal CommandStepFilterBuilder(StepDescriptor descriptor, CommandStepRouterBuilder builder)
     {
         _descriptor = descriptor;
         _builder = builder;

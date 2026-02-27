@@ -1,4 +1,4 @@
-using TeleFlow.Abstractions.Engine.Commands.Interceptors;
+using TeleFlow.Abstractions.Engine.Commands.Filters;
 using TeleFlow.Abstractions.Engine.Commands.Stateful;
 
 namespace TeleFlow.Extensions.DI.Builders.Commands.Stateful;
@@ -7,13 +7,13 @@ internal class StepDescriptor
 {
     public Func<ICommandStep> StepFactory { get; init; }
 
-    public IReadOnlyList<Func<ICommandStepInterceptor>> Interceptors => _interceptors;
+    public IReadOnlyList<Func<ICommandStepFilter>> Filters => _filters;
 
-    private readonly List<Func<ICommandStepInterceptor>> _interceptors = [];
+    private readonly List<Func<ICommandStepFilter>> _filters = [];
 
 
-    public void AddInterceptor(Func<ICommandStepInterceptor> interceptor)
-        => _interceptors.Add(interceptor);
+    public void AddFilter(Func<ICommandStepFilter> filter)
+        => _filters.Add(filter);
 
 
     public StepDescriptor(Func<ICommandStep> stepFactory)
