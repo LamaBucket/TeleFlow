@@ -23,8 +23,12 @@ public class InterceptCommandStepDecorator : ICommandStep
         return await _interceptor.InterceptAfterStep(args, stepResult);
     }
 
-    public Task OnEnter(IServiceProvider serviceProvider)
-        => _inner.OnEnter(serviceProvider);
+    public async Task OnEnter(IServiceProvider serviceProvider)
+    {
+        await _interceptor.InterceptBeforeOnEnter(serviceProvider);
+        await _inner.OnEnter(serviceProvider);
+        await _interceptor.InterceptAfterOnEnter(serviceProvider);
+    }
 
     public InterceptCommandStepDecorator(ICommandStep inner, ICommandStepInterceptor interceptor)
     {
