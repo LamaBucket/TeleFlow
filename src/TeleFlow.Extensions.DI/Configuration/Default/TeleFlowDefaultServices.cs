@@ -31,7 +31,9 @@ internal static class TeleFlowDefaultServicesInternal
         services
         .TryAddDefaultChatIdManager()
         
+        .TryAddDefaultMessageTemplateServices()
         .TryAddDefaultMessageServices()
+
         .TryAddDefaultCallbackEncoder()
         .TryAddDefaultFileReferenceExtractors()
 
@@ -47,6 +49,13 @@ internal static class TeleFlowDefaultServicesInternal
         return services;
     }
 
+    private static IServiceCollection TryAddDefaultMessageTemplateServices(this IServiceCollection services)
+    {
+        services.TryAddScoped<IMessageSenderTemplateService, DefaultMessageSenderTemplateService>();
+        services.TryAddScoped<IMessageEditorTemplateService, DefaultMessageEditorTemplateService>();
+
+        return services;
+    }
 
     private static IServiceCollection TryAddDefaultMessageServices(this IServiceCollection services)
     {
@@ -54,20 +63,22 @@ internal static class TeleFlowDefaultServicesInternal
         {
             var chatIdProvider = sp.GetRequiredService<IChatIdProvider>();
             var botClient = sp.GetRequiredService<ITelegramBotClient>(); 
+            var templateService = sp.GetService<IMessageSenderTemplateService>();
 
             var chatId = chatIdProvider.GetChatId();
 
-            return new DefaultMessageSender(botClient, chatId);
+            return new DefaultMessageSender(botClient, chatId, templateService);
         });
 
         services.TryAddScoped<IMessageEditor>(sp =>
         {
             var chatIdProvider = sp.GetRequiredService<IChatIdProvider>();
             var botClient = sp.GetRequiredService<ITelegramBotClient>(); 
+            var templateService = sp.GetService<IMessageEditorTemplateService>();
 
             var chatId = chatIdProvider.GetChatId();
 
-            return new DefaultMessageEditor(botClient, chatId);
+            return new DefaultMessageEditor(botClient, chatId, templateService);
         });
 
         return services;
