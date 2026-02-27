@@ -15,7 +15,9 @@ public class InterpreterPipelineBuilder
     public IHandler<CommandResultContext> Build(IServiceProvider sp)
     {
         if(_terminalInterpreter is null)
-            throw new Exception("Terminal Command Interpreter middleware is not set.");
+            throw new InvalidOperationException(
+            $"{nameof(InterpreterPipelineBuilder)} is not configured: terminal interpreter is missing. " +
+            $"Call {nameof(UseTerminalCommandInterpreter)}(...) before calling {nameof(Build)}(...).");
         
         var current = _terminalInterpreter.Invoke(sp);
 

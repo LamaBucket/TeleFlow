@@ -11,8 +11,7 @@ public static class InterpreterPipelineBuilderExtensions
 {
     public static InterpreterPipelineBuilder WithNavigateInterpreter(this InterpreterPipelineBuilder builder, int navigateDepth)
     {
-        if(navigateDepth < 0)
-            throw new Exception();
+        ArgumentOutOfRangeException.ThrowIfNegative(navigateDepth, nameof(navigateDepth));
         
         if(navigateDepth > 0)
         {

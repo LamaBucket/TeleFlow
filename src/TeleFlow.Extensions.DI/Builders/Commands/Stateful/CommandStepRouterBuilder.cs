@@ -103,7 +103,7 @@ public class CommandStepRouterBuilder
     public CommandStepRouter Build()
     {
         if(_stepCommandFactories.Count == 0)
-            throw new Exception("No Step Commands Provided!");
+            throw new InvalidOperationException("Cannot build CommandStepRouter: no steps were configured.");
 
         return new CommandStepRouter([.. _stepCommandFactories]);
     }

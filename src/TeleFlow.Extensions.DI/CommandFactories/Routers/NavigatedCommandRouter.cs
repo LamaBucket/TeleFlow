@@ -14,7 +14,13 @@ public class NavigatedCommandRouter : ICommandFactory<ICommandHandler, NavigateC
         var commandName = context.CommandToNavigate;
         var commandArgs = context.Parameters;
 
-        var factory = _factories.GetValueOrDefault(commandName) ?? throw new Exception("Command Not Found!");
+        ArgumentException.ThrowIfNullOrWhiteSpace(commandName, nameof(commandName));
+
+        //TODO Maybe use TeleFlowException instead of KeyNotFound cause this can happen because of user?
+
+        var factory = _factories.GetValueOrDefault(commandName) ?? throw new KeyNotFoundException(
+                $"{nameof(NavigatedCommandRouter)}: command '{commandName}' was not found. " +
+                $"Available commands: [{string.Join(", ", _factories.Keys.OrderBy(k => k))}].");
 
         return factory.Create(commandArgs);
     }

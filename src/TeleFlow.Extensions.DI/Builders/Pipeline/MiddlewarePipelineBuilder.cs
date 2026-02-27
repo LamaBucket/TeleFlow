@@ -24,12 +24,29 @@ public class MiddlewarePipelineBuilder
 
     public IHandler<Update> Build(IServiceProvider sp)
     {
+        if(_commandExecutor is null)
+            throw new InvalidOperationException(
+                $"{nameof(MiddlewarePipelineBuilder)} is not configured: command executor is missing. " +
+                $"Call {nameof(UseCommandExecutor)}(...) before calling {nameof(Build)}(...).");
+
+        if (_commandRouter is null)
+            throw new InvalidOperationException(
+                $"{nameof(MiddlewarePipelineBuilder)} is not configured: command router is missing. " +
+                $"Call {nameof(UseCommandRouter)}(...) before calling {nameof(Build)}(...).");
+
+        if (_updateReceiver is null)
+            throw new InvalidOperationException(
+                $"{nameof(MiddlewarePipelineBuilder)} is not configured: update receiver is missing. " +
+                $"Call {nameof(UseUpdateReceiver)}(...) before calling {nameof(Build)}(...).");
+        
+
+
         var interpreters = _interpreterBuilder.Build(sp);
-        var exec = _commandExecutor?.Create(sp, interpreters) ?? throw new Exception("Command Executor middleware is not set.");
+        var exec = _commandExecutor.Create(sp, interpreters);
         var session = Wrap(sp, _sessionMws, exec);
-        var routed = _commandRouter?.Create(sp, session) ?? throw new Exception("Command Router middleware is not set.");
+        var routed = _commandRouter.Create(sp, session);
         var update = Wrap(sp, _updateCtxMws, routed);
-        var root = _updateReceiver?.Create(sp, update) ?? throw new Exception("Update Receiver middleware is not set.");
+        var root = _updateReceiver.Create(sp, update);
 
         return root;
     }

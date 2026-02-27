@@ -33,7 +33,9 @@ public class CommandRouterBuilder
     private void EnsureNotBuilt()
     {
         if(_built)
-            throw new Exception("Cannot configure Command Registry after finishing configuration!");
+            throw new InvalidOperationException(
+            $"{nameof(CommandRouterBuilder)} configuration is already finalized. " +
+            $"You cannot call '{nameof(AddOrReplace)}' after the builder has been built.");
     }
 
 
