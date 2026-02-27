@@ -13,12 +13,14 @@ public class InterceptCommandDecorator : ICommandHandler
     
     public async Task<CommandResult> Handle(UpdateContext update)
     {
-        var interceptResult = await _interceptor.Intercept(update);
+        var interceptResult = await _interceptor.InterceptBeforeCommand(update);
         
         if (interceptResult is not null)
             return interceptResult;
 
-        return await _inner.Handle(update);
+        var commandResult = await _inner.Handle(update);
+
+        return await _interceptor.InterceptAfterCommand(update, commandResult);
     }
 
     public InterceptCommandDecorator(ICommandHandler inner, ICommandInterceptor interceptor)

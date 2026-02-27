@@ -5,5 +5,7 @@ namespace TeleFlow.Abstractions.Engine.Commands.Interceptors;
 
 public interface ICommandInterceptor
 {
-    Task<CommandResult?> Intercept(UpdateContext update);
+    Task<CommandResult?> InterceptBeforeCommand(UpdateContext update);
+
+    Task<CommandResult>  InterceptAfterCommand(UpdateContext context, CommandResult commandResult);
 }
