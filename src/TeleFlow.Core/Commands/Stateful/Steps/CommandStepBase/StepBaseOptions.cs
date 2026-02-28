@@ -1,8 +1,8 @@
 using TeleFlow.Abstractions.Engine.Commands.Stateful.Steps;
 
-namespace TeleFlow.Core.Commands.Stateful.Steps.ViewModelStepBase;
+namespace TeleFlow.Core.Commands.Stateful.Steps.CommandStepBase;
 
-public class ViewModelCommandStepBaseOptions<TViewModel>
+public class StepBaseOptions<TViewModel>
     where TViewModel : class
 {
     public required IStepRenderService<TViewModel> RenderService { get; init; }

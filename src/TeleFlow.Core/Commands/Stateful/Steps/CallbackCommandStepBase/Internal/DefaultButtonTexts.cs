@@ -1,4 +1,4 @@
-namespace TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase.Internal;
+namespace TeleFlow.Core.Commands.Stateful.Steps.CallbackCommandStepBase.Internal;
 
 internal static class DefaultButtonTexts
 {

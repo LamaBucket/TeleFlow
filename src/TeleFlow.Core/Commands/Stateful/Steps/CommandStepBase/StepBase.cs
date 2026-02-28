@@ -6,14 +6,13 @@ using TeleFlow.Abstractions.Engine.Commands.Stateful.Steps;
 using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Abstractions.Transport.Messaging;
-using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TeleFlow.Core.Commands.Stateful.Steps.ViewModelStepBase;
+namespace TeleFlow.Core.Commands.Stateful.Steps.CommandStepBase;
 
-public abstract class ViewModelCommandStepBase<TViewModel> : ICommandStep
+public abstract class StepBase<TViewModel> : ICommandStep
     where TViewModel : class
 {
-    private readonly ViewModelCommandStepBaseOptions<TViewModel> _options;
+    private readonly StepBaseOptions<TViewModel> _options;
 
     private IStepRenderService<TViewModel> RenderService => _options.RenderService;
 
@@ -98,7 +97,7 @@ public abstract class ViewModelCommandStepBase<TViewModel> : ICommandStep
     }
 
 
-    public ViewModelCommandStepBase(ViewModelCommandStepBaseOptions<TViewModel> options)
+    public StepBase(StepBaseOptions<TViewModel> options)
     {
         _options = options;
     }
