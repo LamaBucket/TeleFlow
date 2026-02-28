@@ -1,4 +1,4 @@
-namespace TeleFlow.Core.Commands.Stateful.Steps.TextInput;
+namespace TeleFlow.Core.Commands.Stateful.Steps.TextInputCommandStep;
 
 public class TextInputCommandStepViewModel
 {
