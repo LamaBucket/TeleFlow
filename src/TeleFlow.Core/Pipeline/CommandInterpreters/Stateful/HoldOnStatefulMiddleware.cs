@@ -29,7 +29,7 @@ public class HoldOnStatefulMiddleware : CommandInterpreterBase<HoldOnStatefulRes
 
         if(args.CommandResult.HoldOnMessage is not null)
         {
-            var messageService = args.GetService<IMessageSender>();
+            var messageService = args.GetService<IMessageSendService>();
             await messageService.SendMessage(args.CommandResult.HoldOnMessage);
         }
 

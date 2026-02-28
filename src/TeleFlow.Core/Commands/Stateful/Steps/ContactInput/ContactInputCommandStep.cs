@@ -47,17 +47,17 @@ public class ContactInputCommandStep : ICommandStep
 
     private static async Task RemoveReplyMarkupButton(IServiceProvider sp)
     {
-        var msgSendService = sp.GetRequiredService<IMessageSender>();
-        var msgEditService = sp.GetRequiredService<IMessageEditor>();
+        var msgSendService = sp.GetRequiredService<IMessageSendService>();
+        var msgDeleteService = sp.GetRequiredService<IMessageDeleteService>();
 
-        OutgoingMessage payload = new()
+        var replyKeyboardRemoveMessage = new ReplyMarkupMessage()
         { 
             Text = "Hold tight, we are removing the inline button...", 
-            ReplyMarkup = ReplyKeyboardBuilder.Remove() 
+            Markup = new ReplyMarkupSpec.Remove(new()) 
         };
 
-        Message msg = await msgSendService.SendMessage(payload);        
-        await msgEditService.Delete(msg.MessageId);
+        Message msg = await msgSendService.SendMessage(replyKeyboardRemoveMessage);        
+        await msgDeleteService.Delete(msg.MessageId);
     }
 
     public virtual CommandStepResult GetSuccessStepResult()
@@ -68,26 +68,34 @@ public class ContactInputCommandStep : ICommandStep
 
     public async Task OnEnter(IServiceProvider serviceProvider)
     {
-        var messageService = serviceProvider.GetRequiredService<IMessageSender>();
+        var messageService = serviceProvider.GetRequiredService<IMessageSendService>();
 
-        OutgoingMessage msg = new()
+        if(_options.ShareContactButtonText is not null)
         {
-            Text = _options.UserPrompt,
-            ReplyMarkup = BuildReplyMarkup()
-        };
-
-        await messageService.SendMessage(msg);
+            ReplyMarkupMessage msg = new()
+            {
+                Text = _options.UserPrompt,
+                Markup = BuildReplyMarkup()
+            };   
+            
+            await messageService.SendMessage(msg);
+        }
+        else
+        {
+            InlineMarkupMessage msg = new(){ Text = _options.UserPrompt };
+            await messageService.SendMessage(msg);   
+        }
     }
 
-    private ReplyKeyboardMarkup? BuildReplyMarkup()
+    private ReplyMarkupSpec BuildReplyMarkup()
     {
         if(_options.ShareContactButtonText is null)
-            return null;
+            throw new Exception();
 
         ReplyKeyboardBuilder builder = new();
         builder.ContactRequestButton(_options.ShareContactButtonText);
 
-        return builder.Build();
+        return new ReplyMarkupSpec.Keyboard(builder.Build());
     }
 
 

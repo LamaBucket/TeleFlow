@@ -3,18 +3,15 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TeleFlow.Abstractions.Transport.Messaging;
 
-public class OutgoingMessage
+public class InlineMarkupMessage
 {
-    public static OutgoingMessage CreateTextMessage(string text) => new() { Text = text };
+    public static InlineMarkupMessage CreateTextMessage(string text) => new() { Text = text };
 
 
     public required string Text { get; init; }
 
-    public IReplyMarkup? ReplyMarkup { get; init; } = null;
-
     public ParseMode ParseMode { get; init; } = ParseMode.None;
 
-    public OutgoingMessage()
-    {
-    }
+    public InlineKeyboardMarkup? Markup { get; init; } = null;
+
 }

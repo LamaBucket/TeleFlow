@@ -92,7 +92,7 @@ public class FileInputCommandStep : ICommandStep
 
     public async Task OnEnter(IServiceProvider serviceProvider)
     {
-        var sender = serviceProvider.GetRequiredService<IMessageSender>();
+        var sender = serviceProvider.GetRequiredService<IMessageSendService>();
         await sender.SendMessage(_options.UserPrompt);
     }
 

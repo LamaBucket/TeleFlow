@@ -6,20 +6,38 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TeleFlow.Extensions.DI.Implementations.Transport.Messaging;
 
-public class DefaultMessageEditor : IMessageEditor
+public class DefaultMessageEditor : IMessageEditService
 {
     private readonly ITelegramBotClient _botClient;
 
     private readonly long _chatId;
 
-    public Task Delete(int messageId)
-        => _botClient.DeleteMessageAsync(_chatId, messageId);
+    public async Task<Message> Edit(int messageId, InlineMarkupMessage message)
+    {
+        Message? msg = null;
+        try
+        {
+            msg = await _botClient.EditMessageTextAsync(_chatId, messageId, message.Text, parseMode: message.ParseMode);   
+        }
+        catch
+        {
+            Console.WriteLine("oops");
+        }
 
-    public Task<Message> EditInlineKeyboard(int messageId, InlineKeyboardMarkup? markup)
-        => _botClient.EditMessageReplyMarkupAsync(_chatId, messageId, replyMarkup: markup);
+        try
+        {
+            msg = await _botClient.EditMessageReplyMarkupAsync(_chatId, messageId, replyMarkup: message.Markup);   
+        }
+        catch
+        {
+            Console.WriteLine("oops");
+        }
 
-    public Task<Message> EditText(int messageId, string text, ParseMode parseMode = ParseMode.None)
-        => _botClient.EditMessageTextAsync(_chatId, messageId, text, parseMode: parseMode);
+        if(msg is null)
+            throw new Exception();
+
+        return msg;
+    }
 
     public DefaultMessageEditor(ITelegramBotClient botClient, long chatId)
     {

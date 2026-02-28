@@ -1,10 +1,13 @@
 using System.Globalization;
 using TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase.Internal;
+using TeleFlow.Core.Commands.Stateful.Steps.ViewModelCallbackStepBase;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.DateInput;
 
 public class DateInputCommandStepOptions
 {
+    public required ViewModelCallbackCommandStepBaseOptions<DateInputCommandStepViewModel> BaseOptions { get; init; }
+
     public required DateInputMode Mode { get; init; }
 
 

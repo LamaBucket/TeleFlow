@@ -9,7 +9,7 @@ public class NavigateWithTextCommand : NavigateCommand
 
     protected override async Task ExecuteBeforeNavigate(UpdateContext update)
     {
-        var messageService = update.GetService<IMessageSender>();
+        var messageService = update.GetService<IMessageSendService>();
 
         await messageService.SendMessage(_message);
     }

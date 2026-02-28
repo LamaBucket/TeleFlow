@@ -4,7 +4,6 @@ using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Abstractions.Transport.Callbacks;
 using TeleFlow.Abstractions.Transport.Messaging;
-using TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase;
 using TeleFlow.Core.Commands.Stateful.Steps.ViewModelStepBase;
 using TeleFlow.Core.Transport.Callbacks;
 using Telegram.Bot.Types;
@@ -15,7 +14,7 @@ namespace TeleFlow.Core.Commands.Stateful.Steps.ViewModelCallbackStepBase;
 public abstract class ViewModelCallbackCommandStepBase<TViewModel> : ViewModelCommandStepBase<TViewModel>
     where TViewModel : class
 {
-    private readonly CallbackCommandStepBaseOptions<TViewModel> _options;
+    private readonly ViewModelCallbackCommandStepBaseOptions<TViewModel> _options;
 
     protected override async Task<CommandStepResult> Handle(UpdateContext context, StepState<TViewModel> state)
     {
@@ -55,7 +54,7 @@ public abstract class ViewModelCallbackCommandStepBase<TViewModel> : ViewModelCo
     protected abstract Task<CommandStepResult> HandleAction(IServiceProvider sp, StepState<TViewModel> state, CallbackAction action);
 
 
-    public ViewModelCallbackCommandStepBase(CallbackCommandStepBaseOptions<TViewModel> options) : base(options.BaseOptions)
+    public ViewModelCallbackCommandStepBase(ViewModelCallbackCommandStepBaseOptions<TViewModel> options) : base(options.BaseOptions)
     {
         _options = options;
     }

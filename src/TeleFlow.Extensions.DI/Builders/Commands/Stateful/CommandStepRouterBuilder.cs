@@ -2,7 +2,6 @@ using TeleFlow.Abstractions.Engine.Commands.Stateful;
 using TeleFlow.Abstractions.Transport.Files;
 using TeleFlow.Core.Commands.Decorators;
 using TeleFlow.Core.Commands.Stateful;
-using TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase;
 using TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
 using TeleFlow.Core.Commands.Stateful.Steps.FileInput;
 using TeleFlow.Core.Commands.Stateful.Steps.ListSelection;
@@ -46,53 +45,53 @@ public class CommandStepRouterBuilder
     
     #endregion
 
-    #region  List
+    // #region  List
     
-    public CommandStepFilterBuilder AddListSelect<T>(ListSelectionOptions<T> options, CallbackCommandStepBaseOptions optionsBase)
-        => Add(() => new ListSelectionCommandStep<T>(options, optionsBase));
+    // public CommandStepFilterBuilder AddListSelect<T>(ListSelectionOptions<T> options, ViewModelCallbackCommandStepBaseOptions optionsBase)
+    //     => Add(() => new ListSelectionCommandStep<T>(options, optionsBase));
     
     
-    public CommandStepFilterBuilder AddSingleSelect<T>(string userPrompt, Func<IServiceProvider, Task<IReadOnlyList<T>>> valueProvider, Func<T, string> displayName, Func<CommandStepCommitContext, T, Task> onCommit)
-        => AddListSelect<T>(
-            options: new() 
-            { 
-                ValueProvider = valueProvider,
-                Mode = new ListSelectionMode.SingleSelect<T>() { OnCommit = onCommit },
-                DisplayNameParser = displayName
-            }, 
-            optionsBase: new() { UserPrompt = userPrompt }
-        );
+    // public CommandStepFilterBuilder AddSingleSelect<T>(string userPrompt, Func<IServiceProvider, Task<IReadOnlyList<T>>> valueProvider, Func<T, string> displayName, Func<CommandStepCommitContext, T, Task> onCommit)
+    //     => AddListSelect<T>(
+    //         options: new() 
+    //         { 
+    //             ValueProvider = valueProvider,
+    //             Mode = new ListSelectionMode.SingleSelect<T>() { OnCommit = onCommit },
+    //             DisplayNameParser = displayName
+    //         }, 
+    //         optionsBase: new() { UserPrompt = userPrompt }
+    //     );
 
-    public CommandStepFilterBuilder AddSingleSelect<T>(string userPrompt, IEnumerable<T> items, Func<T, string> displayName, Func<CommandStepCommitContext, T, Task> onCommit)
-        => AddSingleSelect(
-            valueProvider: async (sp) => items.ToList(),
-            displayName: displayName,
-            onCommit: onCommit,
-            userPrompt: userPrompt
-        );
+    // public CommandStepFilterBuilder AddSingleSelect<T>(string userPrompt, IEnumerable<T> items, Func<T, string> displayName, Func<CommandStepCommitContext, T, Task> onCommit)
+    //     => AddSingleSelect(
+    //         valueProvider: async (sp) => items.ToList(),
+    //         displayName: displayName,
+    //         onCommit: onCommit,
+    //         userPrompt: userPrompt
+    //     );
 
 
-    public CommandStepFilterBuilder AddMultiSelect<T>(string userPrompt, Func<IServiceProvider, Task<IReadOnlyList<T>>> valueProvider, Func<T, string> displayName, Func<CommandStepCommitContext, IReadOnlyList<T>, Task> onCommit)
-        => AddListSelect<T>(
-            options: new() 
-            { 
-                ValueProvider = valueProvider,
-                Mode = new ListSelectionMode.MultiSelect<T>() { OnCommit = onCommit },
-                DisplayNameParser = displayName
-            }, 
-            optionsBase: new() { UserPrompt = userPrompt }
-        );
+    // public CommandStepFilterBuilder AddMultiSelect<T>(string userPrompt, Func<IServiceProvider, Task<IReadOnlyList<T>>> valueProvider, Func<T, string> displayName, Func<CommandStepCommitContext, IReadOnlyList<T>, Task> onCommit)
+    //     => AddListSelect<T>(
+    //         options: new() 
+    //         { 
+    //             ValueProvider = valueProvider,
+    //             Mode = new ListSelectionMode.MultiSelect<T>() { OnCommit = onCommit },
+    //             DisplayNameParser = displayName
+    //         }, 
+    //         optionsBase: new() { UserPrompt = userPrompt }
+    //     );
 
-    public CommandStepFilterBuilder AddMultiSelect<T>(string userPrompt, IEnumerable<T> items, Func<T, string> displayName, Func<CommandStepCommitContext, IReadOnlyList<T>, Task> onCommit)
-        => AddMultiSelect(
-            valueProvider: async (sp) => items.ToList(),
-            displayName: displayName,
-            onCommit: onCommit,
-            userPrompt: userPrompt
-        );
+    // public CommandStepFilterBuilder AddMultiSelect<T>(string userPrompt, IEnumerable<T> items, Func<T, string> displayName, Func<CommandStepCommitContext, IReadOnlyList<T>, Task> onCommit)
+    //     => AddMultiSelect(
+    //         valueProvider: async (sp) => items.ToList(),
+    //         displayName: displayName,
+    //         onCommit: onCommit,
+    //         userPrompt: userPrompt
+    //     );
 
     
-    #endregion
+    // #endregion
 
     #region File
     

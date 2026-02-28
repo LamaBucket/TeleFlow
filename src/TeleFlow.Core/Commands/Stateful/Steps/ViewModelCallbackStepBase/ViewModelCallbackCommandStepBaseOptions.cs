@@ -1,8 +1,8 @@
 using TeleFlow.Core.Commands.Stateful.Steps.ViewModelStepBase;
 
-namespace TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase;
+namespace TeleFlow.Core.Commands.Stateful.Steps.ViewModelCallbackStepBase;
 
-public class CallbackCommandStepBaseOptions<TViewModel>
+public class ViewModelCallbackCommandStepBaseOptions<TViewModel>
     where TViewModel : class
 {
     public required ViewModelCommandStepBaseOptions<TViewModel> BaseOptions { get; init; }

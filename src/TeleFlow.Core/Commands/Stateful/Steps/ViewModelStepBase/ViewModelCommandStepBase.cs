@@ -33,7 +33,7 @@ public abstract class ViewModelCommandStepBase<TViewModel> : ICommandStep
 
     public async Task OnEnter(IServiceProvider serviceProvider)
     {
-        var msgService = serviceProvider.GetRequiredService<IMessageSender>();
+        var msgService = serviceProvider.GetRequiredService<IMessageSendService>();
 
         var vm = await CreateDefaultViewModel(serviceProvider);
         var msg = RenderService.Render(serviceProvider, vm);
@@ -48,15 +48,9 @@ public abstract class ViewModelCommandStepBase<TViewModel> : ICommandStep
     protected abstract Task<TViewModel> CreateDefaultViewModel(IServiceProvider sp);
 
 
-    protected async Task UpsertAndRerenderInlineKeyboard(IServiceProvider sp, StepState<TViewModel> state)
+    protected async Task UpsertAndRerender(IServiceProvider sp, StepState<TViewModel> state)
     {
-        await RerenderInlineKeyboard(sp, state);
-        await UpsertState(sp, state);
-    }
-
-    protected async Task UpsertAndRerenderText(IServiceProvider sp, StepState<TViewModel> state)
-    {
-        await RerenderText(sp, state);
+        await RerenderMessage(sp, state);
         await UpsertState(sp, state);
     }
 
@@ -69,31 +63,13 @@ public abstract class ViewModelCommandStepBase<TViewModel> : ICommandStep
     }
 
 
-    private async Task RerenderInlineKeyboard(IServiceProvider sp, StepState<TViewModel> state)
+    private async Task RerenderMessage(IServiceProvider sp, StepState<TViewModel> state)
     {
-        var msgEditor = sp.GetRequiredService<IMessageEditor>();
+        var msgEditor = sp.GetRequiredService<IMessageEditService>();
 
         var message = RenderService.Render(sp, state.ViewModel);
 
-        if(message.ReplyMarkup is null)
-        {
-            await msgEditor.EditInlineKeyboard(state.MessageId, null); 
-            return;  
-        }
-        
-        if(message.ReplyMarkup is not InlineKeyboardMarkup markup)
-            throw new Exception("Only Inline Markup is supported here. To Re-Render Reply Markup please use IMessageSender + IMessageEditor directly.");
-
-        await msgEditor.EditInlineKeyboard(state.MessageId, markup);
-    }
-
-    private async Task RerenderText(IServiceProvider sp, StepState<TViewModel> state)
-    {
-        var msgEditor = sp.GetRequiredService<IMessageEditor>();
-
-        var message = RenderService.Render(sp, state.ViewModel);
-
-        await msgEditor.EditText(state.MessageId, message.Text, message.ParseMode);
+        await msgEditor.Edit(state.MessageId, message);
     }
 
 

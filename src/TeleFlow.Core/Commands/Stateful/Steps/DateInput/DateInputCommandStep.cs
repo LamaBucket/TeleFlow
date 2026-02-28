@@ -3,6 +3,7 @@ using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase;
 using TeleFlow.Core.Commands.Stateful.Steps.DateInput.Internal;
+using TeleFlow.Core.Commands.Stateful.Steps.ViewModelCallbackStepBase;
 using TeleFlow.Core.Transport.Callbacks;
 using Telegram.Bot.Types.ReplyMarkups;
 using static TeleFlow.Core.Commands.Stateful.Steps.DateInput.DateInputMode;
@@ -10,17 +11,13 @@ using static TeleFlow.Core.Transport.Callbacks.CallbackAction;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.DateInput;
 
-public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStepViewModel>
+public class DateInputCommandStep : ViewModelCallbackCommandStepBase<DateInputCommandStepViewModel>
 {
     private readonly DateInputCommandStepOptions _options;
 
 
     protected override async Task<DateInputCommandStepViewModel> CreateDefaultViewModel(IServiceProvider sp) 
         => new(); 
-
-    protected override InlineKeyboardMarkup RenderMarkup(Func<CallbackAction, string> markupButtonActionCodec, DateInputCommandStepViewModel vm)
-        => DateInputRenderService.RenderMarkup(_options, markupButtonActionCodec, vm);
-
 
     protected override Task<CommandStepResult> HandleAction(IServiceProvider sp, StepState<DateInputCommandStepViewModel> state, CallbackAction token)
     {
@@ -260,7 +257,7 @@ public class DateInputCommandStep : CallbackCommandStepBase<DateInputCommandStep
     #endregion
 
 
-    public DateInputCommandStep(DateInputCommandStepOptions options, CallbackCommandStepBaseOptions optionsBase) : base(optionsBase)
+    public DateInputCommandStep(DateInputCommandStepOptions options) : base(options.BaseOptions)
     {
         _options = options;
     }

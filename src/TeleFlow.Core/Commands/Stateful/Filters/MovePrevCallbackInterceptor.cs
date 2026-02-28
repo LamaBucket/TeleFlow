@@ -53,37 +53,6 @@ public class MovePrevCallbackFilter : ICommandStepFilter
         return null;
     }
 
-
-    public async Task ExecuteOnEnter(IServiceProvider serviceProvider, StepEnterDelegate next)
-    {
-        ApplyMessageTemplate(serviceProvider);
-        await next(serviceProvider);
-        ClearMessageTemplate(serviceProvider);
-    }
-
-    public static void ApplyMessageTemplate(IServiceProvider serviceProvider)
-    {
-        var actionParser = serviceProvider.GetRequiredService<ICallbackActionParser>();
-        var callbackCodec = serviceProvider.GetRequiredService<ICallbackCodec>();
-
-        var templateService = serviceProvider.GetRequiredService<IMessageSenderTemplateService>();
-
-        templateService.ApplyTemplate((message) =>
-        {
-            if(message.ReplyMarkup is InlineKeyboardMarkup markup)
-            {
-                var token = callbackCodec.EncodeAction(actionParser.Parse(CallbackActions.Step.Back));
-                markup.AddNewRow(new InlineKeyboardButton("Go Prev"){ CallbackData = token });
-            }
-
-            return message;
-        });
-    }
-
-    public static void ClearMessageTemplate(IServiceProvider serviceProvider)
-    {
-        var templateService = serviceProvider.GetRequiredService<IMessageSenderTemplateService>();
-        templateService.ClearTemplates();
-    }
-
+    public Task ExecuteOnEnter(IServiceProvider serviceProvider, StepEnterDelegate next)
+        => next(serviceProvider);
 }

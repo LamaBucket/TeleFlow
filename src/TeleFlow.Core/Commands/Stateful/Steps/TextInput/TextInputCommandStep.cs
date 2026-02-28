@@ -35,7 +35,7 @@ public class TextInputCommandStep : ICommandStep
 
     public async Task OnEnter(IServiceProvider serviceProvider)
     {
-        var messageService = serviceProvider.GetRequiredService<IMessageSender>();
+        var messageService = serviceProvider.GetRequiredService<IMessageSendService>();
 
         await messageService.SendMessage(_options.UserPrompt);
     }
