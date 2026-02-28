@@ -1,0 +1,129 @@
+using Microsoft.Extensions.DependencyInjection;
+using TeleFlow.Abstractions.Engine.ChatIdentity;
+using TeleFlow.Abstractions.Engine.Commands.Stateful;
+using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
+using TeleFlow.Abstractions.Engine.Commands.Stateful.Steps;
+using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
+using TeleFlow.Abstractions.State.Step;
+using TeleFlow.Abstractions.Transport.Messaging;
+using Telegram.Bot.Types.ReplyMarkups;
+
+namespace TeleFlow.Core.Commands.Stateful.Steps.ViewModelStepBase;
+
+public abstract class ViewModelCommandStepBase<TViewModel> : ICommandStep
+    where TViewModel : class
+{
+    private readonly ViewModelCommandStepBaseOptions<TViewModel> _options;
+
+    private IStepRenderService<TViewModel> RenderService => _options.RenderService;
+
+
+    public async Task<CommandStepResult> Handle(UpdateContext args)
+    {
+        var state = await LoadStateOrNull(args.ServiceProvider);
+
+        if(state is null)
+            return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.StateExpiredMessage);
+
+        return await Handle(args, state);
+    }
+
+    protected abstract Task<CommandStepResult> Handle(UpdateContext context, StepState<TViewModel> state);
+
+
+    public async Task OnEnter(IServiceProvider serviceProvider)
+    {
+        var msgService = serviceProvider.GetRequiredService<IMessageSender>();
+
+        var vm = await CreateDefaultViewModel(serviceProvider);
+        var msg = RenderService.Render(serviceProvider, vm);
+
+        var response = await msgService.SendMessage(msg);
+        
+        var state = new StepState<TViewModel>(response.MessageId, vm);
+
+        await UpsertState(serviceProvider, state);
+    }
+
+    protected abstract Task<TViewModel> CreateDefaultViewModel(IServiceProvider sp);
+
+
+    protected async Task UpsertAndRerenderInlineKeyboard(IServiceProvider sp, StepState<TViewModel> state)
+    {
+        await RerenderInlineKeyboard(sp, state);
+        await UpsertState(sp, state);
+    }
+
+    protected async Task UpsertAndRerenderText(IServiceProvider sp, StepState<TViewModel> state)
+    {
+        await RerenderText(sp, state);
+        await UpsertState(sp, state);
+    }
+
+    protected async Task FinalizeStep(IServiceProvider sp)
+    {
+        var state = await LoadStateOrNull(sp);
+
+        if(state is not null)
+            await RemoveState(sp);
+    }
+
+
+    private async Task RerenderInlineKeyboard(IServiceProvider sp, StepState<TViewModel> state)
+    {
+        var msgEditor = sp.GetRequiredService<IMessageEditor>();
+
+        var message = RenderService.Render(sp, state.ViewModel);
+
+        if(message.ReplyMarkup is null)
+        {
+            await msgEditor.EditInlineKeyboard(state.MessageId, null); 
+            return;  
+        }
+        
+        if(message.ReplyMarkup is not InlineKeyboardMarkup markup)
+            throw new Exception("Only Inline Markup is supported here. To Re-Render Reply Markup please use IMessageSender + IMessageEditor directly.");
+
+        await msgEditor.EditInlineKeyboard(state.MessageId, markup);
+    }
+
+    private async Task RerenderText(IServiceProvider sp, StepState<TViewModel> state)
+    {
+        var msgEditor = sp.GetRequiredService<IMessageEditor>();
+
+        var message = RenderService.Render(sp, state.ViewModel);
+
+        await msgEditor.EditText(state.MessageId, message.Text, message.ParseMode);
+    }
+
+
+    private static async Task<StepState<TViewModel>?> LoadStateOrNull(IServiceProvider sp)
+    {
+        var chatId = sp.GetRequiredService<IChatIdProvider>().GetChatId();
+        var store = sp.GetRequiredService<IStepStateStore>();
+
+        return await store.GetState<TViewModel>(chatId);
+    }
+
+    private static async Task UpsertState(IServiceProvider sp, StepState<TViewModel> state)
+    {
+        var chatId = sp.GetRequiredService<IChatIdProvider>().GetChatId();
+        var store  = sp.GetRequiredService<IStepStateStore>();
+
+        await store.SetState(chatId, state);
+    }
+
+    private static async Task RemoveState(IServiceProvider sp)
+    {
+        var chatId = sp.GetRequiredService<IChatIdProvider>().GetChatId();
+        var store = sp.GetRequiredService<IStepStateStore>();
+
+        await store.RemoveState(chatId);
+    }
+
+
+    public ViewModelCommandStepBase(ViewModelCommandStepBaseOptions<TViewModel> options)
+    {
+        _options = options;
+    }
+}

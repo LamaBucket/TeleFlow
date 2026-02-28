@@ -1,9 +1,11 @@
+using TeleFlow.Core.Commands.Stateful.Steps.ViewModelStepBase;
+
 namespace TeleFlow.Core.Commands.Stateful.Steps.CallbackStepBase;
 
-public class CallbackCommandStepBaseOptions
+public class CallbackCommandStepBaseOptions<TViewModel>
+    where TViewModel : class
 {
-    public required string UserPrompt { get; init; }
-
+    public required ViewModelCommandStepBaseOptions<TViewModel> BaseOptions { get; init; }
 
     public string NoCallbackQueryMessage { get; init; } = "Use the buttons linked to the previous message";
 
