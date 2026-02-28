@@ -10,35 +10,20 @@ public class DefaultMessageEditor : IMessageEditor
 {
     private readonly ITelegramBotClient _botClient;
 
-    private readonly IMessageEditorTemplateService? _templateService;
-
     private readonly long _chatId;
 
-    public async Task Delete(int messageId)
-    {
-        await _botClient.DeleteMessageAsync(_chatId, messageId);
-    }
+    public Task Delete(int messageId)
+        => _botClient.DeleteMessageAsync(_chatId, messageId);
 
-    public async Task<Message> EditInlineKeyboard(int messageId, InlineKeyboardMarkup? markup)
-    {
-        if(_templateService is not null)
-            markup = _templateService.UseTemplateOnInlineKeyboardEdit(markup);
+    public Task<Message> EditInlineKeyboard(int messageId, InlineKeyboardMarkup? markup)
+        => _botClient.EditMessageReplyMarkupAsync(_chatId, messageId, replyMarkup: markup);
 
-        return await _botClient.EditMessageReplyMarkupAsync(_chatId, messageId, replyMarkup: markup);
-    }
+    public Task<Message> EditText(int messageId, string text, ParseMode parseMode = ParseMode.None)
+        => _botClient.EditMessageTextAsync(_chatId, messageId, text, parseMode: parseMode);
 
-    public async Task<Message> EditText(int messageId, string text, ParseMode parseMode = ParseMode.None)
-    {
-        if(_templateService is not null)
-            text = _templateService.UseTemplateOnTextEdit(text, parseMode);
-            
-        return await _botClient.EditMessageTextAsync(_chatId, messageId, text, parseMode: parseMode);
-    }
-
-    public DefaultMessageEditor(ITelegramBotClient botClient, long chatId, IMessageEditorTemplateService? templateService)
+    public DefaultMessageEditor(ITelegramBotClient botClient, long chatId)
     {
         _botClient = botClient;
         _chatId = chatId;
-        _templateService = templateService;
     }
 }
