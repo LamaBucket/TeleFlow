@@ -82,7 +82,13 @@ public class ContactInputStep : StepBase<ContactInputStepViewModel>
 
     private async Task SetStateSharedContactAndRerender(IServiceProvider sp, StepState<ContactInputStepViewModel> state, Contact value)
     {
-        state.ViewModel.ContactShared = value;
+        state = state with
+        {
+            ViewModel = state.ViewModel with
+            {
+                ContactShared = value
+            }
+        };
         await UpsertAndRerender(sp, state);
     }
 
@@ -120,7 +126,7 @@ public class ContactInputStep : StepBase<ContactInputStepViewModel>
 
 
     protected override Task<ContactInputStepViewModel> CreateDefaultViewModel(IServiceProvider sp)
-        => Task.FromResult<ContactInputStepViewModel>(new());
+        => Task.FromResult(ContactInputStepViewModel.Default);
 
 
     public ContactInputStep(ContactInputStepOptions options) : base(options.RenderConfig)

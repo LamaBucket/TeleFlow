@@ -11,7 +11,7 @@ using Telegram.Bot.Types.Enums;
 namespace TeleFlow.Core.Commands.Stateful.Steps.CallbackCommandStepBase;
 
 public abstract class CallbackStepBase<TViewModel> : StepBase<TViewModel>
-    where TViewModel : class
+    where TViewModel : StepViewModel
 {
     private readonly CallbackStepBaseOptions<TViewModel> _options;
 

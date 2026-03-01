@@ -95,7 +95,14 @@ public class FileInputCommandStep : StepBase<FileInputStepViewModel>
 
     private async Task SetStateInputTextAndRerender(IServiceProvider sp, StepState<FileInputStepViewModel> state, FileReference value)
     {
-        state.ViewModel.File = value;
+        state = state with
+        {
+            ViewModel = state.ViewModel with
+            {
+                FileSent = value
+            }
+        };
+
         await UpsertAndRerender(sp, state);
     }
 
@@ -104,7 +111,7 @@ public class FileInputCommandStep : StepBase<FileInputStepViewModel>
 
 
     protected override Task<FileInputStepViewModel> CreateDefaultViewModel(IServiceProvider sp)
-        => Task.FromResult<FileInputStepViewModel>(new());
+        => Task.FromResult(FileInputStepViewModel.Default);
 
     public FileInputCommandStep(FileInputCommandStepOptions options) : base(options.RenderConfig)
     {

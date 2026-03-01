@@ -1,9 +1,10 @@
+using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Core.Commands.Stateful.Steps.CommandStepBase;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.CallbackCommandStepBase;
 
 public class CallbackStepBaseOptions<TViewModel>
-    where TViewModel : class
+    where TViewModel : StepViewModel
 {
     public required StepBaseOptions<TViewModel> RenderConfig { get; init; }
 

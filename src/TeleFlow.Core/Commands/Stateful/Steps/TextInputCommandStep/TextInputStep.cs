@@ -34,7 +34,14 @@ public class TextInputCommandStep : StepBase<TextInputCommandStepViewModel>
 
     private async Task SetStateInputTextAndRerender(IServiceProvider sp, StepState<TextInputCommandStepViewModel> state, string value)
     {
-        state.ViewModel.TextEntered = value;
+        state = state with
+        {
+            ViewModel = state.ViewModel with
+            {
+                TextEntered = value
+            }
+        };
+    
         await UpsertAndRerender(sp, state);
     }
 
@@ -43,7 +50,7 @@ public class TextInputCommandStep : StepBase<TextInputCommandStepViewModel>
 
 
     protected override Task<TextInputCommandStepViewModel> CreateDefaultViewModel(IServiceProvider sp)
-        => Task.FromResult<TextInputCommandStepViewModel>(new());
+        => Task.FromResult(TextInputCommandStepViewModel.Default);
 
 
     public TextInputCommandStep(TextInputCommandStepOptions options) : base(options.RenderConfig)

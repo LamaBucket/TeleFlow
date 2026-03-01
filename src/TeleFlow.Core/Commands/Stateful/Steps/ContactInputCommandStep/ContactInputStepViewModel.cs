@@ -1,8 +1,10 @@
+using TeleFlow.Abstractions.State.Step;
 using Telegram.Bot.Types;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.ContactInputCommandStep;
 
-public class ContactInputStepViewModel
+public record ContactInputStepViewModel(Contact? ContactShared) : StepViewModel
 {
-    public Contact? ContactShared { get; set; }
+    public static ContactInputStepViewModel Default
+        => new(ContactShared: null);
 }

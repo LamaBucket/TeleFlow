@@ -1,6 +1,9 @@
+using TeleFlow.Abstractions.State.Step;
+
 namespace TeleFlow.Core.Commands.Stateful.Steps.TextInputCommandStep;
 
-public class TextInputCommandStepViewModel
+public record TextInputCommandStepViewModel(string TextEntered) : StepViewModel
 {
-    public string? TextEntered { get; set; }
+    public static TextInputCommandStepViewModel Default
+        => new(string.Empty);
 }
