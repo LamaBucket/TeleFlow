@@ -1,8 +1,7 @@
 using TeleFlow.Abstractions.Transport.Files;
 using TeleFlow.Core.Commands.Stateful.Steps.CommandStepBase;
-using TeleFlow.Core.Commands.Stateful.Steps.FileInputCommandStep;
 
-namespace TeleFlow.Core.Commands.Stateful.Steps.FileInput;
+namespace TeleFlow.Core.Commands.Stateful.Steps.FileInputCommandStep;
 
 public sealed class FileInputCommandStepOptions
 {

@@ -1,16 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
-using TeleFlow.Abstractions.Engine.Commands.Stateful;
 using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Abstractions.Transport.Files;
-using TeleFlow.Abstractions.Transport.Messaging;
 using TeleFlow.Core.Commands.Stateful.Steps.CommandStepBase;
-using TeleFlow.Core.Commands.Stateful.Steps.FileInputCommandStep;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 
-namespace TeleFlow.Core.Commands.Stateful.Steps.FileInput;
+namespace TeleFlow.Core.Commands.Stateful.Steps.FileInputCommandStep;
 
 public class FileInputCommandStep : StepBase<FileInputStepViewModel>
 {
