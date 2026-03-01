@@ -30,7 +30,7 @@ public abstract class StepBase<TViewModel> : ICommandStep
     protected abstract Task<CommandStepResult> Handle(UpdateContext context, StepState<TViewModel> state);
 
 
-    public async Task OnEnter(IServiceProvider serviceProvider)
+    public virtual async Task OnEnter(IServiceProvider serviceProvider)
     {
         var msgService = serviceProvider.GetRequiredService<IMessageSendService>();
 

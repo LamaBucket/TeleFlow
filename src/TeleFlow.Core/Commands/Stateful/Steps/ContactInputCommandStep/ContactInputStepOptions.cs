@@ -1,11 +1,12 @@
+using TeleFlow.Core.Commands.Stateful.Steps.CommandStepBase;
 using Telegram.Bot.Types;
 
-namespace TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
+namespace TeleFlow.Core.Commands.Stateful.Steps.ContactInputCommandStep;
 
 
-public class ContactInputCommandStepOptions
+public class ContactInputStepOptions
 {
-    public required string UserPrompt { get; init; }
+    public required StepBaseOptions<ContactInputStepViewModel> RenderConfig { get; init; }
 
     public required Func<CommandStepCommitContext, Contact, Task> OnUserCommit { get; init; }
 
