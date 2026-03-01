@@ -2,30 +2,33 @@ using Microsoft.Extensions.DependencyInjection;
 using TeleFlow.Abstractions.Engine.Commands.Stateful;
 using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
+using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Abstractions.Transport.Files;
 using TeleFlow.Abstractions.Transport.Messaging;
+using TeleFlow.Core.Commands.Stateful.Steps.CommandStepBase;
+using TeleFlow.Core.Commands.Stateful.Steps.FileInputCommandStep;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.FileInput;
 
-public class FileInputCommandStep : ICommandStep
+public class FileInputCommandStep : StepBase<FileInputStepViewModel>
 {
+    public const long TelegramMaxFileSizeBytes = 20L * 1024 * 1024;
+
     private readonly FileInputCommandStepOptions _options;
 
-    public virtual CommandStepResult GetSuccessStepResult()
-        => CommandStepResult.Next;
 
-    public async Task<CommandStepResult> Handle(UpdateContext args)
+    protected override async Task<CommandStepResult> Handle(UpdateContext context, StepState<FileInputStepViewModel> state)
     {
-        var update = args.Update;
+        var update = context.Update;
 
         if (update.Message is null)
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.NoMessageInputMessage);
 
         var message = update.Message;
 
-        var extractors = args.ServiceProvider.GetServices<IFileReferenceExtractor>().ToList();
+        var extractors = context.ServiceProvider.GetServices<IFileReferenceExtractor>().ToList();
 
         if(extractors.Count == 0)
             throw new InvalidOperationException($"No {nameof(IFileReferenceExtractor)} services were registered. Register at least one extractor to enable file input handling.");
@@ -39,27 +42,30 @@ public class FileInputCommandStep : ICommandStep
             {
                 if (fileRef.DeclaredSizeBytes.HasValue)
                 {
-                    if(fileRef.DeclaredSizeBytes.Value > FileInputCommandStepDefaults.MaxFileSizeBytes)
+                    if(fileRef.DeclaredSizeBytes.Value > TelegramMaxFileSizeBytes)
                         return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.FileExceedsMaxFileSizeMessage);
                 }
                 else
                 {
-                    var probeResult = await ProbeFileSizeOk(args.ServiceProvider, fileRef);
+                    var probeResult = await ProbeFileSizeOk(context.ServiceProvider, fileRef);
 
                     if(probeResult is not null)
                         return probeResult;
                 }
             }
 
-            var ctx = new CommandStepCommitContext(args.ServiceProvider);
-            await _options.OnUserCommit(ctx, fileRef);
+
+            await SetStateInputTextAndRerender(context.ServiceProvider, state, fileRef);
+            await FinalizeStep(context.ServiceProvider);
+
+            await _options.OnUserCommit(new(context.ServiceProvider), fileRef);
 
             return GetSuccessStepResult();
         }
 
         return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.NoFileProvidedMessage);
     }
-
+   
     private async Task<CommandStepResult?> ProbeFileSizeOk(IServiceProvider sp, FileReference fileRef)
     {
         try
@@ -90,14 +96,20 @@ public class FileInputCommandStep : ICommandStep
         return ex.Message.Contains("file is too big", StringComparison.OrdinalIgnoreCase);
     }
 
-    public async Task OnEnter(IServiceProvider serviceProvider)
+    private async Task SetStateInputTextAndRerender(IServiceProvider sp, StepState<FileInputStepViewModel> state, FileReference value)
     {
-        var sender = serviceProvider.GetRequiredService<IMessageSendService>();
-        await sender.SendMessage(_options.UserPrompt);
+        state.ViewModel.File = value;
+        await UpsertAndRerender(sp, state);
     }
 
+    public virtual CommandStepResult GetSuccessStepResult()
+        => CommandStepResult.Next;
 
-    public FileInputCommandStep(FileInputCommandStepOptions options)
+
+    protected override Task<FileInputStepViewModel> CreateDefaultViewModel(IServiceProvider sp)
+        => Task.FromResult<FileInputStepViewModel>(new());
+
+    public FileInputCommandStep(FileInputCommandStepOptions options) : base(options.RenderConfig)
     {
         _options = options;
     }
