@@ -15,29 +15,39 @@ public class DefaultMessageEditor : IMessageEditService
     public async Task<Message> Edit(int messageId, InlineMarkupMessage message)
     {
         Message? msg = null;
+
         try
         {
-            msg = await _botClient.EditMessageTextAsync(_chatId, messageId, message.Text, parseMode: message.ParseMode);   
+            msg = await _botClient.EditMessageTextAsync(_chatId, messageId, message.Text, parseMode: message.ParseMode);
         }
-        catch
+        catch (Exception ex) when (IsMessageNotModified(ex))
         {
-            Console.WriteLine("oops");
+            // ok, ничего не поменялось
         }
 
         try
         {
-            msg = await _botClient.EditMessageReplyMarkupAsync(_chatId, messageId, replyMarkup: message.Markup);   
+            msg = await _botClient.EditMessageReplyMarkupAsync(_chatId, messageId, replyMarkup: message.Markup);
         }
-        catch
+        catch (Exception ex) when (IsMessageNotModified(ex))
         {
-            Console.WriteLine("oops");
+            // ok
         }
 
-        if(msg is null)
-            throw new Exception();
+        // Если оба edit'а были no-op, msg останется null — но это НЕ повод падать.
+        // Вернём хотя бы "виртуальный успех" — например, получим текущее сообщение нельзя.
+        // Поэтому: возвращай что-то другое или меняй контракт.
+        if (msg is null)
+            throw new InvalidOperationException("Edit resulted in no changes (message is not modified). Consider returning a Unit/void or tracking last message state.");
 
         return msg;
     }
+
+    private static bool IsMessageNotModified(Exception ex)
+    => ex is Telegram.Bot.Exceptions.ApiRequestException api
+       && api.ErrorCode == 400
+       && api.Message.Contains("message is not modified", StringComparison.OrdinalIgnoreCase);
+
 
     public DefaultMessageEditor(ITelegramBotClient botClient, long chatId)
     {
