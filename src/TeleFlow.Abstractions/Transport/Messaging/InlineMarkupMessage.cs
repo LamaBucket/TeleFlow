@@ -5,7 +5,7 @@ namespace TeleFlow.Abstractions.Transport.Messaging;
 
 public class InlineMarkupMessage
 {
-    public static InlineMarkupMessage CreateTextMessage(string text) => new() { Text = text };
+    public static InlineMarkupMessage CreateTextMessage(string text, ParseMode mode = ParseMode.None) => new() { Text = text, ParseMode = mode };
 
 
     public required string Text { get; init; }
