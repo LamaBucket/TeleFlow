@@ -1,47 +1,54 @@
 using TeleFlow.Abstractions.Engine.Commands.Stateful;
-using TeleFlow.Abstractions.Transport.Files;
+using TeleFlow.Abstractions.Engine.Commands.Stateful.Steps;
+using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Core.Commands.Decorators;
 using TeleFlow.Core.Commands.Stateful;
-using TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
-using TeleFlow.Core.Commands.Stateful.Steps.FileInput;
-using TeleFlow.Core.Commands.Stateful.Steps.ListSelection;
-using TeleFlow.Core.Commands.Stateful.Steps.ListSelection.Configuration;
-using TeleFlow.Core.Commands.Stateful.Steps.TextInput;
-using Telegram.Bot.Types;
+using TeleFlow.Core.Commands.Stateful.Steps.CommandStepBase;
+using TeleFlow.Extensions.DI.Builders.Commands.Stateful.StepRegistration;
 
 namespace TeleFlow.Extensions.DI.Builders.Commands.Stateful;
 
 public class CommandStepRouterBuilder
 {
-    private readonly List<StepDescriptor> _stepDescriptors;
+    private readonly List<IStepRegistration> _stepDescriptors;
 
 
-    public CommandStepFilterBuilder Add(Func<ICommandStep> factory, bool prepend = false)
+    public StepFilterBuilder Add(Func<ICommandStep> factory, bool prepend = false)
     {
-        StepDescriptor descriptor = new(factory);
+        PlainStepRegistration registration = new(factory);
 
-        _stepDescriptors.Insert(prepend ? 0 : _stepDescriptors.Count, descriptor);
+        _stepDescriptors.Insert(prepend ? 0 : _stepDescriptors.Count, registration);
 
-        return new CommandStepFilterBuilder(descriptor, this);
+        return new StepFilterBuilder(registration, this);
+    }
+
+    public StepWithViewModelFilterBuilder<TViewModel> Add<TViewModel>(Func<IStepRenderService<TViewModel>> renderServiceFactory, Func<IStepRenderService<TViewModel>, StepBase<TViewModel>> factory, bool prepend = false) 
+        where TViewModel : StepViewModel
+    {
+        StepWithRenderRegistration<TViewModel> registration = new(factory, renderServiceFactory);
+        
+        _stepDescriptors.Insert(prepend ? 0 : _stepDescriptors.Count, registration);
+
+        return new StepWithViewModelFilterBuilder<TViewModel>(registration);
     }
 
     #region  Text
     
-    public CommandStepFilterBuilder AddTextInput(TextInputCommandStepOptions options) 
-        => Add(() => new TextInputCommandStep(options));
+    // public CommandStepFilterBuilder AddTextInput(TextInputCommandStepOptions options) 
+    //     => Add(() => new TextInputCommandStep(options));
 
-    public CommandStepFilterBuilder AddTextInput(string userPrompt, Func<CommandStepCommitContext, string, Task> onUserCommit) 
-        => AddTextInput(new() { UserPrompt = userPrompt, OnUserCommit = onUserCommit });
+    // public CommandStepFilterBuilder AddTextInput(string userPrompt, Func<CommandStepCommitContext, string, Task> onUserCommit) 
+    //     => AddTextInput(new() { UserPrompt = userPrompt, OnUserCommit = onUserCommit });
     
     #endregion
 
     #region  Contact
     
-    public CommandStepFilterBuilder AddContactInput(ContactInputCommandStepOptions options) 
-        => Add(() => new ContactInputCommandStep(options));
+    // public CommandStepFilterBuilder AddContactInput(ContactInputStepOptions options) 
+    //     => Add(() => new ContactInputStep(options));
 
-    public CommandStepFilterBuilder AddContactInput(string userPrompt, Func<CommandStepCommitContext, Contact, Task> onUserCommit) 
-        => AddContactInput(new() { UserPrompt = userPrompt, OnUserCommit =  onUserCommit});
+    // public CommandStepFilterBuilder AddContactInput(string userPrompt, Func<CommandStepCommitContext, Contact, Task> onUserCommit) 
+    //     => AddContactInput(new() { UserPrompt = userPrompt, OnUserCommit =  onUserCommit});
     
     #endregion
 
@@ -95,11 +102,11 @@ public class CommandStepRouterBuilder
 
     #region File
     
-    public CommandStepFilterBuilder AddFile(FileInputCommandStepOptions options)
-        => Add(() => new FileInputCommandStep(options));
+    // public CommandStepFilterBuilder AddFile(FileInputCommandStepOptions options)
+    //     => Add(() => new FileInputCommandStep(options));
     
-    public CommandStepFilterBuilder AddFile(string userPrompt, Func<CommandStepCommitContext, FileReference, Task> onUserCommit)
-        => AddFile(new(){ UserPrompt = userPrompt, OnUserCommit = onUserCommit });
+    // public CommandStepFilterBuilder AddFile(string userPrompt, Func<CommandStepCommitContext, FileReference, Task> onUserCommit)
+    //     => AddFile(new(){ UserPrompt = userPrompt, OnUserCommit = onUserCommit });
 
     #endregion
 
@@ -114,34 +121,13 @@ public class CommandStepRouterBuilder
         for(int i = 0; i < _stepDescriptors.Count; i++)
         {
             var stepDescriptor = _stepDescriptors[i];
-            var stepFactory = CompileStepFactory(stepDescriptor);
+            var stepFactory = stepDescriptor.CompileFactory();
 
             stepFactories[i] = stepFactory;
         }
 
         return new CommandStepRouter(stepFactories);
     }
-
-    private static Func<ICommandStep> CompileStepFactory(StepDescriptor descriptor)
-    {
-        if(descriptor.Filters.Count == 0)
-            return descriptor.StepFactory;
-        
-        return () =>
-        {
-            ICommandStep step = descriptor.StepFactory();
-
-            foreach(var filterFactory in descriptor.Filters)
-            {
-                var filter = filterFactory.Invoke();
-
-                step = new FilterCommandStepDecorator(step, filter);
-            }
-
-            return step;
-        };
-    }
-
 
     public CommandStepRouterBuilder()
     {
