@@ -36,7 +36,7 @@ internal static class MonthSelectionRenderService
 
             if (constraints.MinDate.Month <= month && month <= constraints.MaxDate.Month)
             {
-                string text = config.MonthIndexToName(month - 1);
+                string text = config.MonthNumberToName(month);
                 if (model.MonthSelected == month)
                     text = $"*{text}*";
 
