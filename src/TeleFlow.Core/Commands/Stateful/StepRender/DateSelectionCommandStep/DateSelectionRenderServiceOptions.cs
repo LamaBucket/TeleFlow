@@ -6,7 +6,7 @@ namespace TeleFlow.Core.Commands.Stateful.StepRender.DateSelectionCommandStep;
 
 public class DateSelectionRenderServiceOptions
 {
-    public Func<int, string> MonthIndexToName { get; init; } = CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName;
+    public Func<int, string> MonthNumberToName { get; init; } = CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName;
     public Func<int, string> WeekdayIndexToName { get; init; } = index => CultureInfo.InvariantCulture.DateTimeFormat.AbbreviatedDayNames[index];
     public DayOfWeek DaySelectionWeekStart { get; init; } = DayOfWeek.Sunday;
     
