@@ -17,12 +17,12 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
 
     protected override async Task<CommandStepResult> HandleAction(IServiceProvider sp, StepState<DateSelectionStepData> state, CallbackAction action)
     {
-        return state.ViewModel.Page switch
+        return state.StepData.Page switch
         {
             DateSelectionStepPage.YearSelection  => await HandleYearPageAction(sp, state, action),
             DateSelectionStepPage.MonthSelection => await HandleMonthPageAction(sp, state, action),
             DateSelectionStepPage.DaySelection  => await HandleDayPageAction(sp, state, action),
-            _ => throw new InvalidOperationException($"Unexpected DateSelection CommandStepPage value: {state.ViewModel.Page}. The step is in an invalid state.")
+            _ => throw new InvalidOperationException($"Unexpected DateSelection CommandStepPage value: {state.StepData.Page}. The step is in an invalid state.")
         };
     }
 
@@ -42,12 +42,12 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
 
     private async Task<CommandStepResult> HandleYearSelectYear(IServiceProvider sp, StepState<DateSelectionStepData> state, int index)
     {        
-        state = state with { ViewModel = state.ViewModel with { YearSelected = index }};
+        state = state with { StepData = state.StepData with { YearSelected = index }};
 
-        if(!DateSelectionStepDataValidator.IsValid(state.ViewModel, _constraints))
+        if(!DateSelectionStepDataValidator.IsValid(state.StepData, _constraints))
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidYearMessage);
 
-        state = state with { ViewModel = state.ViewModel with { Page = DateSelectionStepPage.MonthSelection }};
+        state = state with { StepData = state.StepData with { Page = DateSelectionStepPage.MonthSelection }};
 
         await UpsertAndRerender(sp, state);
         
@@ -67,9 +67,9 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
         if (addPageValue is not (1 or -1))
             throw new ArgumentOutOfRangeException(nameof(addPageValue), "addPageValue must be +1 or -1.");
 
-        var newVm = state.ViewModel with
+        var newVm = state.StepData with
         {
-            YearPageIndex = state.ViewModel.YearPageIndex + addPageValue
+            YearPageIndex = state.StepData.YearPageIndex + addPageValue
         };
 
         if (!DateSelectionStepDataValidator.IsValid(newVm, _constraints))
@@ -78,7 +78,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, message);
         }
 
-        var newState = state with { ViewModel = newVm };
+        var newState = state with { StepData = newVm };
 
         await UpsertAndRerender(sp, newState);
         return CommandStepResult.HoldOn(CommandStepHoldOnReason.Other);
@@ -102,7 +102,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
 
     private async Task<CommandStepResult> HandleMonthSelectMonth(IServiceProvider sp, StepState<DateSelectionStepData> state, int index)
     {
-        var vmAfterMonth = state.ViewModel with { MonthSelected = index };
+        var vmAfterMonth = state.StepData with { MonthSelected = index };
 
         if (!DateSelectionStepDataValidator.IsValid(vmAfterMonth, _constraints))
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidMonthMessage);
@@ -113,7 +113,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
         {
             nextVm = vmAfterMonth with { DateSelectionCompleted = true };
 
-            await UpsertAndRerender(sp, state with { ViewModel = nextVm });
+            await UpsertAndRerender(sp, state with { StepData = nextVm });
 
             var year = nextVm.YearSelected;
             await mode.OnCommit(new(sp), (year, index));
@@ -123,7 +123,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
 
         nextVm = vmAfterMonth with { Page = DateSelectionStepPage.DaySelection };
 
-        await UpsertAndRerender(sp, state with { ViewModel = nextVm });
+        await UpsertAndRerender(sp, state with { StepData = nextVm });
         return CommandStepResult.HoldOn(CommandStepHoldOnReason.Other);
     }
 
@@ -134,13 +134,13 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
 
         state = state with
         {
-            ViewModel = state.ViewModel with
+            StepData = state.StepData with
             {
-                YearSelected = state.ViewModel.YearSelected + addYearValue
+                YearSelected = state.StepData.YearSelected + addYearValue
             }
         };
 
-        if(!DateSelectionStepDataValidator.IsValid(state.ViewModel, _constraints))
+        if(!DateSelectionStepDataValidator.IsValid(state.StepData, _constraints))
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidYearMessage);
         
         await UpsertAndRerender(sp, state);
@@ -153,7 +153,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
   
         state = state with
         {
-            ViewModel = state.ViewModel with
+            StepData = state.StepData with
             {
                 Page = DateSelectionStepPage.YearSelection
             }
@@ -184,18 +184,18 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
         if (_options.Mode is not YearMonthDay mode)
             throw new InvalidOperationException($"Date selection page requires '{nameof(YearMonthDay)}' mode, but current mode is '{_options.Mode?.GetType().Name ?? "null"}'.");
 
-        state = state with { ViewModel = state.ViewModel with { DaySelected = index }};
+        state = state with { StepData = state.StepData with { DaySelected = index }};
 
-        if(!DateSelectionStepDataValidator.IsValid(state.ViewModel, _constraints))
+        if(!DateSelectionStepDataValidator.IsValid(state.StepData, _constraints))
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidDayMessage);
 
-        state = state with { ViewModel = state.ViewModel with { DateSelectionCompleted = true }};
+        state = state with { StepData = state.StepData with { DateSelectionCompleted = true }};
 
         await UpsertAndRerender(sp, state);
 
-        var year = state.ViewModel.YearSelected;
-        var month = state.ViewModel.MonthSelected;
-        var day = state.ViewModel.DaySelected;
+        var year = state.StepData.YearSelected;
+        var month = state.StepData.MonthSelected;
+        var day = state.StepData.DaySelected;
 
         var date = new DateOnly(year, month, day);
 
@@ -211,7 +211,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
         if (addMonthValue is not (1 or -1))
             throw new ArgumentOutOfRangeException(nameof(addMonthValue), "addMonthValue must be +1 or -1.");
 
-        var vm = state.ViewModel;
+        var vm = state.StepData;
 
         int newYear = vm.YearSelected;
         int newMonth = vm.MonthSelected + addMonthValue;
@@ -229,14 +229,14 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
 
         state = state with
         {
-            ViewModel = vm with
+            StepData = vm with
             {
                 YearSelected = newYear,
                 MonthSelected = newMonth
             }
         };
 
-        if (!DateSelectionStepDataValidator.IsValid(state.ViewModel, _constraints))
+        if (!DateSelectionStepDataValidator.IsValid(state.StepData, _constraints))
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidYearMessage);
 
         await UpsertAndRerender(sp, state);
@@ -249,7 +249,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
 
         state = state with
         {
-            ViewModel = state.ViewModel with
+            StepData = state.StepData with
             {
                 Page = DateSelectionStepPage.MonthSelection
             }
@@ -263,7 +263,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
     #endregion
 
 
-    protected override Task<DateSelectionStepData> CreateDefaultViewModel(IServiceProvider sp) 
+    protected override Task<DateSelectionStepData> CreateDefaultStepData(IServiceProvider sp) 
         => Task.FromResult(DateSelectionStepData.CreateDefault());
 
 

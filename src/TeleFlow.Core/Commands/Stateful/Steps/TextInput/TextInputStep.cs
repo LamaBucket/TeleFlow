@@ -36,7 +36,7 @@ public class TextInputCommandStep : StatefulStep<TextInputStepData>
     {
         state = state with
         {
-            ViewModel = state.ViewModel with
+            StepData = state.StepData with
             {
                 TextEntered = value
             }
@@ -49,7 +49,7 @@ public class TextInputCommandStep : StatefulStep<TextInputStepData>
         => CommandStepResult.Next;
 
 
-    protected override Task<TextInputStepData> CreateDefaultViewModel(IServiceProvider sp)
+    protected override Task<TextInputStepData> CreateDefaultStepData(IServiceProvider sp)
         => Task.FromResult(TextInputStepData.Default);
 
 

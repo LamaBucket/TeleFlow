@@ -34,17 +34,17 @@ public abstract class StatefulStep<TData> : ICommandStep
     {
         var msgService = serviceProvider.GetRequiredService<IMessageSendService>();
 
-        var vm = await CreateDefaultViewModel(serviceProvider);
-        var msg = RenderService.Render(serviceProvider, vm);
+        var data = await CreateDefaultStepData(serviceProvider);
+        var msg = RenderService.Render(serviceProvider, data);
 
         var response = await msgService.SendMessage(msg);
         
-        var state = new StepState<TData>(response.MessageId, vm);
+        var state = new StepState<TData>(response.MessageId, data);
 
         await UpsertState(serviceProvider, state);
     }
 
-    protected abstract Task<TData> CreateDefaultViewModel(IServiceProvider sp);
+    protected abstract Task<TData> CreateDefaultStepData(IServiceProvider sp);
 
 
     protected async Task UpsertAndRerender(IServiceProvider sp, StepState<TData> state)
@@ -66,7 +66,7 @@ public abstract class StatefulStep<TData> : ICommandStep
     {
         var msgEditor = sp.GetRequiredService<IMessageEditService>();
 
-        var message = RenderService.Render(sp, state.ViewModel);
+        var message = RenderService.Render(sp, state.StepData);
 
         await msgEditor.Edit(state.MessageId, message);
     }

@@ -3,8 +3,8 @@ using TeleFlow.Abstractions.Transport.Messaging;
 
 namespace TeleFlow.Abstractions.Engine.Commands.Stateful.Steps;
 
-public interface IStepRenderService<TViewModel>
-    where TViewModel : StepData
+public interface IStepRenderService<TData>
+    where TData : StepData
 {
-    InlineMarkupMessage Render(IServiceProvider serviceProvider, TViewModel model);
+    InlineMarkupMessage Render(IServiceProvider serviceProvider, TData data);
 }

@@ -83,7 +83,7 @@ public class ContactInputStep : StatefulStep<ContactInputStepData>
     {
         state = state with
         {
-            ViewModel = state.ViewModel with
+            StepData = state.StepData with
             {
                 ContactShared = value
             }
@@ -124,7 +124,7 @@ public class ContactInputStep : StatefulStep<ContactInputStepData>
     }
 
 
-    protected override Task<ContactInputStepData> CreateDefaultViewModel(IServiceProvider sp)
+    protected override Task<ContactInputStepData> CreateDefaultStepData(IServiceProvider sp)
         => Task.FromResult(ContactInputStepData.Default);
 
 

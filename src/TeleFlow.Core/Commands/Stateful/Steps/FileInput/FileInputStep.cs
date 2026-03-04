@@ -97,7 +97,7 @@ public class FileInputCommandStep : StatefulStep<FileInputStepData>
     {
         state = state with
         {
-            ViewModel = state.ViewModel with
+            StepData = state.StepData with
             {
                 FileSent = value
             }
@@ -110,7 +110,7 @@ public class FileInputCommandStep : StatefulStep<FileInputStepData>
         => CommandStepResult.Next;
 
 
-    protected override Task<FileInputStepData> CreateDefaultViewModel(IServiceProvider sp)
+    protected override Task<FileInputStepData> CreateDefaultStepData(IServiceProvider sp)
         => Task.FromResult(FileInputStepData.Default);
 
     public FileInputCommandStep(FileInputCommandStepOptions options) : base(options.RenderConfig)
