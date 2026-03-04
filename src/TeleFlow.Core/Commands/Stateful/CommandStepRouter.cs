@@ -6,7 +6,7 @@ public class CommandStepRouter
 {
     public int StepCount => _stepFactories.Length;
 
-    private readonly Func<ICommandStep>[] _stepFactories;
+    private readonly CommandStepFactory[] _stepFactories;
 
     public ICommandStep Create(int context)
     {
@@ -20,7 +20,7 @@ public class CommandStepRouter
         return stepFactory.Invoke();
     }
 
-    public CommandStepRouter(Func<ICommandStep>[] stepFactories)
+    public CommandStepRouter(CommandStepFactory[] stepFactories)
     {
         _stepFactories = stepFactories;
     }

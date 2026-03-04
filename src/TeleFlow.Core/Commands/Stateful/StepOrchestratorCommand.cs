@@ -7,13 +7,15 @@ using static TeleFlow.Abstractions.State.Chat.ChatSession;
 
 namespace TeleFlow.Core.Commands.Stateful;
 
+public delegate Task<CommandResult> OnStatefulCommandFinished(IServiceProvider sp);
+
 public class StepOrchestratorCommand : ICommandHandler
 {
     private readonly ChatSessionStepSnapshot _stepState;
 
     private readonly CommandStepRouter _stepRouter;
 
-    private readonly Func<IServiceProvider, Task<CommandResult>> _onCompleted; 
+    private readonly OnStatefulCommandFinished _onCompleted; 
 
 
     protected virtual bool InitializeNextStep => true;
@@ -78,7 +80,7 @@ public class StepOrchestratorCommand : ICommandHandler
         };
     }
 
-    public StepOrchestratorCommand(ChatSessionStepSnapshot stepState, CommandStepRouter stepRouter, Func<IServiceProvider, Task<CommandResult>> onCompleted)
+    public StepOrchestratorCommand(ChatSessionStepSnapshot stepState, CommandStepRouter stepRouter, OnStatefulCommandFinished onCompleted)
     {
         _stepState = stepState;
         _stepRouter = stepRouter;

@@ -17,8 +17,32 @@ public class CommandRouterBuilder
 
     private bool _built;
 
+    public CommandFilterBuilder AddStateful(string name, Action<StepRouterBuilder> multiStepFactoryConfig, OnStatefulCommandFinished? onCompleted = null)
+    {
+        return Add(name, (session) => { 
+            var stepSnapshot = session.CreateSnapshot();
+            StepRouterBuilder builder = new();
 
-    public CommandFilterBuilder AddOrReplace(string name, ICommandFactory<ICommandHandler, ChatSession> factory)
+            multiStepFactoryConfig.Invoke(builder);
+
+            onCompleted ??= async (serviceProvider) => { return CommandResult.Exit; };
+
+            return new StepOrchestratorCommand(stepSnapshot, builder.Build(), onCompleted);
+        });
+    }
+
+    private CommandFilterBuilder Add(string name, Func<ChatSession, ICommandHandler> factory) 
+        => Add(name, new LambdaCommandFactory<ChatSession>(factory));
+
+
+    public CommandFilterBuilder AddSendText(string name, string message) 
+        => Add(name, (sp) => new SendMessageCommand(message));
+
+    public CommandFilterBuilder Add(string name, Func<ICommandHandler> factory) 
+        => Add(name, new LambdaCommandFactory<ChatSession>(factory));
+
+
+    public CommandFilterBuilder Add(string name, ICommandFactory<ICommandHandler, ChatSession> factory)
     {
         EnsureNotBuilt();
 
@@ -28,37 +52,6 @@ public class CommandRouterBuilder
             _descriptors[name] = descriptor;
 
         return new CommandFilterBuilder(this, descriptor, EnsureNotBuilt);
-    }
-
-    private void EnsureNotBuilt()
-    {
-        if(_built)
-            throw new InvalidOperationException(
-            $"{nameof(CommandRouterBuilder)} configuration is already finalized. " +
-            $"You cannot call '{nameof(AddOrReplace)}' after the builder has been built.");
-    }
-
-
-    public CommandFilterBuilder AddOrReplace(string name, Func<ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
-
-
-    public CommandFilterBuilder AddOrReplace(string name, Func<ChatSession, ICommandHandler> factory) => AddOrReplace(name, new LambdaCommandFactory<ChatSession>(factory));
-
-    public CommandFilterBuilder AddSendText(string name, string message) 
-        => AddOrReplace(name, (sp) => new SendMessageCommand(message));
-
-    public CommandFilterBuilder AddMultiStep(string name, Action<CommandStepRouterBuilder> multiStepFactoryConfig, Func<IServiceProvider, Task<CommandResult>>? onCompleted = null)
-    {
-        return AddOrReplace(name, (session) => { 
-            var stepSnapshot = session.CreateSnapshot();
-            CommandStepRouterBuilder builder = new();
-
-            multiStepFactoryConfig.Invoke(builder);
-
-            onCompleted ??= async (serviceProvider) => { return CommandResult.Exit; };
-
-            return new StepOrchestratorCommand(stepSnapshot, builder.Build(), onCompleted);
-        });
     }
 
 
@@ -89,6 +82,14 @@ public class CommandRouterBuilder
                 new NavigatedCommandRouter(new(navFactories)));
     }
 
+    private void EnsureNotBuilt()
+    {
+        if(_built)
+            throw new InvalidOperationException(
+            $"{nameof(CommandRouterBuilder)} configuration is already finalized. " +
+            $"You cannot call '{nameof(Add)}' after the builder has been built.");
+    }
+
     private static ICommandFactory<ICommandHandler, ChatSession> CompileSessionFactory(CommandDescriptor descriptor)
     {
         if (descriptor.Filters.Count == 0)
@@ -109,9 +110,7 @@ public class CommandRouterBuilder
         });
     }
 
-    private static ICommandFactory<ICommandHandler, NavigateCommandParameters> CompileNavFactory(
-        CommandDescriptor descriptor,
-        ICommandFactory<ICommandHandler, ChatSession> finalSessionFactory)
+    private static ICommandFactory<ICommandHandler, NavigateCommandParameters> CompileNavFactory(CommandDescriptor descriptor, ICommandFactory<ICommandHandler, ChatSession> finalSessionFactory)
     {
         return new LambdaCommandFactory<NavigateCommandParameters>(navArgs =>
         {
@@ -122,6 +121,7 @@ public class CommandRouterBuilder
             return new NavigateCommandDecorator(handler, navArgs, descriptor.NavParamHandler);
         });
     }
+
 
     public CommandRouterBuilder()
     {

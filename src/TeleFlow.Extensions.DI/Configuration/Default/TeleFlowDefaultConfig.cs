@@ -33,6 +33,6 @@ internal static class TeleFlowDefaultConfigInternal
 
     internal static void ConfigureCommandsDefault(CommandRouterBuilder builder)
     {
-        builder.AddOrReplace("/start", () => new SendMessageCommand("Welcome to TeleFlow! Create your commands via options.ConfigureCommands(..)"));
+        builder.Add("/start", () => new SendMessageCommand("Welcome to TeleFlow! Create your commands via options.ConfigureCommands(..)"));
     }
 }

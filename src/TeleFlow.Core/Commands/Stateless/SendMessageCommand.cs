@@ -3,9 +3,11 @@ using TeleFlow.Abstractions.Transport.Messaging;
 
 namespace TeleFlow.Core.Commands.Stateless;
 
+public delegate Task<InlineMarkupMessage> MessageFactory(IServiceProvider sp);
+
 public class SendMessageCommand : StatelessCommandBase
 {
-    private readonly Func<IServiceProvider, Task<InlineMarkupMessage>> _message;
+    private readonly MessageFactory _message;
 
     protected override async Task ExecuteCommand(UpdateContext context)
     {
@@ -28,7 +30,7 @@ public class SendMessageCommand : StatelessCommandBase
     {
     }
 
-    public SendMessageCommand(Func<IServiceProvider, Task<InlineMarkupMessage>> message)
+    public SendMessageCommand(MessageFactory message)
     {
         _message = message;
     }

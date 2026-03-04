@@ -1,5 +1,6 @@
 using TeleFlow.Abstractions.Engine.Commands.Filters;
 using TeleFlow.Abstractions.Engine.Commands.Results;
+using TeleFlow.Core.Commands.Decorators;
 
 namespace TeleFlow.Extensions.DI.Builders.Commands;
 
@@ -16,14 +17,14 @@ public class CommandFilterBuilder
         => _builder;
 
 
-    public CommandFilterBuilder EnableNavigation(Func<NavigateCommandParameters, IServiceProvider, Task>? seed = null)
+    public CommandFilterBuilder EnableNavigation(NavigateParametersHandler? seed = null)
     {
         _ensureNotBuilt();
         _descriptor.EnableNavigation(seed);
         return this;
     }
 
-    public CommandFilterBuilder AddFilter(Func<ICommandFilter> filter)
+    public CommandFilterBuilder AddFilter(CommandFilterFactory filter)
     {
         _ensureNotBuilt();
         _descriptor.AddFilter(filter);

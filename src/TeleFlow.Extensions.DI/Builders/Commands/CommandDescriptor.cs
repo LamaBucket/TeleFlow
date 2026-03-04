@@ -5,9 +5,12 @@ using TeleFlow.Abstractions.Engine.Commands;
 using TeleFlow.Abstractions.Engine.Commands.Filters;
 using TeleFlow.Abstractions.Engine.Commands.Results;
 using TeleFlow.Abstractions.State.Chat;
+using TeleFlow.Core.Commands.Decorators;
 using TeleFlow.Core.Commands.Factories;
 
 namespace TeleFlow.Extensions.DI.Builders.Commands;
+
+public delegate ICommandFilter CommandFilterFactory();
 
 internal class CommandDescriptor
 {
@@ -18,22 +21,22 @@ internal class CommandDescriptor
 
     public bool NavigationEnabled { get; private set; }
 
-    public Func<NavigateCommandParameters, IServiceProvider, Task>? NavParamHandler { get; private set; }
+    public NavigateParametersHandler? NavParamHandler { get; private set; }
 
 
-    public IReadOnlyList<Func<ICommandFilter>> Filters => _filters;
+    public IReadOnlyList<CommandFilterFactory> Filters => _filters;
 
 
-    private readonly List<Func<ICommandFilter>> _filters = [];
+    private readonly List<CommandFilterFactory> _filters = [];
 
 
-    public void EnableNavigation(Func<NavigateCommandParameters, IServiceProvider, Task>? paramHandler = null)
+    public void EnableNavigation(NavigateParametersHandler? paramHandler = null)
     {
         NavigationEnabled = true;
         NavParamHandler = paramHandler;
     }
 
-    public void AddFilter(Func<ICommandFilter> filter)
+    public void AddFilter(CommandFilterFactory filter)
     {
         _filters.Add(filter);
     }
