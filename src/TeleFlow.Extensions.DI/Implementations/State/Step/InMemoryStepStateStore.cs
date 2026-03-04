@@ -10,36 +10,37 @@ public sealed class InMemoryStepStateStore : IStepStateStore
     {
         public required int MessageId { get; init; }
         public required object ViewModel { get; init; }
-        public required Type VmType { get; init; }
+        public required Type StepDataType { get; init; }
     }
 
     private readonly ConcurrentDictionary<long, Entry> _states = new();
 
-    public Task<StepState<TVm>?> GetState<TVm>(long chatId) where TVm : class
+    public Task<StepState<TData>?> GetState<TData>(long chatId) 
+        where TData : StepData
     {
         if (!_states.TryGetValue(chatId, out var entry))
-            return Task.FromResult<StepState<TVm>?>(null);
+            return Task.FromResult<StepState<TData>?>(null);
 
-        if (entry.VmType != typeof(TVm))
-            return Task.FromResult<StepState<TVm>?>(null);
+        if (entry.StepDataType != typeof(TData))
+            return Task.FromResult<StepState<TData>?>(null);
 
-        var typed = (TVm)entry.ViewModel;
+        var typed = (TData)entry.ViewModel;
 
-        StepState<TVm> state = new(entry.MessageId, typed);
-        return Task.FromResult<StepState<TVm>?>(state);
+        StepState<TData> state = new(entry.MessageId, typed);
+        return Task.FromResult<StepState<TData>?>(state);
     }
 
-    public Task SetState<TVm>(long chatId, StepState<TVm> state) where TVm : class
+    public Task SetState<TData>(long chatId, StepState<TData> state) where TData : StepData
     {
         if (state is null) throw new ArgumentNullException(nameof(state));
-        if (state.ViewModel is null) throw new ArgumentException("ViewModel must not be null.", nameof(state));
+        if (state.StepData is null) throw new ArgumentException("ViewModel must not be null.", nameof(state));
         if (state.MessageId <= 0) throw new ArgumentException("MessageId must be a positive integer.", nameof(state));
 
         _states[chatId] = new Entry
         {
             MessageId = state.MessageId,
-            ViewModel = state.ViewModel,
-            VmType = typeof(TVm)
+            ViewModel = state.StepData,
+            StepDataType = typeof(TData)
         };
 
         return Task.CompletedTask;
