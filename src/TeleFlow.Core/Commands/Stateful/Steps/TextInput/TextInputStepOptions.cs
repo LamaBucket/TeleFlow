@@ -1,10 +1,10 @@
-using TeleFlow.Core.Commands.Stateful.Steps.CommandStepBase;
+using TeleFlow.Core.Commands.Stateful.Steps.Base;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.TextInput;
 
 public class TextInputCommandStepOptions
 {
-    public required StepBaseOptions<TextInputCommandStepViewModel> RenderConfig { get; init; }
+    public required StatefulStepOptions<TextInputCommandStepViewModel> RenderConfig { get; init; }
 
     public required Func<CommandStepCommitContext, string, Task> OnUserCommit { get; init; }
 

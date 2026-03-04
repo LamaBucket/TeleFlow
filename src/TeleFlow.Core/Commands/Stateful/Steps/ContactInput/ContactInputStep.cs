@@ -3,14 +3,14 @@ using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Abstractions.Transport.Messaging;
-using TeleFlow.Core.Commands.Stateful.Steps.CommandStepBase;
+using TeleFlow.Core.Commands.Stateful.Steps.Base;
 using TeleFlow.Core.Transport.Markup;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
 
-public class ContactInputStep : StepBase<ContactInputStepViewModel>
+public class ContactInputStep : StatefulStep<ContactInputStepViewModel>
 {
     private readonly ContactInputStepOptions _options;
 

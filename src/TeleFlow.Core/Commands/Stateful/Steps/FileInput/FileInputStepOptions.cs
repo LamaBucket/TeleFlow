@@ -1,11 +1,11 @@
 using TeleFlow.Abstractions.Transport.Files;
-using TeleFlow.Core.Commands.Stateful.Steps.CommandStepBase;
+using TeleFlow.Core.Commands.Stateful.Steps.Base;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.FileInput;
 
 public sealed class FileInputCommandStepOptions
 {
-    public required StepBaseOptions<FileInputStepViewModel> RenderConfig { get; init; }
+    public required StatefulStepOptions<FileInputStepViewModel> RenderConfig { get; init; }
 
     public required Func<CommandStepCommitContext, FileReference, Task> OnUserCommit { get; init; }
 

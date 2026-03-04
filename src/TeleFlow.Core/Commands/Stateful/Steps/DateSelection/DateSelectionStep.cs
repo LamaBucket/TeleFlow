@@ -1,6 +1,6 @@
 using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.State.Step;
-using TeleFlow.Core.Commands.Stateful.Steps.CallbackCommandStepBase;
+using TeleFlow.Core.Commands.Stateful.Steps.Base;
 using TeleFlow.Core.Commands.Stateful.Steps.DateSelection.DataValidator;
 using TeleFlow.Core.Transport.Callbacks;
 using static TeleFlow.Core.Commands.Stateful.Steps.DateSelection.DateSelectionMode;
@@ -8,7 +8,7 @@ using static TeleFlow.Core.Transport.Callbacks.CallbackAction;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.DateSelection;
 
-public class DateSelectionStep : CallbackStepBase<DateSelectionStepViewModel>
+public class DateSelectionStep : CallbackStep<DateSelectionStepViewModel>
 {
     private readonly DateSelectionStepOptions _options;
 

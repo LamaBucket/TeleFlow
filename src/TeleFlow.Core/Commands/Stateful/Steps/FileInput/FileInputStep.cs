@@ -3,13 +3,13 @@ using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Abstractions.Transport.Files;
-using TeleFlow.Core.Commands.Stateful.Steps.CommandStepBase;
+using TeleFlow.Core.Commands.Stateful.Steps.Base;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.FileInput;
 
-public class FileInputCommandStep : StepBase<FileInputStepViewModel>
+public class FileInputCommandStep : StatefulStep<FileInputStepViewModel>
 {
     public const long TelegramMaxFileSizeBytes = 20L * 1024 * 1024;
 

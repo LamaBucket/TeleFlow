@@ -1,10 +1,10 @@
-using TeleFlow.Core.Commands.Stateful.Steps.CallbackCommandStepBase;
+using TeleFlow.Core.Commands.Stateful.Steps.Base;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.DateSelection;
 
 public class DateSelectionStepOptions
 {
-    public required CallbackStepBaseOptions<DateSelectionStepViewModel> BaseOptions { get; init; }
+    public required CallbackStepOptions<DateSelectionStepViewModel> BaseOptions { get; init; }
 
     public required DateSelectionMode Mode { get; init; }
 

@@ -3,12 +3,12 @@ using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Abstractions.Transport.Messaging;
-using TeleFlow.Core.Commands.Stateful.Steps.CommandStepBase;
+using TeleFlow.Core.Commands.Stateful.Steps.Base;
 using Telegram.Bot.Types.Enums;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.TextInput;
 
-public class TextInputCommandStep : StepBase<TextInputCommandStepViewModel>
+public class TextInputCommandStep : StatefulStep<TextInputCommandStepViewModel>
 {
     private readonly TextInputCommandStepOptions _options;
 

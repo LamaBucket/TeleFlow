@@ -7,14 +7,14 @@ using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Abstractions.Transport.Messaging;
 
-namespace TeleFlow.Core.Commands.Stateful.Steps.CommandStepBase;
+namespace TeleFlow.Core.Commands.Stateful.Steps.Base;
 
-public abstract class StepBase<TViewModel> : ICommandStep
-    where TViewModel : StepViewModel
+public abstract class StatefulStep<TData> : ICommandStep
+    where TData : StepViewModel
 {
-    private readonly StepBaseOptions<TViewModel> _options;
+    private readonly StatefulStepOptions<TData> _options;
 
-    private IStepRenderService<TViewModel> RenderService => _options.RenderService;
+    private IStepRenderService<TData> RenderService => _options.RenderService;
 
 
     public async Task<CommandStepResult> Handle(UpdateContext args)
@@ -27,7 +27,7 @@ public abstract class StepBase<TViewModel> : ICommandStep
         return await Handle(args, state);
     }
 
-    protected abstract Task<CommandStepResult> Handle(UpdateContext context, StepState<TViewModel> state);
+    protected abstract Task<CommandStepResult> Handle(UpdateContext context, StepState<TData> state);
 
 
     public virtual async Task OnEnter(IServiceProvider serviceProvider)
@@ -39,15 +39,15 @@ public abstract class StepBase<TViewModel> : ICommandStep
 
         var response = await msgService.SendMessage(msg);
         
-        var state = new StepState<TViewModel>(response.MessageId, vm);
+        var state = new StepState<TData>(response.MessageId, vm);
 
         await UpsertState(serviceProvider, state);
     }
 
-    protected abstract Task<TViewModel> CreateDefaultViewModel(IServiceProvider sp);
+    protected abstract Task<TData> CreateDefaultViewModel(IServiceProvider sp);
 
 
-    protected async Task UpsertAndRerender(IServiceProvider sp, StepState<TViewModel> state)
+    protected async Task UpsertAndRerender(IServiceProvider sp, StepState<TData> state)
     {
         await RerenderMessage(sp, state);
         await UpsertState(sp, state);
@@ -62,7 +62,7 @@ public abstract class StepBase<TViewModel> : ICommandStep
     }
 
 
-    private async Task RerenderMessage(IServiceProvider sp, StepState<TViewModel> state)
+    private async Task RerenderMessage(IServiceProvider sp, StepState<TData> state)
     {
         var msgEditor = sp.GetRequiredService<IMessageEditService>();
 
@@ -72,15 +72,15 @@ public abstract class StepBase<TViewModel> : ICommandStep
     }
 
 
-    private static async Task<StepState<TViewModel>?> LoadStateOrNull(IServiceProvider sp)
+    private static async Task<StepState<TData>?> LoadStateOrNull(IServiceProvider sp)
     {
         var chatId = sp.GetRequiredService<IChatIdProvider>().GetChatId();
         var store = sp.GetRequiredService<IStepStateStore>();
 
-        return await store.GetState<TViewModel>(chatId);
+        return await store.GetState<TData>(chatId);
     }
 
-    private static async Task UpsertState(IServiceProvider sp, StepState<TViewModel> state)
+    private static async Task UpsertState(IServiceProvider sp, StepState<TData> state)
     {
         var chatId = sp.GetRequiredService<IChatIdProvider>().GetChatId();
         var store  = sp.GetRequiredService<IStepStateStore>();
@@ -97,7 +97,7 @@ public abstract class StepBase<TViewModel> : ICommandStep
     }
 
 
-    public StepBase(StepBaseOptions<TViewModel> options)
+    public StatefulStep(StatefulStepOptions<TData> options)
     {
         _options = options;
     }

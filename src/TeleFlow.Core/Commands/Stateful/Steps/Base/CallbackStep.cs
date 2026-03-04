@@ -3,19 +3,18 @@ using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Abstractions.Transport.Callbacks;
-using TeleFlow.Core.Commands.Stateful.Steps.CommandStepBase;
 using TeleFlow.Core.Transport.Callbacks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TeleFlow.Core.Commands.Stateful.Steps.CallbackCommandStepBase;
+namespace TeleFlow.Core.Commands.Stateful.Steps.Base;
 
-public abstract class CallbackStepBase<TViewModel> : StepBase<TViewModel>
-    where TViewModel : StepViewModel
+public abstract class CallbackStep<TData> : StatefulStep<TData>
+    where TData : StepViewModel
 {
-    private readonly CallbackStepBaseOptions<TViewModel> _options;
+    private readonly CallbackStepOptions<TData> _options;
 
-    protected override async Task<CommandStepResult> Handle(UpdateContext context, StepState<TViewModel> state)
+    protected override async Task<CommandStepResult> Handle(UpdateContext context, StepState<TData> state)
     {
         if(context.Update.Type != UpdateType.CallbackQuery || context.Update.CallbackQuery is null)
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.NoCallbackQueryMessage);
@@ -50,10 +49,10 @@ public abstract class CallbackStepBase<TViewModel> : StepBase<TViewModel>
         return (query.Data, query.Message.MessageId);
     }
 
-    protected abstract Task<CommandStepResult> HandleAction(IServiceProvider sp, StepState<TViewModel> state, CallbackAction action);
+    protected abstract Task<CommandStepResult> HandleAction(IServiceProvider sp, StepState<TData> state, CallbackAction action);
 
 
-    public CallbackStepBase(CallbackStepBaseOptions<TViewModel> options) : base(options.RenderConfig)
+    public CallbackStep(CallbackStepOptions<TData> options) : base(options.RenderConfig)
     {
         _options = options;
     }
