@@ -31,12 +31,8 @@ public class CommandRouterBuilder
         });
     }
 
-    private CommandFilterBuilder Add(string name, Func<ChatSession, ICommandHandler> factory) 
+    public CommandFilterBuilder Add(string name, Func<ChatSession, ICommandHandler> factory) 
         => Add(name, new LambdaCommandFactory<ChatSession>(factory));
-
-
-    public CommandFilterBuilder AddSendText(string name, string message) 
-        => Add(name, (sp) => new SendMessageCommand(message));
 
     public CommandFilterBuilder Add(string name, Func<ICommandHandler> factory) 
         => Add(name, new LambdaCommandFactory<ChatSession>(factory));
