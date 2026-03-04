@@ -10,7 +10,7 @@ using TeleFlow.Abstractions.Transport.Messaging;
 namespace TeleFlow.Core.Commands.Stateful.Steps.Base;
 
 public abstract class StatefulStep<TData> : ICommandStep
-    where TData : StepViewModel
+    where TData : StepData
 {
     private readonly StatefulStepOptions<TData> _options;
 

@@ -3,8 +3,8 @@ using TeleFlow.Abstractions.Transport.Files;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.FileInput;
 
-public record FileInputStepViewModel(FileReference? FileSent) : StepViewModel
+public record FileInputStepData(FileReference? FileSent) : StepData
 {
-    public static FileInputStepViewModel Default
+    public static FileInputStepData Default
         => new(FileSent: null);
 }

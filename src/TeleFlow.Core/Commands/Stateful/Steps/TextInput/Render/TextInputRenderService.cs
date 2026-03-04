@@ -3,11 +3,11 @@ using TeleFlow.Abstractions.Transport.Messaging;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.TextInput.Render;
 
-internal class TextInputRenderService : IStepRenderService<TextInputCommandStepViewModel>
+internal class TextInputRenderService : IStepRenderService<TextInputStepData>
 {
     private readonly TextInputRenderServiceOptions _options;
 
-    public InlineMarkupMessage Render(IServiceProvider serviceProvider, TextInputCommandStepViewModel model)
+    public InlineMarkupMessage Render(IServiceProvider serviceProvider, TextInputStepData model)
     {
         string message = "";
 

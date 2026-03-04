@@ -8,14 +8,14 @@ using static TeleFlow.Core.Transport.Callbacks.CallbackAction;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.DateSelection;
 
-public class DateSelectionStep : CallbackStep<DateSelectionStepViewModel>
+public class DateSelectionStep : CallbackStep<DateSelectionStepData>
 {
     private readonly DateSelectionStepOptions _options;
 
-    private readonly DateSelectionStepVMConstraints _constraints;
+    private readonly DateSelectionStepDataConstraints _constraints;
 
 
-    protected override async Task<CommandStepResult> HandleAction(IServiceProvider sp, StepState<DateSelectionStepViewModel> state, CallbackAction action)
+    protected override async Task<CommandStepResult> HandleAction(IServiceProvider sp, StepState<DateSelectionStepData> state, CallbackAction action)
     {
         return state.ViewModel.Page switch
         {
@@ -29,7 +29,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepViewModel>
 
     #region YearPage
     
-    private async Task<CommandStepResult> HandleYearPageAction(IServiceProvider sp, StepState<DateSelectionStepViewModel> state, CallbackAction token)
+    private async Task<CommandStepResult> HandleYearPageAction(IServiceProvider sp, StepState<DateSelectionStepData> state, CallbackAction token)
     {
         return token switch
         {
@@ -40,11 +40,11 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepViewModel>
         };
     }
 
-    private async Task<CommandStepResult> HandleYearSelectYear(IServiceProvider sp, StepState<DateSelectionStepViewModel> state, int index)
+    private async Task<CommandStepResult> HandleYearSelectYear(IServiceProvider sp, StepState<DateSelectionStepData> state, int index)
     {        
         state = state with { ViewModel = state.ViewModel with { YearSelected = index }};
 
-        if(!DateSelectionViewModelValidator.IsValid(state.ViewModel, _constraints))
+        if(!DateSelectionStepDataValidator.IsValid(state.ViewModel, _constraints))
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidYearMessage);
 
         state = state with { ViewModel = state.ViewModel with { Page = DateSelectionStepPage.MonthSelection }};
@@ -62,7 +62,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepViewModel>
         return CommandStepResult.HoldOn(CommandStepHoldOnReason.Other);
     }
 
-    private async Task<CommandStepResult> HandleYearChangePage(IServiceProvider sp, StepState<DateSelectionStepViewModel> state, int addPageValue)
+    private async Task<CommandStepResult> HandleYearChangePage(IServiceProvider sp, StepState<DateSelectionStepData> state, int addPageValue)
     {
         if (addPageValue is not (1 or -1))
             throw new ArgumentOutOfRangeException(nameof(addPageValue), "addPageValue must be +1 or -1.");
@@ -72,7 +72,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepViewModel>
             YearPageIndex = state.ViewModel.YearPageIndex + addPageValue
         };
 
-        if (!DateSelectionViewModelValidator.IsValid(newVm, _constraints))
+        if (!DateSelectionStepDataValidator.IsValid(newVm, _constraints))
         {
             var message = addPageValue > 0 ? _options.LastPageMessage : _options.FirstPageMessage;
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, message);
@@ -88,7 +88,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepViewModel>
 
     #region MonthPage
     
-    private async Task<CommandStepResult> HandleMonthPageAction(IServiceProvider sp, StepState<DateSelectionStepViewModel> state, CallbackAction token)
+    private async Task<CommandStepResult> HandleMonthPageAction(IServiceProvider sp, StepState<DateSelectionStepData> state, CallbackAction token)
     {
         return token switch
         {
@@ -100,14 +100,14 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepViewModel>
         };
     }
 
-    private async Task<CommandStepResult> HandleMonthSelectMonth(IServiceProvider sp, StepState<DateSelectionStepViewModel> state, int index)
+    private async Task<CommandStepResult> HandleMonthSelectMonth(IServiceProvider sp, StepState<DateSelectionStepData> state, int index)
     {
         var vmAfterMonth = state.ViewModel with { MonthSelected = index };
 
-        if (!DateSelectionViewModelValidator.IsValid(vmAfterMonth, _constraints))
+        if (!DateSelectionStepDataValidator.IsValid(vmAfterMonth, _constraints))
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidMonthMessage);
 
-        DateSelectionStepViewModel nextVm;
+        DateSelectionStepData nextVm;
 
         if (_options.Mode is YearMonth mode)
         {
@@ -127,7 +127,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepViewModel>
         return CommandStepResult.HoldOn(CommandStepHoldOnReason.Other);
     }
 
-    private async Task<CommandStepResult> HandleMonthChangeYear(IServiceProvider sp, StepState<DateSelectionStepViewModel> state, int addYearValue)
+    private async Task<CommandStepResult> HandleMonthChangeYear(IServiceProvider sp, StepState<DateSelectionStepData> state, int addYearValue)
     {
         if (addYearValue is not (1 or -1))
             throw new ArgumentOutOfRangeException(nameof(addYearValue), "addPageValue must be +1 or -1.");
@@ -140,14 +140,14 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepViewModel>
             }
         };
 
-        if(!DateSelectionViewModelValidator.IsValid(state.ViewModel, _constraints))
+        if(!DateSelectionStepDataValidator.IsValid(state.ViewModel, _constraints))
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidYearMessage);
         
         await UpsertAndRerender(sp, state);
         return CommandStepResult.HoldOn(CommandStepHoldOnReason.Other);
     }
 
-    private async Task<CommandStepResult> HandleMonthGoToPage(IServiceProvider sp, StepState<DateSelectionStepViewModel> state, int page)
+    private async Task<CommandStepResult> HandleMonthGoToPage(IServiceProvider sp, StepState<DateSelectionStepData> state, int page)
     {
         ArgumentOutOfRangeException.ThrowIfNotEqual(page, (int)DateSelectionStepPage.YearSelection, nameof(page));
   
@@ -167,7 +167,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepViewModel>
 
     #region DayPage
 
-    private async Task<CommandStepResult> HandleDayPageAction(IServiceProvider sp, StepState<DateSelectionStepViewModel> state, CallbackAction token)
+    private async Task<CommandStepResult> HandleDayPageAction(IServiceProvider sp, StepState<DateSelectionStepData> state, CallbackAction token)
     {
         return token switch
         {
@@ -179,14 +179,14 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepViewModel>
         };
     }
 
-    private async Task<CommandStepResult> HandleDaySelectDay(IServiceProvider sp, StepState<DateSelectionStepViewModel> state, int index)
+    private async Task<CommandStepResult> HandleDaySelectDay(IServiceProvider sp, StepState<DateSelectionStepData> state, int index)
     {
         if (_options.Mode is not YearMonthDay mode)
             throw new InvalidOperationException($"Date selection page requires '{nameof(YearMonthDay)}' mode, but current mode is '{_options.Mode?.GetType().Name ?? "null"}'.");
 
         state = state with { ViewModel = state.ViewModel with { DaySelected = index }};
 
-        if(!DateSelectionViewModelValidator.IsValid(state.ViewModel, _constraints))
+        if(!DateSelectionStepDataValidator.IsValid(state.ViewModel, _constraints))
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidDayMessage);
 
         state = state with { ViewModel = state.ViewModel with { DateSelectionCompleted = true }};
@@ -206,7 +206,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepViewModel>
         return CommandStepResult.Next;
     }
 
-    private async Task<CommandStepResult> HandleDayChangeMonth(IServiceProvider sp, StepState<DateSelectionStepViewModel> state, int addMonthValue)
+    private async Task<CommandStepResult> HandleDayChangeMonth(IServiceProvider sp, StepState<DateSelectionStepData> state, int addMonthValue)
     {
         if (addMonthValue is not (1 or -1))
             throw new ArgumentOutOfRangeException(nameof(addMonthValue), "addMonthValue must be +1 or -1.");
@@ -236,14 +236,14 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepViewModel>
             }
         };
 
-        if (!DateSelectionViewModelValidator.IsValid(state.ViewModel, _constraints))
+        if (!DateSelectionStepDataValidator.IsValid(state.ViewModel, _constraints))
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidYearMessage);
 
         await UpsertAndRerender(sp, state);
         return CommandStepResult.HoldOn(CommandStepHoldOnReason.Other);
     }
 
-    private async Task<CommandStepResult> HandleDayGoToPage(IServiceProvider sp, StepState<DateSelectionStepViewModel> state, int page)
+    private async Task<CommandStepResult> HandleDayGoToPage(IServiceProvider sp, StepState<DateSelectionStepData> state, int page)
     {
         ArgumentOutOfRangeException.ThrowIfNotEqual(page, (int)DateSelectionStepPage.MonthSelection, nameof(page));
 
@@ -263,11 +263,11 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepViewModel>
     #endregion
 
 
-    protected override Task<DateSelectionStepViewModel> CreateDefaultViewModel(IServiceProvider sp) 
-        => Task.FromResult(DateSelectionStepViewModel.CreateDefault());
+    protected override Task<DateSelectionStepData> CreateDefaultViewModel(IServiceProvider sp) 
+        => Task.FromResult(DateSelectionStepData.CreateDefault());
 
 
-    public DateSelectionStep(DateSelectionStepOptions options, DateSelectionStepVMConstraints constraints) : base(options.BaseOptions)
+    public DateSelectionStep(DateSelectionStepOptions options, DateSelectionStepDataConstraints constraints) : base(options.BaseOptions)
     {
         _options = options;
         _constraints = constraints;

@@ -2,7 +2,7 @@ using TeleFlow.Abstractions.State.Step;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.DateSelection;
 
-public sealed record DateSelectionStepViewModel(
+public sealed record DateSelectionStepData(
     int YearSelected,
     int MonthSelected,
     int DaySelected,
@@ -10,9 +10,9 @@ public sealed record DateSelectionStepViewModel(
     DateSelectionStepPage Page,
     int YearPageIndex,
     int YearPagePivotValue
-) : StepViewModel
+) : StepData
 {
-    public static DateSelectionStepViewModel CreateDefault(DateTime utcNow)
+    public static DateSelectionStepData CreateDefault(DateTime utcNow)
         => new(
             YearSelected: utcNow.Year,
             MonthSelected: utcNow.Month,
@@ -23,7 +23,7 @@ public sealed record DateSelectionStepViewModel(
             YearPagePivotValue: utcNow.Year
         );
 
-    public static DateSelectionStepViewModel CreateDefault()
+    public static DateSelectionStepData CreateDefault()
         => CreateDefault(DateTime.UtcNow);
 }
 

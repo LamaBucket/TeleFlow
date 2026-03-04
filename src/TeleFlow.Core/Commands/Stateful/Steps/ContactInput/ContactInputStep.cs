@@ -10,7 +10,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
 
-public class ContactInputStep : StatefulStep<ContactInputStepViewModel>
+public class ContactInputStep : StatefulStep<ContactInputStepData>
 {
     private readonly ContactInputStepOptions _options;
 
@@ -28,7 +28,7 @@ public class ContactInputStep : StatefulStep<ContactInputStepViewModel>
         return new ReplyMarkupSpec.Keyboard(builder.Build());
     }
 
-    protected override async Task<CommandStepResult> Handle(UpdateContext context, StepState<ContactInputStepViewModel> state)
+    protected override async Task<CommandStepResult> Handle(UpdateContext context, StepState<ContactInputStepData> state)
     {
         var update = context.Update;
 
@@ -79,7 +79,7 @@ public class ContactInputStep : StatefulStep<ContactInputStepViewModel>
         await msgDeleteService.Delete(msg.MessageId);
     }
 
-    private async Task SetStateSharedContactAndRerender(IServiceProvider sp, StepState<ContactInputStepViewModel> state, Contact value)
+    private async Task SetStateSharedContactAndRerender(IServiceProvider sp, StepState<ContactInputStepData> state, Contact value)
     {
         state = state with
         {
@@ -124,8 +124,8 @@ public class ContactInputStep : StatefulStep<ContactInputStepViewModel>
     }
 
 
-    protected override Task<ContactInputStepViewModel> CreateDefaultViewModel(IServiceProvider sp)
-        => Task.FromResult(ContactInputStepViewModel.Default);
+    protected override Task<ContactInputStepData> CreateDefaultViewModel(IServiceProvider sp)
+        => Task.FromResult(ContactInputStepData.Default);
 
 
     public ContactInputStep(ContactInputStepOptions options) : base(options.RenderConfig)

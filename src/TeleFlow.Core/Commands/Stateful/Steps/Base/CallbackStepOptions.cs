@@ -3,7 +3,7 @@ using TeleFlow.Abstractions.State.Step;
 namespace TeleFlow.Core.Commands.Stateful.Steps.Base;
 
 public class CallbackStepOptions<TData>
-    where TData : StepViewModel
+    where TData : StepData
 {
     public required StatefulStepOptions<TData> RenderConfig { get; init; }
 

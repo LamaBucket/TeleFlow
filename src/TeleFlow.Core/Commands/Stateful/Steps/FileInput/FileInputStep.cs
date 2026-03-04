@@ -9,14 +9,14 @@ using Telegram.Bot.Exceptions;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.FileInput;
 
-public class FileInputCommandStep : StatefulStep<FileInputStepViewModel>
+public class FileInputCommandStep : StatefulStep<FileInputStepData>
 {
     public const long TelegramMaxFileSizeBytes = 20L * 1024 * 1024;
 
     private readonly FileInputCommandStepOptions _options;
 
 
-    protected override async Task<CommandStepResult> Handle(UpdateContext context, StepState<FileInputStepViewModel> state)
+    protected override async Task<CommandStepResult> Handle(UpdateContext context, StepState<FileInputStepData> state)
     {
         var update = context.Update;
 
@@ -93,7 +93,7 @@ public class FileInputCommandStep : StatefulStep<FileInputStepViewModel>
         return ex.Message.Contains("file is too big", StringComparison.OrdinalIgnoreCase);
     }
 
-    private async Task SetStateInputTextAndRerender(IServiceProvider sp, StepState<FileInputStepViewModel> state, FileReference value)
+    private async Task SetStateInputTextAndRerender(IServiceProvider sp, StepState<FileInputStepData> state, FileReference value)
     {
         state = state with
         {
@@ -110,8 +110,8 @@ public class FileInputCommandStep : StatefulStep<FileInputStepViewModel>
         => CommandStepResult.Next;
 
 
-    protected override Task<FileInputStepViewModel> CreateDefaultViewModel(IServiceProvider sp)
-        => Task.FromResult(FileInputStepViewModel.Default);
+    protected override Task<FileInputStepData> CreateDefaultViewModel(IServiceProvider sp)
+        => Task.FromResult(FileInputStepData.Default);
 
     public FileInputCommandStep(FileInputCommandStepOptions options) : base(options.RenderConfig)
     {

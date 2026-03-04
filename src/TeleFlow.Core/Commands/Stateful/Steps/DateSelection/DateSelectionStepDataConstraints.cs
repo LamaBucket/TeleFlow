@@ -1,6 +1,6 @@
 namespace TeleFlow.Core.Commands.Stateful.Steps.DateSelection;
 
-public class DateSelectionStepVMConstraints
+public class DateSelectionStepDataConstraints
 {
     public DateOnly MinDate { get; init; } = DateOnly.MinValue;
     public DateOnly MaxDate { get; init; } = DateOnly.MaxValue;

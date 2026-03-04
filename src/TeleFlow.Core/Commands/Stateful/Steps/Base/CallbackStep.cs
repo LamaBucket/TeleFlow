@@ -10,7 +10,7 @@ using Telegram.Bot.Types.Enums;
 namespace TeleFlow.Core.Commands.Stateful.Steps.Base;
 
 public abstract class CallbackStep<TData> : StatefulStep<TData>
-    where TData : StepViewModel
+    where TData : StepData
 {
     private readonly CallbackStepOptions<TData> _options;
 

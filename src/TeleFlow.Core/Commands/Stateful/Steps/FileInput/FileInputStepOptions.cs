@@ -5,7 +5,7 @@ namespace TeleFlow.Core.Commands.Stateful.Steps.FileInput;
 
 public sealed class FileInputCommandStepOptions
 {
-    public required StatefulStepOptions<FileInputStepViewModel> RenderConfig { get; init; }
+    public required StatefulStepOptions<FileInputStepData> RenderConfig { get; init; }
 
     public required Func<CommandStepCommitContext, FileReference, Task> OnUserCommit { get; init; }
 

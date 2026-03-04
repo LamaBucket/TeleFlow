@@ -9,7 +9,7 @@ public class DateSelectionRenderServiceOptions
     public Func<int, string> WeekdayIndexToName { get; init; } = index => CultureInfo.InvariantCulture.DateTimeFormat.AbbreviatedDayNames[index];
     public DayOfWeek DaySelectionWeekStart { get; init; } = DayOfWeek.Sunday;
     
-    public Func<IServiceProvider, DateSelectionStepViewModel, string> UserPrompt { get; init; } = DefaultUserPrompt;
+    public Func<IServiceProvider, DateSelectionStepData, string> UserPrompt { get; init; } = DefaultUserPrompt;
     
     public string PrevYearPageButtonText { get; init; } = DefaultButtonTexts.PrevPageButtonText;
     public string NextYearPageButtonText { get; init; } = DefaultButtonTexts.NextPageButtonText;
@@ -23,7 +23,7 @@ public class DateSelectionRenderServiceOptions
     public string YearMonthFormatOnDayPage { get; init; } = "MMM yyyy";
 
 
-    private static string DefaultUserPrompt(IServiceProvider serviceProvider, DateSelectionStepViewModel model)
+    private static string DefaultUserPrompt(IServiceProvider serviceProvider, DateSelectionStepData model)
     {
         var selectedDate = new DateOnly(model.YearSelected, model.MonthSelected, model.DaySelected);
         return model.Page switch

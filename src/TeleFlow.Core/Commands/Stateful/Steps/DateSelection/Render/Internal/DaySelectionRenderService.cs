@@ -10,8 +10,8 @@ internal static class DaySelectionRenderService
     private const int DaysInWeek = 7;
 
     public static InlineKeyboardMarkup RenderMarkup(Func<CallbackAction, string> markupButtonActionCodec,
-                                                               DateSelectionStepViewModel model,
-                                                               DateSelectionStepVMConstraints constraints,
+                                                               DateSelectionStepData model,
+                                                               DateSelectionStepDataConstraints constraints,
                                                                DateSelectionRenderServiceOptions config)
     {
         var b = new InlineKeyboardBuilder();
@@ -27,7 +27,7 @@ internal static class DaySelectionRenderService
         return b.Build();
     }
 
-    private static void AppendHeaderControls(InlineKeyboardBuilder b, Func<CallbackAction, string> markupButtonActionCodec, DateSelectionStepViewModel model, DateSelectionRenderServiceOptions config)
+    private static void AppendHeaderControls(InlineKeyboardBuilder b, Func<CallbackAction, string> markupButtonActionCodec, DateSelectionStepData model, DateSelectionRenderServiceOptions config)
     {
         b.ButtonCallback(config.PrevMonthItemButtonText, markupButtonActionCodec(CallbackActions.Ui.PrevPage));
 
@@ -46,7 +46,7 @@ internal static class DaySelectionRenderService
         }
     }
 
-    private static void AppendDaySelectionButtons(InlineKeyboardBuilder b, Func<CallbackAction, string> markupButtonActionCodec, DateSelectionStepViewModel model, DateSelectionStepVMConstraints constraints, DateSelectionRenderServiceOptions config)
+    private static void AppendDaySelectionButtons(InlineKeyboardBuilder b, Func<CallbackAction, string> markupButtonActionCodec, DateSelectionStepData model, DateSelectionStepDataConstraints constraints, DateSelectionRenderServiceOptions config)
     {        
         int year = model.YearSelected;
         int month = model.MonthSelected;

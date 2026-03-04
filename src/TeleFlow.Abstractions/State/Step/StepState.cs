@@ -1,6 +1,6 @@
 namespace TeleFlow.Abstractions.State.Step;
 
-public abstract record class StepViewModel;
+public abstract record class StepData;
 
-public sealed record StepState<TVm>(int MessageId, TVm ViewModel)
-    where TVm : StepViewModel;
+public sealed record StepState<TData>(int MessageId, TData ViewModel)
+    where TData : StepData;

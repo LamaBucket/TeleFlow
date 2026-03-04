@@ -3,8 +3,8 @@ using Telegram.Bot.Types;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
 
-public record ContactInputStepViewModel(Contact? ContactShared) : StepViewModel
+public record ContactInputStepData(Contact? ContactShared) : StepData
 {
-    public static ContactInputStepViewModel Default
+    public static ContactInputStepData Default
         => new(ContactShared: null);
 }

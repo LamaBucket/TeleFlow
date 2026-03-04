@@ -7,8 +7,8 @@ namespace TeleFlow.Core.Commands.Stateful.Steps.DateSelection.Render.Internal;
 internal static class YearSelectionRenderService
 {
     public static InlineKeyboardMarkup RenderMarkup(Func<CallbackAction, string> markupButtonActionCodec,
-                                                    DateSelectionStepViewModel model,
-                                                    DateSelectionStepVMConstraints constraints,
+                                                    DateSelectionStepData model,
+                                                    DateSelectionStepDataConstraints constraints,
                                                     DateSelectionRenderServiceOptions config)
     {
         int rows = constraints.YearSelectionRows;

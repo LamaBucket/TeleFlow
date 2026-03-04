@@ -10,8 +10,8 @@ internal static class MonthSelectionRenderService
     private const int MonthsInYear = 12;
 
     public static InlineKeyboardMarkup RenderMarkup(Func<CallbackAction, string> markupButtonActionCodec,
-                                                     DateSelectionStepViewModel model,
-                                                     DateSelectionStepVMConstraints constraints,
+                                                     DateSelectionStepData model,
+                                                     DateSelectionStepDataConstraints constraints,
                                                      DateSelectionRenderServiceOptions config)
     {
         int rows = constraints.MonthSelectionRows;

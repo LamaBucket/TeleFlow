@@ -4,7 +4,7 @@ namespace TeleFlow.Core.Commands.Stateful.Steps.TextInput;
 
 public class TextInputCommandStepOptions
 {
-    public required StatefulStepOptions<TextInputCommandStepViewModel> RenderConfig { get; init; }
+    public required StatefulStepOptions<TextInputStepData> RenderConfig { get; init; }
 
     public required Func<CommandStepCommitContext, string, Task> OnUserCommit { get; init; }
 

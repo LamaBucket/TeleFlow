@@ -8,17 +8,17 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.DateSelection.Render;
 
-internal class DateSelectionRenderService : IStepRenderService<DateSelectionStepViewModel>
+internal class DateSelectionRenderService : IStepRenderService<DateSelectionStepData>
 {
-    private delegate InlineKeyboardMarkup RenderMarkupDelegate(Func<CallbackAction, string> markupButtonActionCodec, DateSelectionStepViewModel model, DateSelectionStepVMConstraints constraints, DateSelectionRenderServiceOptions config);
+    private delegate InlineKeyboardMarkup RenderMarkupDelegate(Func<CallbackAction, string> markupButtonActionCodec, DateSelectionStepData model, DateSelectionStepDataConstraints constraints, DateSelectionRenderServiceOptions config);
 
 
-    private readonly DateSelectionStepVMConstraints _constraints;
+    private readonly DateSelectionStepDataConstraints _constraints;
 
     private readonly DateSelectionRenderServiceOptions _config;
 
 
-    public InlineMarkupMessage Render(IServiceProvider serviceProvider, DateSelectionStepViewModel model)
+    public InlineMarkupMessage Render(IServiceProvider serviceProvider, DateSelectionStepData model)
     {
         if(model.DateSelectionCompleted)
             return RenderCompleted(serviceProvider, model, _config);
@@ -26,10 +26,10 @@ internal class DateSelectionRenderService : IStepRenderService<DateSelectionStep
         return RenderIncomplete(serviceProvider, model, _constraints, _config);
     }
 
-    private static InlineMarkupMessage RenderCompleted(IServiceProvider serviceProvider, DateSelectionStepViewModel model, DateSelectionRenderServiceOptions config)
+    private static InlineMarkupMessage RenderCompleted(IServiceProvider serviceProvider, DateSelectionStepData model, DateSelectionRenderServiceOptions config)
         => new(){ Text = config.UserPrompt(serviceProvider, model), Markup = null};
 
-    private static InlineMarkupMessage RenderIncomplete(IServiceProvider serviceProvider, DateSelectionStepViewModel model, DateSelectionStepVMConstraints constraints, DateSelectionRenderServiceOptions config)
+    private static InlineMarkupMessage RenderIncomplete(IServiceProvider serviceProvider, DateSelectionStepData model, DateSelectionStepDataConstraints constraints, DateSelectionRenderServiceOptions config)
     {
         RenderMarkupDelegate markupRenderFunction = model.Page switch
         {
@@ -54,7 +54,7 @@ internal class DateSelectionRenderService : IStepRenderService<DateSelectionStep
         };
     }
 
-    public DateSelectionRenderService(DateSelectionStepVMConstraints constraints, DateSelectionRenderServiceOptions config)
+    public DateSelectionRenderService(DateSelectionStepDataConstraints constraints, DateSelectionRenderServiceOptions config)
     {
         _constraints = constraints;
         _config = config;

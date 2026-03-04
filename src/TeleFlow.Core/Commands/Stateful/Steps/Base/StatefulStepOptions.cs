@@ -4,7 +4,7 @@ using TeleFlow.Abstractions.State.Step;
 namespace TeleFlow.Core.Commands.Stateful.Steps.Base;
 
 public class StatefulStepOptions<TData>
-    where TData : StepViewModel
+    where TData : StepData
 {
     public required IStepRenderService<TData> RenderService { get; init; }
 

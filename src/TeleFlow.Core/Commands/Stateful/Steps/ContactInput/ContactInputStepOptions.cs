@@ -6,7 +6,7 @@ namespace TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
 
 public class ContactInputStepOptions
 {
-    public required StatefulStepOptions<ContactInputStepViewModel> RenderConfig { get; init; }
+    public required StatefulStepOptions<ContactInputStepData> RenderConfig { get; init; }
 
     public required Func<CommandStepCommitContext, Contact, Task> OnUserCommit { get; init; }
 
