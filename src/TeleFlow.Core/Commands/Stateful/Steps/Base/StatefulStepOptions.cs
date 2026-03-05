@@ -8,6 +8,6 @@ public class StatefulStepOptions<TData>
 {
     public required IStepRenderService<TData> RenderService { get; init; }
 
-    public string StateExpiredMessage { get; init; } = "Your State Expired.";
+    public string? StateExpiredMessage { get; init; }
     
 }

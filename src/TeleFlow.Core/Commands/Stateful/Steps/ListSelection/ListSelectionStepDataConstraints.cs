@@ -2,7 +2,7 @@ namespace TeleFlow.Core.Commands.Stateful.Steps.ListSelection;
 
 public class ListSelectionStepDataConstraints
 {
-    public int PageRows { get; init; } = 5;
+    public required int PageRows { get; init; }
 
-    public int PageColumns { get; init; } = 2;
+    public required int PageColumns { get; init; }
 }

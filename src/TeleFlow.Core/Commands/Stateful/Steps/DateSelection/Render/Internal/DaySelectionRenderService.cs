@@ -1,4 +1,4 @@
-using TeleFlow.Core.Commands.Stateful.Steps.CallbackCommandStepBase.Internal;
+using TeleFlow.Core.Commands.Stateful.Steps.Base;
 using TeleFlow.Core.Transport.Callbacks;
 using TeleFlow.Core.Transport.Markup;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -67,14 +67,14 @@ internal static class DaySelectionRenderService
 
                 if (day < 1 || day > daysInMonth)
                 {
-                    b.ButtonCallback(DefaultButtonTexts.EmptyButtonText, markupButtonActionCodec(CallbackActions.Ui.Noop));
+                    b.ButtonCallback(CallbackButtonDefaultTexts.EmptyButtonText, markupButtonActionCodec(CallbackActions.Ui.Noop));
                     continue;
                 }
 
                 var date = new DateOnly(year, month, day);
                 if (date < constraints.MinDate || date > constraints.MaxDate)
                 {
-                    b.ButtonCallback(DefaultButtonTexts.EmptyButtonText, markupButtonActionCodec(CallbackActions.Ui.Noop));
+                    b.ButtonCallback(CallbackButtonDefaultTexts.EmptyButtonText, markupButtonActionCodec(CallbackActions.Ui.Noop));
                     continue;
                 }
 

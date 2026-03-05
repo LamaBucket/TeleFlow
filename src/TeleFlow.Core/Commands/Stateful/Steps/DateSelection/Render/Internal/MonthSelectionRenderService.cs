@@ -1,4 +1,4 @@
-using TeleFlow.Core.Commands.Stateful.Steps.CallbackCommandStepBase.Internal;
+using TeleFlow.Core.Commands.Stateful.Steps.Base;
 using TeleFlow.Core.Transport.Callbacks;
 using TeleFlow.Core.Transport.Markup;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -40,7 +40,7 @@ internal static class MonthSelectionRenderService
             }
             else
             {
-                b.ButtonCallback(DefaultButtonTexts.EmptyButtonText, markupButtonActionCodec(CallbackActions.Ui.Noop));
+                b.ButtonCallback(CallbackButtonDefaultTexts.EmptyButtonText, markupButtonActionCodec(CallbackActions.Ui.Noop));
             }
 
             if ((cell + 1) % cols == 0 && cell != totalCells - 1)

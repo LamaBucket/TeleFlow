@@ -1,44 +1,22 @@
-using System.Globalization;
-using TeleFlow.Core.Commands.Stateful.Steps.CallbackCommandStepBase.Internal;
-
 namespace TeleFlow.Core.Commands.Stateful.Steps.DateSelection.Render;
 
 public class DateSelectionRenderServiceOptions
 {
-    public Func<int, string> MonthNumberToName { get; init; } = CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName;
-    public Func<int, string> WeekdayIndexToName { get; init; } = index => CultureInfo.InvariantCulture.DateTimeFormat.AbbreviatedDayNames[index];
-    public DayOfWeek DaySelectionWeekStart { get; init; } = DayOfWeek.Sunday;
+    public required Func<int, string> MonthNumberToName { get; init; }
+    public required Func<int, string> WeekdayIndexToName { get; init; }
+    public required DayOfWeek DaySelectionWeekStart { get; init; }
     
-    public Func<IServiceProvider, DateSelectionStepData, string> UserPrompt { get; init; } = DefaultUserPrompt;
+    public required Func<IServiceProvider, DateSelectionStepData, string> UserPrompt { get; init; }
     
-    public string PrevYearPageButtonText { get; init; } = DefaultButtonTexts.PrevPageButtonText;
-    public string NextYearPageButtonText { get; init; } = DefaultButtonTexts.NextPageButtonText;
+    public required string PrevYearPageButtonText { get; init; }     
+    public required string NextYearPageButtonText { get; init; } 
 
-    public string PrevYearItemButtonText { get; init; } = DefaultButtonTexts.PrevItemButtonText;
-    public string NextYearItemButtonText { get; init; } = DefaultButtonTexts.NextItemButtonText;
+    public required string PrevYearItemButtonText { get; init; } 
+    public required string NextYearItemButtonText { get; init; } 
 
-    public string PrevMonthItemButtonText { get; init; } = DefaultButtonTexts.PrevItemButtonText;
-    public string NextMonthItemButtonText { get; init; } = DefaultButtonTexts.NextItemButtonText;
+    public required string PrevMonthItemButtonText { get; init; }
+    public required string NextMonthItemButtonText { get; init; }
 
-    public string YearMonthFormatOnDayPage { get; init; } = "MMM yyyy";
-
-
-    private static string DefaultUserPrompt(IServiceProvider serviceProvider, DateSelectionStepData model)
-    {
-        var selectedDate = new DateOnly(model.YearSelected, model.MonthSelected, model.DaySelected);
-        return model.Page switch
-        {
-            DateSelectionStepPage.YearSelection => model.DateSelectionCompleted 
-                ? $"You selected: {selectedDate:yyyy}"
-                : "Please select a year",
-            DateSelectionStepPage.MonthSelection => model.DateSelectionCompleted 
-                ? $"You selected: {selectedDate:MM/yyyy}"
-                : "Please select a month",
-            DateSelectionStepPage.DaySelection => model.DateSelectionCompleted 
-                ? $"You selected: {selectedDate:MM/dd/yyyy}"
-                : "Please select a year",
-            _ => throw new Exception($"Not expected page value: {model.Page}")
-        };
-    }
+    public required string YearMonthFormatOnDayPage { get; init; }
     
 }

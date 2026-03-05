@@ -5,17 +5,10 @@ namespace TeleFlow.Core.Commands.Stateful.Steps.FileInput.Render;
 
 public sealed class FileInputRenderServiceOptions
 {
-    public Func<IServiceProvider, string> PromptText { get; init; }
-        = _ => "Please send us some file";
+    public required ParseMode ParseMode { get; init; }
 
-    public Func<IServiceProvider, FileReference, string>? AfterInputText { get; init; }
-        = (_, input) =>
-        {
-            if(string.IsNullOrWhiteSpace(input.FileName))
-                return "You sent a file.";
-            else
-                return $"You sent file {input.FileName}.";
-        };
+    public required Func<IServiceProvider, string> PromptText { get; init; }
+    
+    public Func<IServiceProvider, FileReference, string>? AfterInputText {get; init;}
 
-    public ParseMode ParseMode { get; init; } = ParseMode.Markdown;
 }

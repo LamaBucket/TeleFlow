@@ -9,14 +9,14 @@ public sealed class FileInputStepOptions
 
     public required Func<CommandStepCommitContext, FileReference, Task> OnUserCommit { get; init; }
 
-
-    public string NoMessageInputMessage { get; init; } = "This Command accepts only messages";
-    public string NoFileProvidedMessage { get; init; } = "This command accepts only file messages";
-    public string FileExceedsMaxFileSizeMessage { get; init; } = "Bots can only work with files less than 20MB";
-    public string FileNotAvailableMessage { get; init; } = "File is not available. please try again";
-
     /// <summary>
     /// If you are not hosting your telegram bot api locally, the max file size is 20MB, this boolean allows you to override this check.
     /// </summary>
-    public bool EnforceMaxFileSize { get; init; } = true;
+    public required bool EnforceMaxFileSize { get; init; }
+
+    public string? NoMessageInputMessage { get; init; }
+    public string? NoFileProvidedMessage { get; init; }
+    public string? FileExceedsMaxFileSizeMessage { get; init; }
+    public string? FileNotAvailableMessage { get; init; }
+    
 }

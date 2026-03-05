@@ -1,6 +1,6 @@
-namespace TeleFlow.Core.Commands.Stateful.Steps.CallbackCommandStepBase.Internal;
+namespace TeleFlow.Core.Commands.Stateful.Steps.Base;
 
-internal static class DefaultButtonTexts
+internal static class CallbackButtonDefaultTexts
 {
     internal static readonly string DoneButtonText = "Done";
 

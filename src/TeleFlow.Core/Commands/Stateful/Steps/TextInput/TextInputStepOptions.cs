@@ -8,7 +8,7 @@ public class TextInputStepOptions
 
     public required Func<CommandStepCommitContext, string, Task> OnUserCommit { get; init; }
 
-    public string NoMessageInputMessage { get; init; } = "This Command accepts only messages";
+    public string? NoMessageInputMessage { get; init; }
 
-    public string NoTextProvidedMessage { get; init; } = "This command accepts only text";
+    public string? NoTextProvidedMessage { get; init; }
 }

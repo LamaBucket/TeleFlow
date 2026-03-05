@@ -8,12 +8,12 @@ public class DateSelectionStepOptions
 
     public required DateSelectionMode Mode { get; init; }
 
-    public string? LastPageMessage { get; init; } = "There is no more items";
-    public string? FirstPageMessage { get; init; } = "There is no more items";
-
-    public string InvalidYearMessage { get; init; } = "Please select the year between the minimum and maximum amount";
-    public string InvalidMonthMessage { get; init; } = "Select a month";
-    public string InvalidDayMessage { get; set; } = "Select a day";
+    public string? LastPageMessage { get; init; }
+    public string? FirstPageMessage { get; init; }
+    
+    public string? InvalidYearMessage { get; init; }
+    public string? InvalidMonthMessage { get; init; }
+    public string? InvalidDayMessage { get; init; }
 }
 
 
