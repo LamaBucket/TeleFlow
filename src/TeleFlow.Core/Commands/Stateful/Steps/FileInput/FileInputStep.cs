@@ -9,11 +9,11 @@ using Telegram.Bot.Exceptions;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.FileInput;
 
-public class FileInputCommandStep : StatefulStep<FileInputStepData>
+public class FileInputStep : StatefulStep<FileInputStepData>
 {
     public const long TelegramMaxFileSizeBytes = 20L * 1024 * 1024;
 
-    private readonly FileInputCommandStepOptions _options;
+    private readonly FileInputStepOptions _options;
 
 
     protected override async Task<CommandStepResult> Handle(UpdateContext context, StepState<FileInputStepData> state)
@@ -113,7 +113,7 @@ public class FileInputCommandStep : StatefulStep<FileInputStepData>
     protected override Task<FileInputStepData> CreateDefaultStepData(IServiceProvider sp)
         => Task.FromResult(FileInputStepData.Default);
 
-    public FileInputCommandStep(FileInputCommandStepOptions options) : base(options.RenderConfig)
+    public FileInputStep(FileInputStepOptions options) : base(options.RenderConfig)
     {
         _options = options;
     }

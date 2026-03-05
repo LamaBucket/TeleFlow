@@ -8,9 +8,9 @@ using Telegram.Bot.Types.Enums;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.TextInput;
 
-public class TextInputCommandStep : StatefulStep<TextInputStepData>
+public class TextInputStep : StatefulStep<TextInputStepData>
 {
-    private readonly TextInputCommandStepOptions _options;
+    private readonly TextInputStepOptions _options;
 
     protected override async Task<CommandStepResult> Handle(UpdateContext context, StepState<TextInputStepData> state)
     {
@@ -53,7 +53,7 @@ public class TextInputCommandStep : StatefulStep<TextInputStepData>
         => Task.FromResult(TextInputStepData.Default);
 
 
-    public TextInputCommandStep(TextInputCommandStepOptions options) : base(options.RenderConfig)
+    public TextInputStep(TextInputStepOptions options) : base(options.RenderConfig)
     {
         _options = options;
     }

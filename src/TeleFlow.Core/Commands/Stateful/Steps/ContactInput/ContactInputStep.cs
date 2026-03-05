@@ -16,18 +16,6 @@ public class ContactInputStep : StatefulStep<ContactInputStepData>
 
     private bool IsContactShareButtonUsed => !string.IsNullOrWhiteSpace(_options.ShareContactButtonText);
 
-
-    private ReplyMarkupSpec BuildReplyMarkup()
-    {
-        if(_options.ShareContactButtonText is null)
-            throw new Exception();
-
-        ReplyKeyboardBuilder builder = new();
-        builder.ContactRequestButton(_options.ShareContactButtonText);
-
-        return new ReplyMarkupSpec.Keyboard(builder.Build());
-    }
-
     protected override async Task<CommandStepResult> Handle(UpdateContext context, StepState<ContactInputStepData> state)
     {
         var update = context.Update;

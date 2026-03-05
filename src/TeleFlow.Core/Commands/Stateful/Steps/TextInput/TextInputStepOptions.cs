@@ -2,7 +2,7 @@ using TeleFlow.Core.Commands.Stateful.Steps.Base;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.TextInput;
 
-public class TextInputCommandStepOptions
+public class TextInputStepOptions
 {
     public required StatefulStepOptions<TextInputStepData> RenderConfig { get; init; }
 
