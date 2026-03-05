@@ -22,7 +22,7 @@ public static class CallbackActions
     {
         public static StepAction Back => new StepAction.Back();
         public static StepAction Finish => new StepAction.Finish();
-        public static StepAction GoTo(string stepId) => new StepAction.GoTo(stepId);
+        public static StepAction GoTo(int stepNumber) => new StepAction.GoTo(stepNumber);
     }
 
     public static class Command

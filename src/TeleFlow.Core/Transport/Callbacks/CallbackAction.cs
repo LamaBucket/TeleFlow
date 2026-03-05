@@ -11,7 +11,7 @@ public abstract record CallbackAction
     {
         public sealed record Back : StepAction;
         public sealed record Finish : StepAction;
-        public sealed record GoTo(string StepId) : StepAction;
+        public sealed record GoTo(int StepNumber) : StepAction;
     }
 
     public abstract record UiAction : CallbackAction

@@ -37,7 +37,7 @@ public sealed class DefaultCallbackActionParser : ICallbackActionParser
                 => new CallbackToken(StepFin, string.Empty),
 
             CallbackAction.StepAction.GoTo g
-                => new CallbackToken(StepGoTo, RequireNonEmpty(g.StepId, nameof(g.StepId))),
+                => new CallbackToken(StepGoTo, g.StepNumber.ToString()),
 
             // ----- UI -----
             CallbackAction.UiAction.NextPage
@@ -88,8 +88,8 @@ public sealed class DefaultCallbackActionParser : ICallbackActionParser
                 return true;
 
             case StepGoTo:
-                if (string.IsNullOrWhiteSpace(data)) return false;
-                action = new CallbackAction.StepAction.GoTo(data);
+                if (!int.TryParse(data, out int stepNumber)) return false;
+                action = new CallbackAction.StepAction.GoTo(stepNumber);
                 return true;
 
             // ----- UI -----
