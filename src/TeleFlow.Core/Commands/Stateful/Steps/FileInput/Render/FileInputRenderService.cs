@@ -3,7 +3,7 @@ using TeleFlow.Abstractions.Transport.Messaging;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.FileInput.Render;
 
-internal class FileInputRenderService : IStepRenderService<FileInputStepData>
+public class FileInputRenderService : IStepRenderService<FileInputStepData>
 {
     private readonly FileInputRenderServiceOptions _options;
 

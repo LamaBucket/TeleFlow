@@ -3,7 +3,7 @@ using TeleFlow.Abstractions.Transport.Messaging;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.ContactInput.Render;
 
-internal class ContactInputRenderService : IStepRenderService<ContactInputStepData>
+public class ContactInputRenderService : IStepRenderService<ContactInputStepData>
 {
     private readonly ContactInputRenderServiceOptions _options;
 

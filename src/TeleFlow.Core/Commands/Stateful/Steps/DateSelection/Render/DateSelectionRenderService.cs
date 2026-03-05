@@ -8,7 +8,7 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.DateSelection.Render;
 
-internal class DateSelectionRenderService : IStepRenderService<DateSelectionStepData>
+public class DateSelectionRenderService : IStepRenderService<DateSelectionStepData>
 {
     private delegate InlineKeyboardMarkup RenderMarkupDelegate(Func<CallbackAction, string> markupButtonActionCodec, DateSelectionStepData model, DateSelectionStepDataConstraints constraints, DateSelectionRenderServiceOptions config);
 
