@@ -14,6 +14,7 @@ public static class CallbackActions
         public static UiAction Noop => new UiAction.NoOperation();
         public static UiAction NextPage => new UiAction.NextPage();
         public static UiAction PrevPage => new UiAction.PrevPage();
+        public static UiAction Finish => new UiAction.Finish();
         public static UiAction GoToPage(int page) => new UiAction.GoToPage(page);
         public static UiAction Select(int index) => new UiAction.SelectIndex(index);
     }

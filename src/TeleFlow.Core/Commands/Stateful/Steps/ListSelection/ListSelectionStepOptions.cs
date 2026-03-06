@@ -6,7 +6,7 @@ public sealed class ListSelectionStepOptions<T>
 {
     public required CallbackStepOptions<ListSelectionStepData<T>> BaseOptions { get; init; }
 
-    public required Func<IServiceProvider, Task<IReadOnlyList<T>>> ValueProvider { get; init; }
+    public required Func<IServiceProvider, Task<IEnumerable<T>>> ValueProvider { get; init; }
 
     public required ListSelectionMode Mode { get; init; }
 

@@ -77,7 +77,7 @@ public class ListSelectionRenderService<T> : IStepRenderService<ListSelectionSte
         AppendNavigation(codec, builder);
 
         builder.NewRow();
-        builder.ButtonCallback(config.MultiSelectFinishButtonText, codec(CallbackActions.Step.Finish));
+        builder.ButtonCallback(config.MultiSelectFinishButtonText, codec(CallbackActions.Ui.Finish));
 
         return builder.Build();
     }

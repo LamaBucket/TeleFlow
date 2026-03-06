@@ -34,12 +34,6 @@ public class DefaultMessageEditor : IMessageEditService
             // ok
         }
 
-        // Если оба edit'а были no-op, msg останется null — но это НЕ повод падать.
-        // Вернём хотя бы "виртуальный успех" — например, получим текущее сообщение нельзя.
-        // Поэтому: возвращай что-то другое или меняй контракт.
-        if (msg is null)
-            throw new InvalidOperationException("Edit resulted in no changes (message is not modified). Consider returning a Unit/void or tracking last message state.");
-
         return msg;
     }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using TeleFlow.Abstractions.Transport.Callbacks;
 using TeleFlow.Core.Transport.Callbacks;
 
@@ -18,6 +19,7 @@ public sealed class DefaultCallbackActionParser : ICallbackActionParser
     private const string UiNoop    = "ui.noop";
     private const string UiGoTo    = "ui.goto";
     private const string UiSelect  = "ui.sel";
+    private const string UiFinish  = "ui.finish";
 
     public CallbackToken Parse(CallbackAction action)
     {
@@ -54,6 +56,8 @@ public sealed class DefaultCallbackActionParser : ICallbackActionParser
 
             CallbackAction.UiAction.SelectIndex s
                 => new CallbackToken(UiSelect, s.Index.ToString()),
+            CallbackAction.UiAction.Finish
+                => new CallbackToken(UiFinish, string.Empty),
 
             _ => throw new NotSupportedException($"Unsupported callback action type: {action.GetType().FullName}")
         };
@@ -115,6 +119,10 @@ public sealed class DefaultCallbackActionParser : ICallbackActionParser
                 // Это позволяет шагам использовать SelectIndex как локальный протокол (например -1/-2) при необходимости.
                 if (!int.TryParse(data, out int idx)) return false;
                 action = new CallbackAction.UiAction.SelectIndex(idx);
+                return true;
+
+            case UiFinish:
+                action = new CallbackAction.UiAction.Finish();
                 return true;
 
             default:

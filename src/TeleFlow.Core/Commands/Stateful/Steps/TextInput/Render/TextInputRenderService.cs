@@ -11,7 +11,7 @@ public class TextInputRenderService : IStepRenderService<TextInputStepData>
     {
         string message = "";
 
-        if(model.TextEntered is null)
+        if(string.IsNullOrWhiteSpace(model.TextEntered))
             message = _options.PromptText(serviceProvider);
         else
             if (_options.AfterInputText is not null)

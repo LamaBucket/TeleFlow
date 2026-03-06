@@ -41,24 +41,29 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
     }
 
     private async Task<CommandStepResult> HandleYearSelectYear(IServiceProvider sp, StepState<DateSelectionStepData> state, int index)
-    {        
-        state = state with { StepData = state.StepData with { YearSelected = index }};
+    {     
+        var vmAfterYear = state.StepData with { YearSelected = index };
 
-        if(!DateSelectionStepDataValidator.IsValid(state.StepData, _constraints))
+        if (!DateSelectionStepDataValidator.IsValid(vmAfterYear, _constraints))
             return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidYearMessage);
 
-        state = state with { StepData = state.StepData with { Page = DateSelectionStepPage.MonthSelection }};
+        DateSelectionStepData nextVm;
 
-        await UpsertAndRerender(sp, state);
-        
-
-        if(_options.Mode is YearOnly mode)
+        if (_options.Mode is YearOnly mode)
         {
-            await mode.OnCommit(new(sp), index);
+            nextVm = vmAfterYear with { DateSelectionCompleted = true };
+
+            await UpsertAndRerender(sp, state with { StepData = nextVm });
+
+            var year = nextVm.YearSelected;
+            await mode.OnCommit(new(sp), year);
             await FinalizeStep(sp);
             return CommandStepResult.Next;
-        }
+        }   
         
+        nextVm = vmAfterYear with { Page = DateSelectionStepPage.MonthSelection };
+
+        await UpsertAndRerender(sp, state with { StepData = nextVm });
         return CommandStepResult.HoldOn(CommandStepHoldOnReason.Other);
     }
 
