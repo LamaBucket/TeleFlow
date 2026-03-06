@@ -12,7 +12,7 @@ public static class ContactInputDefaults
 
 
     public static readonly ParseMode ParseMode = ParseMode.Markdown;
-    public static readonly Func<IServiceProvider, string> PromptText = _ => "Please send us some file";
+    public static readonly Func<IServiceProvider, string> PromptText = _ => "Please send a contact";
     public static readonly Func<IServiceProvider, Contact, string>? AfterInputText = (_, input) =>
         {
             if(string.IsNullOrWhiteSpace(input.FirstName))

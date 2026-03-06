@@ -70,6 +70,16 @@ internal static class TeleFlowDefaultServicesInternal
             return new DefaultMessageEditor(botClient, chatId);
         });
 
+        services.TryAddScoped<IMessageDeleteService>(sp =>
+        {
+            var chatIdProvider = sp.GetRequiredService<IChatIdProvider>();
+            var botClient = sp.GetRequiredService<ITelegramBotClient>(); 
+
+            var chatId = chatIdProvider.GetChatId();
+
+            return new DefaultMessageDeleteService(chatId, botClient);
+        });
+
         return services;
     }
 

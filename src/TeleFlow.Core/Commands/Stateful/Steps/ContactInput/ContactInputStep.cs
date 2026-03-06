@@ -38,9 +38,12 @@ public class ContactInputStep : StatefulStep<ContactInputStepData>
             if(contact is null)
                 return CommandStepResult.HoldOn(CommandStepHoldOnReason.InvalidInput, _options.InvalidTextContactMessage);
         }
-        
-        if(IsContactShareButtonUsed)
-            await RemoveShareContactReplyButton(context.ServiceProvider);
+
+        if (IsContactShareButtonUsed)
+        {
+            await RemoveShareContactReplyButton(context.ServiceProvider, state.StepData.ShareContactReplyButtonMessageId);
+            state = state with { StepData = state.StepData with { ShareContactReplyButtonMessageId = null } };   
+        }
         
 
         await SetStateSharedContactAndRerender(context.ServiceProvider, state, contact);
@@ -52,19 +55,27 @@ public class ContactInputStep : StatefulStep<ContactInputStepData>
         return GetSuccessStepResult();
     }
 
-    private static async Task RemoveShareContactReplyButton(IServiceProvider sp)
+    private static async Task RemoveShareContactReplyButton(IServiceProvider sp, int? messageId)
     {
-        var msgSendService = sp.GetRequiredService<IMessageSendService>();
         var msgDeleteService = sp.GetRequiredService<IMessageDeleteService>();
 
-        var replyKeyboardRemoveMessage = new ReplyMarkupMessage()
-        { 
-            Text = "Hold tight, we are removing the inline button...", 
-            Markup = new ReplyMarkupSpec.Remove(new()) 
-        };
-
-        Message msg = await msgSendService.SendMessage(replyKeyboardRemoveMessage);        
-        await msgDeleteService.Delete(msg.MessageId);
+        if (messageId.HasValue)
+        {
+            await msgDeleteService.Delete(messageId.Value);
+        }
+        else
+        {
+            var msgSendService = sp.GetRequiredService<IMessageSendService>();
+            
+            var replyKeyboardRemoveMessage = new ReplyMarkupMessage()
+            { 
+                Text = "Use the button below to share your number", 
+                Markup = new ReplyMarkupSpec.Remove(new()) 
+            };
+            
+            Message msg = await msgSendService.SendMessage(replyKeyboardRemoveMessage);  
+            await msgDeleteService.Delete(msg.MessageId); 
+        }
     }
 
     private async Task SetStateSharedContactAndRerender(IServiceProvider sp, StepState<ContactInputStepData> state, Contact value)
@@ -83,37 +94,34 @@ public class ContactInputStep : StatefulStep<ContactInputStepData>
         => CommandStepResult.Next;
 
 
-    public override async Task OnEnter(IServiceProvider serviceProvider)
+    protected override async Task<ContactInputStepData> CreateDefaultStepData(IServiceProvider sp)
     {
-        await base.OnEnter(serviceProvider);
+        int? msgId = null;
 
-        if(IsContactShareButtonUsed)
-            await ShowShareContactReplyButton(serviceProvider);
+        if(IsContactShareButtonUsed)    
+            await ShowShareContactReplyButton(sp);
+
+        return new(null, msgId);
     }
 
-    private async Task ShowShareContactReplyButton(IServiceProvider sp)
+    private async Task<int?> ShowShareContactReplyButton(IServiceProvider sp)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(_options.ShareContactButtonText, nameof(_options.ShareContactButtonText));
 
         var msgSendService = sp.GetRequiredService<IMessageSendService>();
-        var msgDeleteService = sp.GetRequiredService<IMessageDeleteService>();
 
         ReplyKeyboardBuilder builder = new();
         builder.ContactRequestButton(_options.ShareContactButtonText);
 
         var replyKeyboardRemoveMessage = new ReplyMarkupMessage()
         { 
-            Text = "Hold tight, we are adding the inline button...", 
+            Text = "Use the button below to share your number", 
             Markup = new ReplyMarkupSpec.Keyboard(builder.Build()) 
         };
 
         Message msg = await msgSendService.SendMessage(replyKeyboardRemoveMessage);        
-        await msgDeleteService.Delete(msg.MessageId);
+        return msg.MessageId;
     }
-
-
-    protected override Task<ContactInputStepData> CreateDefaultStepData(IServiceProvider sp)
-        => Task.FromResult(ContactInputStepData.Default);
 
 
     public ContactInputStep(ContactInputStepOptions options) : base(options.RenderConfig)
