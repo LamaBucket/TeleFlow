@@ -29,7 +29,7 @@ public class TextInputStep : StatefulStep<TextInputStepData>
 
         await _options.OnUserCommit.Invoke(new(context.ServiceProvider), update.Message.Text);
 
-        return GetSuccessStepResult();;
+        return GetSuccessStepResult();
     }
 
     private async Task SetStateInputTextAndRerender(IServiceProvider sp, StepState<TextInputStepData> state, string value)
