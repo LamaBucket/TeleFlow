@@ -16,6 +16,7 @@ public class ListSelectionRenderServiceOptions<T>
 
     public required string PrevPageButtonText { get; init; }
     public required string NextPageButtonText { get; init; }
+    public required string EmptyButtonText { get; init; }  
     public required string MultiSelectFinishButtonText { get; init; }
 }
 

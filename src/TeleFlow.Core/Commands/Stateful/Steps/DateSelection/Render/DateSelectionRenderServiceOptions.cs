@@ -16,6 +16,8 @@ public class DateSelectionRenderServiceOptions
 
     public required string PrevMonthItemButtonText { get; init; }
     public required string NextMonthItemButtonText { get; init; }
+    
+    public required string EmptyButtonText { get; init; }  
 
     public required string YearMonthFormatOnDayPage { get; init; }
     

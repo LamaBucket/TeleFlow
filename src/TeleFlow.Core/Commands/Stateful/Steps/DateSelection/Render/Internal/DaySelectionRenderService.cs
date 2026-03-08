@@ -67,14 +67,14 @@ internal static class DaySelectionRenderService
 
                 if (day < 1 || day > daysInMonth)
                 {
-                    b.ButtonCallback(CallbackButtonDefaultTexts.EmptyButtonText, markupButtonActionCodec(CallbackActions.Ui.Noop));
+                    b.ButtonCallback(config.EmptyButtonText, markupButtonActionCodec(CallbackActions.Ui.Noop));
                     continue;
                 }
 
                 var date = new DateOnly(year, month, day);
                 if (date < constraints.MinDate || date > constraints.MaxDate)
                 {
-                    b.ButtonCallback(CallbackButtonDefaultTexts.EmptyButtonText, markupButtonActionCodec(CallbackActions.Ui.Noop));
+                    b.ButtonCallback(config.EmptyButtonText, markupButtonActionCodec(CallbackActions.Ui.Noop));
                     continue;
                 }
 

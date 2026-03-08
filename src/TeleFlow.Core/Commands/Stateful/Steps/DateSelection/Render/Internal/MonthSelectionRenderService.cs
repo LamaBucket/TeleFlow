@@ -40,7 +40,7 @@ internal static class MonthSelectionRenderService
             }
             else
             {
-                b.ButtonCallback(CallbackButtonDefaultTexts.EmptyButtonText, markupButtonActionCodec(CallbackActions.Ui.Noop));
+                b.ButtonCallback(config.EmptyButtonText, markupButtonActionCodec(CallbackActions.Ui.Noop));
             }
 
             if ((cell + 1) % cols == 0 && cell != totalCells - 1)

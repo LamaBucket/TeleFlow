@@ -1,9 +1,7 @@
-using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
 using TeleFlow.Abstractions.Engine.Commands.Stateful.Steps;
 using TeleFlow.Abstractions.Transport.Callbacks;
 using TeleFlow.Abstractions.Transport.Messaging;
-using TeleFlow.Core.Commands.Stateful.Steps.Base;
 using TeleFlow.Core.Transport.Callbacks;
 using TeleFlow.Core.Transport.Markup;
 using Telegram.Bot.Types.ReplyMarkups;
@@ -104,7 +102,7 @@ public class ListSelectionRenderService<T> : IStepRenderService<ListSelectionSte
                 {
                     if (config.IsPaddingOn)
                     {
-                        builder.ButtonCallback(CallbackButtonDefaultTexts.EmptyButtonText, codec(CallbackActions.Ui.Noop));
+                        builder.ButtonCallback(config.EmptyButtonText, codec(CallbackActions.Ui.Noop));
                         rowHasButtons = true;
                     }
                     else break;
