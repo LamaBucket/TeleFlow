@@ -3,14 +3,14 @@ using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Abstractions.Transport.Messaging;
-using TeleFlow.Core.Commands.Stateful.Steps.Base;
+using TeleFlow.Core.Commands.Stateful.Steps.SingleInput.Base;
 using TeleFlow.Core.Transport.Markup;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
+namespace TeleFlow.Core.Commands.Stateful.Steps.SingleInput.ContactInput;
 
-public class ContactInputStep : StatefulStep<ContactInputStepData>
+public class ContactInputStep : SingleInputStep<ContactInputStepData, Contact>
 {
     private readonly ContactInputStepOptions _options;
 
@@ -46,7 +46,7 @@ public class ContactInputStep : StatefulStep<ContactInputStepData>
         }
         
 
-        await SetStateSharedContactAndRerender(context.ServiceProvider, state, contact);
+        await SetInputAndRerender(context.ServiceProvider, state, contact);
         await FinalizeStep(context.ServiceProvider);
         
 
@@ -78,28 +78,16 @@ public class ContactInputStep : StatefulStep<ContactInputStepData>
         }
     }
 
-    private async Task SetStateSharedContactAndRerender(IServiceProvider sp, StepState<ContactInputStepData> state, Contact value)
-    {
-        state = state with
-        {
-            StepData = state.StepData with
-            {
-                ContactShared = value
-            }
-        };
-        await UpsertAndRerender(sp, state);
-    }
-
-    public virtual CommandStepResult GetSuccessStepResult()
+    protected virtual CommandStepResult GetSuccessStepResult()
         => CommandStepResult.Next;
-
+    
 
     protected override async Task<ContactInputStepData> CreateDefaultStepData(IServiceProvider sp)
     {
         int? msgId = null;
 
         if(IsContactShareButtonUsed)    
-            await ShowShareContactReplyButton(sp);
+            msgId = await ShowShareContactReplyButton(sp);
 
         return new(null, msgId);
     }

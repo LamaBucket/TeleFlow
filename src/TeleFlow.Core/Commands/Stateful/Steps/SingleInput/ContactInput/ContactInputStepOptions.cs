@@ -1,7 +1,7 @@
 using TeleFlow.Core.Commands.Stateful.Steps.Base;
 using Telegram.Bot.Types;
 
-namespace TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
+namespace TeleFlow.Core.Commands.Stateful.Steps.SingleInput.ContactInput;
 
 
 public class ContactInputStepOptions
