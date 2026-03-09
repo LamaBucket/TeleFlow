@@ -2,7 +2,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.TextInput.Render;
 
-public sealed class TextInputRenderServiceOptions
+public sealed record TextInputRenderServiceOptions
 {
     public required ParseMode ParseMode { get; init; }
     

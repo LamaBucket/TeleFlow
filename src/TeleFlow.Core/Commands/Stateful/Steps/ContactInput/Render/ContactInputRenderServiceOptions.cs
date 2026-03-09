@@ -3,7 +3,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.ContactInput.Render;
 
-public sealed class ContactInputRenderServiceOptions
+public record class ContactInputRenderServiceOptions
 {
     public required ParseMode ParseMode { get; init; }
 

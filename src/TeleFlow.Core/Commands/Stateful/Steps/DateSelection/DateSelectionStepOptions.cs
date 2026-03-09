@@ -2,7 +2,7 @@ using TeleFlow.Core.Commands.Stateful.Steps.Base;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.DateSelection;
 
-public class DateSelectionStepOptions
+public record DateSelectionStepOptions
 {
     public required CallbackStepOptions<DateSelectionStepData> BaseOptions { get; init; }
 

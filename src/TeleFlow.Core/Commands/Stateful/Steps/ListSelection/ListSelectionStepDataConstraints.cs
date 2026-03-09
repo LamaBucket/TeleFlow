@@ -1,6 +1,6 @@
 namespace TeleFlow.Core.Commands.Stateful.Steps.ListSelection;
 
-public class ListSelectionStepDataConstraints
+public record ListSelectionStepDataConstraints
 {
     public required int PageRows { get; init; }
 

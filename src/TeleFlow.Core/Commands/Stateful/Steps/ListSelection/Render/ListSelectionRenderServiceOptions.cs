@@ -4,7 +4,7 @@ public delegate string ListSelectionDisplayNameParser<T>(T item);
 
 public delegate string ListSelectionUserPrompt<T>(IServiceProvider sp, ListSelectionDisplayNameParser<T> displayNameParser, ListSelectionStepData<T> data);
 
-public class ListSelectionRenderServiceOptions<T>
+public record ListSelectionRenderServiceOptions<T>
 {
     public required ListSelectionRenderType RenderType { get; init; }
 

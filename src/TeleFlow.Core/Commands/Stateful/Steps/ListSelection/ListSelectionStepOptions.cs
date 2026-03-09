@@ -2,7 +2,7 @@ using TeleFlow.Core.Commands.Stateful.Steps.Base;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.ListSelection;
 
-public sealed class ListSelectionStepOptions<T>
+public sealed record ListSelectionStepOptions<T>
 {
     public required CallbackStepOptions<ListSelectionStepData<T>> BaseOptions { get; init; }
 

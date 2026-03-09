@@ -1,6 +1,6 @@
 namespace TeleFlow.Core.Commands.Stateful.Steps.DateSelection.Render;
 
-public class DateSelectionRenderServiceOptions
+public record DateSelectionRenderServiceOptions
 {
     public required Func<int, string> MonthNumberToName { get; init; }
     public required Func<int, string> WeekdayIndexToName { get; init; }

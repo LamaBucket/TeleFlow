@@ -3,7 +3,7 @@ using TeleFlow.Core.Commands.Stateful.Steps.Base;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.FileInput;
 
-public sealed class FileInputStepOptions
+public sealed record FileInputStepOptions
 {
     public required StatefulStepOptions<FileInputStepData> RenderConfig { get; init; }
 

@@ -3,7 +3,7 @@ using Telegram.Bot.Types.Enums;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.FileInput.Render;
 
-public sealed class FileInputRenderServiceOptions
+public sealed record FileInputRenderServiceOptions
 {
     public required ParseMode ParseMode { get; init; }
 

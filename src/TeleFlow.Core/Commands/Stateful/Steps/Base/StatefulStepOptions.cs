@@ -3,7 +3,7 @@ using TeleFlow.Abstractions.State.Step;
 
 namespace TeleFlow.Core.Commands.Stateful.Steps.Base;
 
-public class StatefulStepOptions<TData>
+public record StatefulStepOptions<TData>
     where TData : StepData
 {
     public required IStepRenderService<TData> RenderService { get; init; }

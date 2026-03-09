@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 namespace TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
 
 
-public class ContactInputStepOptions
+public record ContactInputStepOptions
 {
     public required StatefulStepOptions<ContactInputStepData> RenderConfig { get; init; }
 
