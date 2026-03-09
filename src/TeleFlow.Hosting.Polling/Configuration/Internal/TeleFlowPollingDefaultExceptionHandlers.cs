@@ -3,7 +3,7 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TeleFlow.Extensions.DI.Polling.Configuration.Internal;
+namespace TeleFlow.Hosting.Polling.Configuration.Internal;
 
 internal static class TeleFlowPollingDefaultExceptionHandlers
 {

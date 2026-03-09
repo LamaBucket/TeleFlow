@@ -1,11 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using TeleFlow.Extensions.DI.Configuration;
-using TeleFlow.Extensions.DI.Polling.Configuration;
-using TeleFlow.Extensions.DI.Polling.Services;
+using TeleFlow.DependencyInjection.Extensions;
+using TeleFlow.Fluent.Configuration;
+using TeleFlow.Fluent.Extensions;
+using TeleFlow.Hosting.Polling.Configuration;
+using TeleFlow.Hosting.Polling.Services;
 using Telegram.Bot;
 
-namespace TeleFlow.Extensions.DI.Polling;
+namespace TeleFlow.Hosting.Polling;
 
 public static class ServiceCollectionExtensions
 {
@@ -16,15 +18,16 @@ public static class ServiceCollectionExtensions
         services.AddTeleFlowPolling(botToken, noActionsTeleFlowSetup);
     }
 
-    public static void AddTeleFlowPolling(this IServiceCollection services, string botToken, Action<TeleFlowConfiguration> teleFlow)
+    public static void AddTeleFlowPolling(this IServiceCollection services, string botToken, Action<TeleFlowConfiguration> configure)
     {
         TeleFlowPollingConfiguration polling = new(){ BotToken = botToken };
-        services.AddTeleFlowPolling(polling, teleFlow);
+        services.AddTeleFlowPolling(polling, configure);
     }
 
-    public static void AddTeleFlowPolling(this IServiceCollection services, TeleFlowPollingConfiguration polling, Action<TeleFlowConfiguration> teleFlow)
+    public static void AddTeleFlowPolling(this IServiceCollection services, TeleFlowPollingConfiguration polling, Action<TeleFlowConfiguration> configure)
     {
-        services.AddTeleFlowServices(teleFlow);
+        services.AddTeleFlowServices();
+        services.AddTeleFlowPipeline(configure);
         services.TryAddTeleFlowTelegramClient(polling);
 
         services.TryAddSingleton<TeleFlowPollingConfiguration>();
