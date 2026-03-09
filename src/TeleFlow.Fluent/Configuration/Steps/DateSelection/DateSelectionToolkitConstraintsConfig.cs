@@ -2,11 +2,11 @@ namespace TeleFlow.Fluent.Configuration.Steps.DateSelection;
 
 public class DateSelectionToolkitConstraintsConfig
 {
-    public DateOnly MinDate { get; init; } = DateSelectionDefaults.MinDate;
-    public DateOnly MaxDate { get; init; } = DateSelectionDefaults.MaxDate;
+    public DateOnly MinDate { get; set; } = DateSelectionDefaults.MinDate;
+    public DateOnly MaxDate { get; set; } = DateSelectionDefaults.MaxDate;
 
-    public int YearSelectionRows { get; init; } = DateSelectionDefaults.YearSelectionRows;
-    public int YearSelectionColumns { get; init; } = DateSelectionDefaults.YearSelectionColumns;
+    public int YearSelectionRows { get; set; } = DateSelectionDefaults.YearSelectionRows;
+    public int YearSelectionColumns { get; set; } = DateSelectionDefaults.YearSelectionColumns;
 
-    public int MonthSelectionRows { get; init; } = DateSelectionDefaults.MonthSelectionRows;
+    public int MonthSelectionRows { get; set; } = DateSelectionDefaults.MonthSelectionRows;
 }
