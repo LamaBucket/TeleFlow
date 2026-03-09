@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace TeleFlow.Extensions.DI.Implementations.Transport.Messaging;
+namespace TeleFlow.DependencyInjection.Implementations.Transport.Messaging;
 
 public class DefaultMessageEditor : IMessageEditService
 {

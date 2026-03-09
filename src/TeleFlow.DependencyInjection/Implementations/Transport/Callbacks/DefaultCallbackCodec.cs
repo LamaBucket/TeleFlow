@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using TeleFlow.Abstractions.Transport.Callbacks;
 
-namespace TeleFlow.Extensions.DI.Implementations.Transport.Callbacks;
+namespace TeleFlow.DependencyInjection.Implementations.Transport.Callbacks;
 
 public sealed class DefaultCallbackCodec : ICallbackCodec
 {

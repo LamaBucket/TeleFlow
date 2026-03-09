@@ -1,35 +1,35 @@
-using System;
 using Telegram.Bot.Types;
 using TeleFlow.Abstractions.Transport.Files;
 
-namespace TeleFlow.Extensions.DI.Implementations.Transport.Files;
+namespace TeleFlow.DependencyInjection.Implementations.Transport.Files;
 
-public sealed class VideoFileReferenceExtractor : IFileReferenceExtractor
+public sealed class ImageFileReferenceExtractor : IFileReferenceExtractor
 {
     public bool TryExtract(Message message, out FileReference file)
     {
         file = default!;
 
-        // 1) Native video
-        var v = message.Video;
-        if (v is not null)
+        // 1) Photo (preferred)
+        if (message.Photo is not null && message.Photo.Length > 0)
         {
+            var best = message.Photo.OrderByDescending(p => p.FileSize ?? 0).First();
+
             file = new FileReference
             {
-                ContentType = FileContentType.Video,
-                FileId = v.FileId,
-                FileUniqueId = v.FileUniqueId,
+                ContentType = FileContentType.Photo,
+                FileId = best.FileId,
+                FileUniqueId = best.FileUniqueId,
                 FileName = null,
-                MimeType = v.MimeType,
-                DeclaredSizeBytes = v.FileSize,
-                Width = v.Width,
-                Height = v.Height,
-                DurationSeconds = v.Duration
+                MimeType = null,
+                DeclaredSizeBytes = best.FileSize,
+                Width = best.Width,
+                Height = best.Height,
+                DurationSeconds = null
             };
             return true;
         }
 
-        // 2) Document with video/*
+        // 2) Document with image/*
         var d = message.Document;
         if (d is null)
             return false;
@@ -37,7 +37,7 @@ public sealed class VideoFileReferenceExtractor : IFileReferenceExtractor
         if (string.IsNullOrWhiteSpace(d.MimeType))
             return false;
 
-        if (!d.MimeType.StartsWith("video/", StringComparison.OrdinalIgnoreCase))
+        if (!d.MimeType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
             return false;
 
         file = new FileReference

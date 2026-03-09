@@ -1,26 +1,21 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TeleFlow.Abstractions.Engine.ChatIdentity;
-using TeleFlow.Abstractions.Engine.Commands;
-using TeleFlow.Abstractions.Engine.Commands.Results;
 using TeleFlow.Abstractions.State.Chat;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Abstractions.Transport.Callbacks;
 using TeleFlow.Abstractions.Transport.Files;
 using TeleFlow.Abstractions.Transport.Messaging;
-using TeleFlow.Core.Commands.Factories;
 using TeleFlow.Core.Transport.Callbacks;
-using TeleFlow.Extensions.DI.Builders.Commands;
-using TeleFlow.Extensions.DI.Builders.Pipeline;
-using TeleFlow.Extensions.DI.Implementations.Engine;
-using TeleFlow.Extensions.DI.Implementations.State.Chat;
-using TeleFlow.Extensions.DI.Implementations.State.Step;
-using TeleFlow.Extensions.DI.Implementations.Transport.Callbacks;
-using TeleFlow.Extensions.DI.Implementations.Transport.Files;
-using TeleFlow.Extensions.DI.Implementations.Transport.Messaging;
+using TeleFlow.DependencyInjection.Implementations.Engine;
+using TeleFlow.DependencyInjection.Implementations.State.Chat;
+using TeleFlow.DependencyInjection.Implementations.State.Step;
+using TeleFlow.DependencyInjection.Implementations.Transport.Callbacks;
+using TeleFlow.DependencyInjection.Implementations.Transport.Files;
+using TeleFlow.DependencyInjection.Implementations.Transport.Messaging;
 using Telegram.Bot;
 
-namespace TeleFlow.Extensions.DI.Configuration.Default;
+namespace TeleFlow.DependencyInjection.Extensions.Internal;
 
 internal static class TeleFlowDefaultServicesInternal
 {
@@ -100,32 +95,9 @@ internal static class TeleFlowDefaultServicesInternal
         return services;
     }
 
-    internal static IServiceCollection TryAddInMemoryInteractiveStateStore(this IServiceCollection services)
+    private static IServiceCollection TryAddInMemoryInteractiveStateStore(this IServiceCollection services)
     {
         services.TryAddSingleton<IStepStateStore, InMemoryStepStateStore>();
         return services;
-    }
-
-
-    internal static void ConfigureMiddlewarePipeline(this IServiceCollection services, Action<MiddlewarePipelineBuilder> options)
-    {
-        services.TryAddSingleton(sp =>
-        {
-            MiddlewarePipelineBuilder builder = new();
-            options.Invoke(builder);
-
-            return builder.Build(sp);
-        });
-    }
-
-    internal static void ConfigureCommandRouters(this IServiceCollection services, Action<CommandRouterBuilder> options)
-    {
-        var builder = new CommandRouterBuilder();
-        options.Invoke(builder);
-
-        var (sessionRouter, navigatedRouter) = builder.Build();
-
-        services.TryAddSingleton<ICommandFactory<ICommandHandler, ChatSession>>(sessionRouter);
-        services.TryAddSingleton<ICommandFactory<ICommandHandler, NavigateCommandResult>>(navigatedRouter);
     }
 }

@@ -3,7 +3,7 @@ using System.Data;
 using TeleFlow.Abstractions.Transport.Callbacks;
 using TeleFlow.Core.Transport.Callbacks;
 
-namespace TeleFlow.Extensions.DI.Implementations.Transport.Callbacks;
+namespace TeleFlow.DependencyInjection.Implementations.Transport.Callbacks;
 
 public sealed class DefaultCallbackActionParser : ICallbackActionParser
 {

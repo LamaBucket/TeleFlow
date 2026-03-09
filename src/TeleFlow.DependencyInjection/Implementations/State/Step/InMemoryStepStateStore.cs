@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using TeleFlow.Abstractions.State.Step;
 
-namespace TeleFlow.Extensions.DI.Implementations.State.Step;
+namespace TeleFlow.DependencyInjection.Implementations.State.Step;
 
 public sealed class InMemoryStepStateStore : IStepStateStore
 {

@@ -2,7 +2,7 @@ using System;
 using Telegram.Bot.Types;
 using TeleFlow.Abstractions.Transport.Files;
 
-namespace TeleFlow.Extensions.DI.Implementations.Transport.Files;
+namespace TeleFlow.DependencyInjection.Implementations.Transport.Files;
 
 public sealed class AudioFileReferenceExtractor : IFileReferenceExtractor
 {

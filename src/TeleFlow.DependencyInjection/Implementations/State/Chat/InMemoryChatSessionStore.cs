@@ -1,6 +1,6 @@
 using TeleFlow.Abstractions.State.Chat;
 
-namespace TeleFlow.Extensions.DI.Implementations.State.Chat;
+namespace TeleFlow.DependencyInjection.Implementations.State.Chat;
 
 public class InMemoryChatSessionStore : IChatSessionStore
 {
