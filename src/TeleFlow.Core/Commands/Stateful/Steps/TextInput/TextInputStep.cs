@@ -1,16 +1,18 @@
+using Microsoft.Extensions.DependencyInjection;
 using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using TeleFlow.Abstractions.State.Step;
-using TeleFlow.Core.Commands.Stateful.Steps.SingleInput.Base;
+using TeleFlow.Abstractions.Transport.Messaging;
+using TeleFlow.Core.Commands.Stateful.Steps.Base;
 using Telegram.Bot.Types.Enums;
 
-namespace TeleFlow.Core.Commands.Stateful.Steps.SingleInput.TextInput;
+namespace TeleFlow.Core.Commands.Stateful.Steps.TextInput;
 
-public class TextInputStep : SingleInputStep<string>
+public class TextInputStep : StatefulStep<TextInputStepData>
 {
     private readonly TextInputStepOptions _options;
 
-    protected override async Task<CommandStepResult> Handle(UpdateContext context, StepState<SingleInputStepData<string>> state)
+    protected override async Task<CommandStepResult> Handle(UpdateContext context, StepState<TextInputStepData> state)
     {
         var update = context.Update;
 
@@ -22,7 +24,7 @@ public class TextInputStep : SingleInputStep<string>
 
         var userInput = update.Message.Text;
 
-        await SetInputAndRerender(context.ServiceProvider, state, userInput);
+        await SetStateInputTextAndRerender(context.ServiceProvider, state, userInput);
         await FinalizeStep(context.ServiceProvider);
 
         await _options.OnUserCommit.Invoke(new(context.ServiceProvider), update.Message.Text);
@@ -30,12 +32,25 @@ public class TextInputStep : SingleInputStep<string>
         return GetSuccessStepResult();
     }
 
+    private async Task SetStateInputTextAndRerender(IServiceProvider sp, StepState<TextInputStepData> state, string value)
+    {
+        state = state with
+        {
+            StepData = state.StepData with
+            {
+                TextEntered = value
+            }
+        };
+    
+        await UpsertAndRerender(sp, state);
+    }
+
     protected virtual CommandStepResult GetSuccessStepResult()
         => CommandStepResult.Next;
 
 
-    protected override Task<SingleInputStepData<string>> CreateDefaultStepData(IServiceProvider sp)
-        => Task.FromResult(SingleInputStepData<string>.CreateDefault());
+    protected override Task<TextInputStepData> CreateDefaultStepData(IServiceProvider sp)
+        => Task.FromResult(TextInputStepData.Default);
 
 
     public TextInputStep(TextInputStepOptions options) : base(options.RenderConfig)

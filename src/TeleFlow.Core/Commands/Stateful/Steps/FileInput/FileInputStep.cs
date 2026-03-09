@@ -3,20 +3,20 @@ using TeleFlow.Abstractions.Engine.Commands.Stateful.Results;
 using TeleFlow.Abstractions.Engine.Pipeline.Contexts;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Abstractions.Transport.Files;
-using TeleFlow.Core.Commands.Stateful.Steps.SingleInput.Base;
+using TeleFlow.Core.Commands.Stateful.Steps.Base;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 
-namespace TeleFlow.Core.Commands.Stateful.Steps.SingleInput.FileInput;
+namespace TeleFlow.Core.Commands.Stateful.Steps.FileInput;
 
-public class FileInputStep : SingleInputStep<FileReference>
+public class FileInputStep : StatefulStep<FileInputStepData>
 {
     public const long TelegramMaxFileSizeBytes = 20L * 1024 * 1024;
 
     private readonly FileInputStepOptions _options;
 
 
-    protected override async Task<CommandStepResult> Handle(UpdateContext context, StepState<SingleInputStepData<FileReference>> state)
+    protected override async Task<CommandStepResult> Handle(UpdateContext context, StepState<FileInputStepData> state)
     {
         var update = context.Update;
 
@@ -52,7 +52,7 @@ public class FileInputStep : SingleInputStep<FileReference>
             }
 
 
-            await SetInputAndRerender(context.ServiceProvider, state, fileRef);
+            await SetStateInputTextAndRerender(context.ServiceProvider, state, fileRef);
             await FinalizeStep(context.ServiceProvider);
 
             await _options.OnUserCommit(new(context.ServiceProvider), fileRef);
@@ -93,13 +93,25 @@ public class FileInputStep : SingleInputStep<FileReference>
         return ex.Message.Contains("file is too big", StringComparison.OrdinalIgnoreCase);
     }
 
+    private async Task SetStateInputTextAndRerender(IServiceProvider sp, StepState<FileInputStepData> state, FileReference value)
+    {
+        state = state with
+        {
+            StepData = state.StepData with
+            {
+                FileSent = value
+            }
+        };
 
-    protected virtual CommandStepResult GetSuccessStepResult()
+        await UpsertAndRerender(sp, state);
+    }
+
+    public virtual CommandStepResult GetSuccessStepResult()
         => CommandStepResult.Next;
 
 
-    protected override Task<SingleInputStepData<FileReference>> CreateDefaultStepData(IServiceProvider sp)
-        => Task.FromResult(SingleInputStepData<FileReference>.CreateDefault());
+    protected override Task<FileInputStepData> CreateDefaultStepData(IServiceProvider sp)
+        => Task.FromResult(FileInputStepData.Default);
 
     public FileInputStep(FileInputStepOptions options) : base(options.RenderConfig)
     {
