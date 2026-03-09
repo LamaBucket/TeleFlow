@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>reg_bot</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\TeleFlow.Fluent\TeleFlow.Fluent.csproj" />
+      <ProjectReference Include="..\..\src\TeleFlow.Hosting.Polling\TeleFlow.Hosting.Polling.csproj" />
+    </ItemGroup>
+
+</Project>
