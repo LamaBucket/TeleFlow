@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleFlow.Abstractions", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleFlow.Core", "src\TeleFlow.Core\TeleFlow.Core.csproj", "{FD819725-4526-4070-94BE-D700E415DC3B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleFlow.Extensions.DI", "src\TeleFlow.Extensions.DI\TeleFlow.Extensions.DI.csproj", "{677C1493-5429-4AAE-AE08-8440DFEB8A66}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleFlow.DependencyInjection", "src\TeleFlow.DependencyInjection\TeleFlow.DependencyInjection.csproj", "{677C1493-5429-4AAE-AE08-8440DFEB8A66}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleFlow.Extensions.DI.Polling", "src\TeleFlow.Extensions.DI.Polling\TeleFlow.Extensions.DI.Polling.csproj", "{458E8ADB-6E52-4EEF-B36E-07064E434257}"
 EndProject
@@ -23,7 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{B3
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "echo-bot-polling", "examples\echo-bot-polling\echo-bot-polling.csproj", "{CBC66009-413C-4301-B6E4-AC6768A78525}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleFlow.Extensions.DI.Toolkit", "src\TeleFlow.Extensions.DI.Toolkit\TeleFlow.Extensions.DI.Toolkit.csproj", "{A78AA644-EDEA-479C-B587-97A1C25F34C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleFlow.Fluent", "src\TeleFlow.Fluent\TeleFlow.Fluent.csproj", "{A78AA644-EDEA-479C-B587-97A1C25F34C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

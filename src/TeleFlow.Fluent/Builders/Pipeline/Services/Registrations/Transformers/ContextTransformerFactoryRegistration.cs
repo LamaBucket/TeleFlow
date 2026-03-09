@@ -1,0 +1,16 @@
+using TeleFlow.Abstractions.Engine.Pipeline;
+
+namespace TeleFlow.Fluent.Builders.Pipeline.Services.Registrations.Transformers;
+
+public sealed class ContextTransformerFactoryRegistration<TContext, TNextContext> : IContextTransformerRegistration<TContext, TNextContext>
+{
+    private readonly Func<IServiceProvider, IHandler<TNextContext>, IHandler<TContext>> _factory;
+
+    public IHandler<TContext> Create(IServiceProvider sp, IHandler<TNextContext> next)
+        => _factory(sp, next);
+
+    public ContextTransformerFactoryRegistration(Func<IServiceProvider, IHandler<TNextContext>, IHandler<TContext>> factory)
+    {
+        _factory = factory;
+    }
+}
