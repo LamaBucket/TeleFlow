@@ -1,5 +1,5 @@
 using TeleFlow.Core.Commands.Stateful;
-using TeleFlow.Core.Commands.Stateful.Steps.SingleInput.TextInput;
+using TeleFlow.Core.Commands.Stateful.Steps.TextInput;
 using TeleFlow.Core.Commands.Stateful.Steps.TextInput.Render;
 using TeleFlow.Fluent.Builders.Commands.Stateful;
 using TeleFlow.Fluent.Builders.Commands.Stateful.Filters;

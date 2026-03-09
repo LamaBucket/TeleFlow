@@ -1,6 +1,6 @@
 using TeleFlow.Core.Commands.Stateful;
+using TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
 using TeleFlow.Core.Commands.Stateful.Steps.ContactInput.Render;
-using TeleFlow.Core.Commands.Stateful.Steps.SingleInput.ContactInput;
 using TeleFlow.Fluent.Builders.Commands.Stateful;
 using TeleFlow.Fluent.Builders.Commands.Stateful.Filters;
 using TeleFlow.Fluent.Configuration.ContactInput;

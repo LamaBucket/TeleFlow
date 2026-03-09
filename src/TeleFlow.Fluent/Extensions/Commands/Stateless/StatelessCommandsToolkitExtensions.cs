@@ -4,7 +4,7 @@ using TeleFlow.Fluent.Builders.Commands;
 
 namespace TeleFlow.Fluent.Extensions;
 
-public static partial class CommandRouterToolkitExtensions
+public static class CommandRouterToolkitExtensions
 {
     public static CommandFilterBuilder AddSendMessage(this CommandRouterBuilder commands, string commandName, string message)
     => commands.Add(commandName, () => new SendMessageCommand(message));

@@ -1,7 +1,7 @@
 using TeleFlow.Abstractions.Transport.Files;
 using TeleFlow.Core.Commands.Stateful;
+using TeleFlow.Core.Commands.Stateful.Steps.FileInput;
 using TeleFlow.Core.Commands.Stateful.Steps.FileInput.Render;
-using TeleFlow.Core.Commands.Stateful.Steps.SingleInput.FileInput;
 using TeleFlow.Fluent.Builders.Commands.Stateful;
 using TeleFlow.Fluent.Builders.Commands.Stateful.Filters;
 using TeleFlow.Fluent.Configuration.FileInput;

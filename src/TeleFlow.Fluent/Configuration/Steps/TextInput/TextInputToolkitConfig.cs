@@ -1,6 +1,6 @@
 using TeleFlow.Abstractions.Engine.Commands.Stateful.Steps;
 using TeleFlow.Core.Commands.Stateful;
-using TeleFlow.Core.Commands.Stateful.Steps.SingleInput.TextInput;
+using TeleFlow.Core.Commands.Stateful.Steps.TextInput;
 using TeleFlow.Core.Commands.Stateful.Steps.TextInput.Render;
 using TeleFlow.Fluent.Configuration.Base;
 using Telegram.Bot.Types.Enums;
