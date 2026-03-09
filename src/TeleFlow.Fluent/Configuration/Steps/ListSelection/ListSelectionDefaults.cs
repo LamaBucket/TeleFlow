@@ -1,10 +1,9 @@
 using System.Text;
-using TeleFlow.Core.Commands.Stateful.Steps.Base;
 using TeleFlow.Core.Commands.Stateful.Steps.ListSelection;
 using TeleFlow.Core.Commands.Stateful.Steps.ListSelection.Render;
-using TeleFlow.Fluent.Configuration.Base;
+using TeleFlow.Fluent.Configuration.Steps.Base;
 
-namespace TeleFlow.Fluent.Configuration.ListSelection;
+namespace TeleFlow.Fluent.Configuration.Steps.ListSelection;
 
 internal static class ListSelectionDefaults
 {

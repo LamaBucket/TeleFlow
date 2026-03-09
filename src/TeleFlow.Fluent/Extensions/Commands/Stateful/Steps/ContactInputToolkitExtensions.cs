@@ -3,10 +3,10 @@ using TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
 using TeleFlow.Core.Commands.Stateful.Steps.ContactInput.Render;
 using TeleFlow.Fluent.Builders.Commands.Stateful;
 using TeleFlow.Fluent.Builders.Commands.Stateful.Filters;
-using TeleFlow.Fluent.Configuration.ContactInput;
+using TeleFlow.Fluent.Configuration.Steps.ContactInput;
 using Telegram.Bot.Types;
 
-namespace TeleFlow.Fluent.Extensions.Steps;
+namespace TeleFlow.Fluent.Extensions.Commands.Stateful.Steps;
 
 public static class ContactInputToolkitExtensions
 {

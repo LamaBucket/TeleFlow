@@ -2,10 +2,10 @@ using TeleFlow.Abstractions.Engine.Commands.Stateful.Steps;
 using TeleFlow.Core.Commands.Stateful;
 using TeleFlow.Core.Commands.Stateful.Steps.ContactInput;
 using TeleFlow.Core.Commands.Stateful.Steps.ContactInput.Render;
-using TeleFlow.Fluent.Configuration.Base;
+using TeleFlow.Fluent.Configuration.Steps.Base;
 using Telegram.Bot.Types;
 
-namespace TeleFlow.Fluent.Configuration.ContactInput;
+namespace TeleFlow.Fluent.Configuration.Steps.ContactInput;
 
 public class ContactInputToolkitConfig : StatefulStepToolkitConfig
 {

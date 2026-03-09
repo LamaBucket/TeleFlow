@@ -2,7 +2,7 @@ using TeleFlow.Abstractions.Engine.Commands.Stateful.Steps;
 using TeleFlow.Abstractions.State.Step;
 using TeleFlow.Core.Commands.Stateful.Steps.Base;
 
-namespace TeleFlow.Fluent.Configuration.Base;
+namespace TeleFlow.Fluent.Configuration.Steps.Base;
 
 public abstract class CallbackStepToolkitConfig : StatefulStepToolkitConfig
 {

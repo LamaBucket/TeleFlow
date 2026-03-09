@@ -1,4 +1,4 @@
-namespace TeleFlow.Fluent.Configuration.DateSelection;
+namespace TeleFlow.Fluent.Configuration.Steps.DateSelection;
 
 public class DateSelectionToolkitConstraintsConfig
 {

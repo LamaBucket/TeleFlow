@@ -3,9 +3,9 @@ using TeleFlow.Core.Commands.Stateful.Steps.TextInput;
 using TeleFlow.Core.Commands.Stateful.Steps.TextInput.Render;
 using TeleFlow.Fluent.Builders.Commands.Stateful;
 using TeleFlow.Fluent.Builders.Commands.Stateful.Filters;
-using TeleFlow.Fluent.Configuration.TextInput;
+using TeleFlow.Fluent.Configuration.Steps.TextInput;
 
-namespace TeleFlow.Fluent.Extensions.Steps;
+namespace TeleFlow.Fluent.Extensions.Commands.Stateful.Steps;
 
 public static class TextInputToolkitExtensions
 {

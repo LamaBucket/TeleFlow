@@ -1,6 +1,6 @@
 using Telegram.Bot.Types.Enums;
 
-namespace TeleFlow.Fluent.Configuration.TextInput;
+namespace TeleFlow.Fluent.Configuration.Steps.TextInput;
 
 internal static class TextInputDefaults
 {

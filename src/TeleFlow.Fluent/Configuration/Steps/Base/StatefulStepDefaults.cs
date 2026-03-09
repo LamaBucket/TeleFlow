@@ -1,4 +1,4 @@
-namespace TeleFlow.Fluent.Configuration.Base;
+namespace TeleFlow.Fluent.Configuration.Steps.Base;
 
 internal static class StatefulStepDefaults
 {

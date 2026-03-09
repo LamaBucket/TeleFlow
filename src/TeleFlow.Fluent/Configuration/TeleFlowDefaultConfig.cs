@@ -7,7 +7,7 @@ using TeleFlow.Core.Pipeline.CommandInterpreters.Stateful;
 using TeleFlow.Fluent.Builders.Commands;
 using TeleFlow.Fluent.Builders.Pipeline;
 
-namespace TeleFlow.Fluent.Default.Internal;
+namespace TeleFlow.Fluent.Configuration;
 
 internal static class TeleFlowDefaultConfigInternal
 {

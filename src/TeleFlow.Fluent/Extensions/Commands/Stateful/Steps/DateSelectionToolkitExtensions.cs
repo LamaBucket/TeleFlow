@@ -3,9 +3,9 @@ using TeleFlow.Core.Commands.Stateful.Steps.DateSelection;
 using TeleFlow.Core.Commands.Stateful.Steps.DateSelection.Render;
 using TeleFlow.Fluent.Builders.Commands.Stateful;
 using TeleFlow.Fluent.Builders.Commands.Stateful.Filters;
-using TeleFlow.Fluent.Configuration.DateSelection;
+using TeleFlow.Fluent.Configuration.Steps.DateSelection;
 
-namespace TeleFlow.Fluent.Extensions.Steps;
+namespace TeleFlow.Fluent.Extensions.Commands.Stateful.Steps;
 
 public static class DateSelectionToolkitExtensions
 {

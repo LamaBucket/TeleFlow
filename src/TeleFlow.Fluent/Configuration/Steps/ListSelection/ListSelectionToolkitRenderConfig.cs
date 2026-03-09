@@ -1,7 +1,7 @@
 using TeleFlow.Core.Commands.Stateful.Steps.ListSelection.Render;
-using TeleFlow.Fluent.Configuration.Base;
+using TeleFlow.Fluent.Configuration.Steps.Base;
 
-namespace TeleFlow.Fluent.Configuration.ListSelection;
+namespace TeleFlow.Fluent.Configuration.Steps.ListSelection;
 
 public class ListSelectionToolkitRenderConfig<T>
 {

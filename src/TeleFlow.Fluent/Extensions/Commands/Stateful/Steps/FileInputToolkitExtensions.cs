@@ -4,9 +4,9 @@ using TeleFlow.Core.Commands.Stateful.Steps.FileInput;
 using TeleFlow.Core.Commands.Stateful.Steps.FileInput.Render;
 using TeleFlow.Fluent.Builders.Commands.Stateful;
 using TeleFlow.Fluent.Builders.Commands.Stateful.Filters;
-using TeleFlow.Fluent.Configuration.FileInput;
+using TeleFlow.Fluent.Configuration.Steps.FileInput;
 
-namespace TeleFlow.Fluent.Extensions.Steps;
+namespace TeleFlow.Fluent.Extensions.Commands.Stateful.Steps;
 
 public static class FileInputToolkitExtensions
 {

@@ -3,9 +3,9 @@ using TeleFlow.Abstractions.Transport.Files;
 using TeleFlow.Core.Commands.Stateful;
 using TeleFlow.Core.Commands.Stateful.Steps.FileInput;
 using TeleFlow.Core.Commands.Stateful.Steps.FileInput.Render;
-using TeleFlow.Fluent.Configuration.Base;
+using TeleFlow.Fluent.Configuration.Steps.Base;
 
-namespace TeleFlow.Fluent.Configuration.FileInput;
+namespace TeleFlow.Fluent.Configuration.Steps.FileInput;
 
 public class FileInputToolkitConfig : StatefulStepToolkitConfig
 {

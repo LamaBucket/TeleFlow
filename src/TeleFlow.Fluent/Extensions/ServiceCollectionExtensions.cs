@@ -6,8 +6,9 @@ using TeleFlow.Abstractions.State.Chat;
 using TeleFlow.Core.Commands.Factories;
 using TeleFlow.Fluent.Builders.Commands;
 using TeleFlow.Fluent.Builders.Pipeline;
+using TeleFlow.Fluent.Configuration;
 
-namespace TeleFlow.Fluent.Default;
+namespace TeleFlow.Fluent.Extensions;
 
 public static class ServiceCollectionExtensions
 {

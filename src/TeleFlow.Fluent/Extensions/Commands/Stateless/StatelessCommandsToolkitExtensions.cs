@@ -2,7 +2,7 @@ using TeleFlow.Abstractions.Transport.Messaging;
 using TeleFlow.Core.Commands.Stateless;
 using TeleFlow.Fluent.Builders.Commands;
 
-namespace TeleFlow.Fluent.Extensions;
+namespace TeleFlow.Fluent.Extensions.Commands.Stateless;
 
 public static class CommandRouterToolkitExtensions
 {

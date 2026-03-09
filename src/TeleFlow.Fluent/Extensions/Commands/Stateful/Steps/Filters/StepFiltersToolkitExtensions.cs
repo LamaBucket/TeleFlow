@@ -1,7 +1,7 @@
 using TeleFlow.Core.Commands.Stateful.Filters;
 using TeleFlow.Fluent.Builders.Commands.Stateful.Filters;
 
-namespace TeleFlow.Fluent.Extensions.Filters;
+namespace TeleFlow.Fluent.Extensions.Commands.Stateful.Steps.Filters;
 
 /// <summary>
 /// Fluent helpers for attaching step-level filters.

@@ -1,7 +1,7 @@
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace TeleFlow.Fluent.Configuration.ContactInput;
+namespace TeleFlow.Fluent.Configuration.Steps.ContactInput;
 
 internal static class ContactInputDefaults
 {

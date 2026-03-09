@@ -2,10 +2,10 @@ using TeleFlow.Abstractions.Engine.Commands.Stateful.Steps;
 using TeleFlow.Core.Commands.Stateful;
 using TeleFlow.Core.Commands.Stateful.Steps.TextInput;
 using TeleFlow.Core.Commands.Stateful.Steps.TextInput.Render;
-using TeleFlow.Fluent.Configuration.Base;
+using TeleFlow.Fluent.Configuration.Steps.Base;
 using Telegram.Bot.Types.Enums;
 
-namespace TeleFlow.Fluent.Configuration.TextInput;
+namespace TeleFlow.Fluent.Configuration.Steps.TextInput;
 
 public class TextInputToolkitConfig : StatefulStepToolkitConfig
 {

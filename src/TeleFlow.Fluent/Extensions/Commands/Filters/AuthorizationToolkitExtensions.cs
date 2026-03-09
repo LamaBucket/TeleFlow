@@ -1,7 +1,7 @@
 using TeleFlow.Core.Commands.Filters;
 using TeleFlow.Fluent.Builders.Commands;
 
-namespace TeleFlow.Fluent.Extensions.Filters.Authorization;
+namespace TeleFlow.Fluent.Extensions.Commands.Filters;
 
 public static class AuthorizationToolkitExtensions
 {

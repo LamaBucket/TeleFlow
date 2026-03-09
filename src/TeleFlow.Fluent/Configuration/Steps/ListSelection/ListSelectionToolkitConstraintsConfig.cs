@@ -1,4 +1,4 @@
-namespace TeleFlow.Fluent.Configuration.ListSelection;
+namespace TeleFlow.Fluent.Configuration.Steps.ListSelection;
 
 public class ListSelectionToolkitConstraintsConfig<T>
 {

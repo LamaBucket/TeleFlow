@@ -1,9 +1,9 @@
 using TeleFlow.Abstractions.Engine.Commands.Stateful.Steps;
 using TeleFlow.Core.Commands.Stateful.Steps.DateSelection;
 using TeleFlow.Core.Commands.Stateful.Steps.DateSelection.Render;
-using TeleFlow.Fluent.Configuration.Base;
+using TeleFlow.Fluent.Configuration.Steps.Base;
 
-namespace TeleFlow.Fluent.Configuration.DateSelection;
+namespace TeleFlow.Fluent.Configuration.Steps.DateSelection;
 
 public class DateSelectionToolkitConfig : CallbackStepToolkitConfig
 {

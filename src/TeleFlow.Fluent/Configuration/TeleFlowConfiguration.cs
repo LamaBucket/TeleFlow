@@ -1,8 +1,7 @@
 using TeleFlow.Fluent.Builders.Commands;
 using TeleFlow.Fluent.Builders.Pipeline;
-using TeleFlow.Fluent.Default.Internal;
 
-namespace TeleFlow.Fluent.Default;
+namespace TeleFlow.Fluent.Configuration;
 
 public class TeleFlowConfiguration
 {

@@ -1,7 +1,7 @@
 using TeleFlow.Abstractions.Transport.Files;
 using Telegram.Bot.Types.Enums;
 
-namespace TeleFlow.Fluent.Configuration.FileInput;
+namespace TeleFlow.Fluent.Configuration.Steps.FileInput;
 
 public class FileInputToolkitRenderConfig
 {

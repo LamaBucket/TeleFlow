@@ -3,9 +3,9 @@ using TeleFlow.Core.Commands.Stateful.Steps.ListSelection;
 using TeleFlow.Core.Commands.Stateful.Steps.ListSelection.Render;
 using TeleFlow.Fluent.Builders.Commands.Stateful;
 using TeleFlow.Fluent.Builders.Commands.Stateful.Filters;
-using TeleFlow.Fluent.Configuration.ListSelection;
+using TeleFlow.Fluent.Configuration.Steps.ListSelection;
 
-namespace TeleFlow.Fluent.Extensions.Steps;
+namespace TeleFlow.Fluent.Extensions.Commands.Stateful.Steps;
 
 public static class ListSelectionToolkitExtensions
 {
