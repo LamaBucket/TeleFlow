@@ -13,3 +13,20 @@
 /dataSources.local.xml
 # Editor-based HTTP Client requests
 /httpRequests/
+
+# Rider user files
+*.DotSettings.user
+
+# Rider workspace
+.idea/workspace.xml
+.idea/tasks.xml
+
+# Rider caches
+.idea/shelf/
+.idea/.idea.*
+
+# build
+bin/
+obj/
+.artifacts/
+.smoke/
