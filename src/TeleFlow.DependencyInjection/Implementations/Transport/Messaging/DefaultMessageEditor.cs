@@ -12,29 +12,25 @@ public class DefaultMessageEditor : IMessageEditService
 
     private readonly long _chatId;
 
-    public async Task<Message> Edit(int messageId, InlineMarkupMessage message)
+    public async Task Edit(int messageId, InlineMarkupMessage message)
     {
-        Message? msg = null;
-
         try
         {
-            msg = await _botClient.EditMessageTextAsync(_chatId, messageId, message.Text, parseMode: message.ParseMode);
+            await _botClient.EditMessageTextAsync(_chatId, messageId, message.Text, parseMode: message.ParseMode);
         }
         catch (Exception ex) when (IsMessageNotModified(ex))
         {
-            // ok, ничего не поменялось
+            // Ok, nothing changed
         }
 
         try
         {
-            msg = await _botClient.EditMessageReplyMarkupAsync(_chatId, messageId, replyMarkup: message.Markup);
+            await _botClient.EditMessageReplyMarkupAsync(_chatId, messageId, replyMarkup: message.Markup);
         }
         catch (Exception ex) when (IsMessageNotModified(ex))
         {
-            // ok
+            // Ok, nothing changed
         }
-
-        return msg;
     }
 
     private static bool IsMessageNotModified(Exception ex)

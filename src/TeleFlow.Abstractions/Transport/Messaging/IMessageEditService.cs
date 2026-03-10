@@ -4,5 +4,5 @@ namespace TeleFlow.Abstractions.Transport.Messaging;
 
 public interface IMessageEditService
 {
-    Task<Message> Edit(int messageId, InlineMarkupMessage message);
+    Task Edit(int messageId, InlineMarkupMessage message);
 }
