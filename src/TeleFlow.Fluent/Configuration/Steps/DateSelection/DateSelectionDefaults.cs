@@ -40,19 +40,55 @@ internal static class DateSelectionDefaults
 
     private static string DefaultUserPrompt(IServiceProvider serviceProvider, DateSelectionStepData model)
     {
-        var selectedDate = new DateOnly(model.YearSelected, model.MonthSelected, model.DaySelected);
         return model.Page switch
         {
-            DateSelectionStepPage.YearSelection => model.DateSelectionCompleted 
-                ? $"You selected: {selectedDate:yyyy}"
+            DateSelectionStepPage.YearSelection => model.DateSelectionCompleted
+                ? $"You selected: {FormatYearSelection(model)}"
                 : "Please select a year",
-            DateSelectionStepPage.MonthSelection => model.DateSelectionCompleted 
-                ? $"You selected: {selectedDate:MM/yyyy}"
+
+            DateSelectionStepPage.MonthSelection => model.DateSelectionCompleted
+                ? $"You selected: {FormatMonthSelection(model)}"
                 : "Please select a month",
-            DateSelectionStepPage.DaySelection => model.DateSelectionCompleted 
-                ? $"You selected: {selectedDate:MM/dd/yyyy}"
-                : "Please select a year",
+
+            DateSelectionStepPage.DaySelection => model.DateSelectionCompleted
+                ? $"You selected: {FormatDaySelection(model)}"
+                : "Please select a day",
+
             _ => throw new Exception($"Not expected page value: {model.Page}")
         };
+    }
+
+    private static string FormatYearSelection(DateSelectionStepData model)
+    {
+        if (model.YearSelected is not int year)
+            throw new InvalidOperationException("Year must be selected for completed year selection.");
+
+        return $"{year:0000}";
+    }
+
+    private static string FormatMonthSelection(DateSelectionStepData model)
+    {
+        if (model.YearSelected is not int year)
+            throw new InvalidOperationException("Year must be selected for completed month selection.");
+
+        if (model.MonthSelected is not int month)
+            throw new InvalidOperationException("Month must be selected for completed month selection.");
+
+        return $"{month:00}/{year:0000}";
+    }
+
+    private static string FormatDaySelection(DateSelectionStepData model)
+    {
+        if (model.YearSelected is not int year)
+            throw new InvalidOperationException("Year must be selected for completed day selection.");
+
+        if (model.MonthSelected is not int month)
+            throw new InvalidOperationException("Month must be selected for completed day selection.");
+
+        if (model.DaySelected is not int day)
+            throw new InvalidOperationException("Day must be selected for completed day selection.");
+
+        var date = new DateOnly(year, month, day);
+        return $"{date:MM/dd/yyyy}";
     }
 }

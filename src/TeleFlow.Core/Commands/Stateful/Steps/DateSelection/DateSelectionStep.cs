@@ -56,7 +56,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
             await UpsertAndRerender(sp, state with { StepData = nextVm });
 
             var year = nextVm.YearSelected;
-            await mode.OnCommit(new(sp), year);
+            await mode.OnCommit(new(sp), year.Value);
             await FinalizeStep(sp);
             return CommandStepResult.Next;
         }   
@@ -121,7 +121,11 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
             await UpsertAndRerender(sp, state with { StepData = nextVm });
 
             var year = nextVm.YearSelected;
-            await mode.OnCommit(new(sp), (year, index));
+            
+            if(!year.HasValue)
+                throw new Exception("Year must be specified");
+            
+            await mode.OnCommit(new(sp), (year.Value, index));
             await FinalizeStep(sp);
             return CommandStepResult.Next;
         }
@@ -154,7 +158,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
 
     private async Task<CommandStepResult> HandleMonthGoToPage(IServiceProvider sp, StepState<DateSelectionStepData> state, int page)
     {
-        ArgumentOutOfRangeException.ThrowIfNotEqual(page, (int)DateSelectionStepPage.YearSelection, nameof(page));
+        ArgumentOutOfRangeException.ThrowIfNotEqual(page, (int)DateSelectionStepPage.YearSelection);
   
         state = state with
         {
@@ -198,9 +202,14 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
 
         await UpsertAndRerender(sp, state);
 
-        var year = state.StepData.YearSelected;
-        var month = state.StepData.MonthSelected;
-        var day = state.StepData.DaySelected;
+        var data = state.StepData;
+        
+        if(!data.YearSelected.HasValue || !data.MonthSelected.HasValue)
+            throw new Exception($"Date selection page requires '{nameof(DateSelectionStepData)}'.");
+        
+        var year = data.YearSelected.Value;
+        var month = data.MonthSelected.Value;
+        var day = data.DaySelected.Value;
 
         var date = new DateOnly(year, month, day);
 
@@ -216,10 +225,13 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
         if (addMonthValue is not (1 or -1))
             throw new ArgumentOutOfRangeException(nameof(addMonthValue), "addMonthValue must be +1 or -1.");
 
-        var vm = state.StepData;
-
-        int newYear = vm.YearSelected;
-        int newMonth = vm.MonthSelected + addMonthValue;
+        var data = state.StepData;
+        
+        if(!data.YearSelected.HasValue || !data.MonthSelected.HasValue)
+            throw new Exception($"Date selection page requires '{nameof(DateSelectionStepData)}'.");
+        
+        int newYear = data.YearSelected.Value;
+        int newMonth = data.MonthSelected.Value + addMonthValue;
 
         if (newMonth == 13)
         {
@@ -234,7 +246,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
 
         state = state with
         {
-            StepData = vm with
+            StepData = data with
             {
                 YearSelected = newYear,
                 MonthSelected = newMonth
@@ -250,7 +262,7 @@ public class DateSelectionStep : CallbackStep<DateSelectionStepData>
 
     private async Task<CommandStepResult> HandleDayGoToPage(IServiceProvider sp, StepState<DateSelectionStepData> state, int page)
     {
-        ArgumentOutOfRangeException.ThrowIfNotEqual(page, (int)DateSelectionStepPage.MonthSelection, nameof(page));
+        ArgumentOutOfRangeException.ThrowIfNotEqual(page, (int)DateSelectionStepPage.MonthSelection);
 
         state = state with
         {

@@ -13,12 +13,25 @@ internal static class DateSelectionStepDataValidator
         return true;
     }
 
-    private static bool IsSelectedDateWithinBounds(DateSelectionStepData data, DateSelectionStepDataConstraints c)
+    private static bool IsSelectedDateWithinBounds(
+        DateSelectionStepData data,
+        DateSelectionStepDataConstraints c)
     {
+        int minYear  = data.YearSelected  ?? c.MinDate.Year;
+        int maxYear  = data.YearSelected  ?? c.MaxDate.Year;
+
+        int minMonth = data.MonthSelected ?? 1;
+        int maxMonth = data.MonthSelected ?? 12;
+
+        int minDay   = data.DaySelected   ?? 1;
+        int maxDay   = data.DaySelected   ?? 31;
+
         try
         {
-            var date = new DateOnly(data.YearSelected, data.MonthSelected, data.DaySelected);
-            return date >= c.MinDate && date <= c.MaxDate;
+            var minPossible = new DateOnly(minYear, minMonth, minDay);
+            var maxPossible = new DateOnly(maxYear, maxMonth, maxDay);
+
+            return maxPossible >= c.MinDate && minPossible <= c.MaxDate;
         }
         catch
         {

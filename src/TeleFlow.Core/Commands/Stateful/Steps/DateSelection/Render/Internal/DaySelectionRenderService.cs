@@ -30,8 +30,11 @@ internal static class DaySelectionRenderService
     private static void AppendHeaderControls(InlineKeyboardBuilder b, Func<CallbackAction, string> markupButtonActionCodec, DateSelectionStepData model, DateSelectionRenderServiceOptions config)
     {
         b.ButtonCallback(config.PrevMonthItemButtonText, markupButtonActionCodec(CallbackActions.Ui.PrevPage));
-
-        string headerText = new DateOnly(model.YearSelected, model.MonthSelected, 1).ToString(config.YearMonthFormatOnDayPage);
+        
+        if(!model.YearSelected.HasValue || !model.MonthSelected.HasValue)
+            throw new Exception($"Date selection page requires '{nameof(DateSelectionStepData)}'.");
+        
+        string headerText = new DateOnly(model.YearSelected.Value, model.MonthSelected.Value, 1).ToString(config.YearMonthFormatOnDayPage);
         b.ButtonCallback(headerText, markupButtonActionCodec(CallbackActions.Ui.GoToPage((int)DateSelectionStepPage.MonthSelection)));
 
         b.ButtonCallback(config.NextMonthItemButtonText, markupButtonActionCodec(CallbackActions.Ui.NextPage));
@@ -48,8 +51,11 @@ internal static class DaySelectionRenderService
 
     private static void AppendDaySelectionButtons(InlineKeyboardBuilder b, Func<CallbackAction, string> markupButtonActionCodec, DateSelectionStepData model, DateSelectionStepDataConstraints constraints, DateSelectionRenderServiceOptions config)
     {        
-        int year = model.YearSelected;
-        int month = model.MonthSelected;
+        if(!model.YearSelected.HasValue || !model.MonthSelected.HasValue)
+            throw new Exception($"Date selection page requires '{nameof(DateSelectionStepData)}'.");
+        
+        int year = model.YearSelected.Value;
+        int month = model.MonthSelected.Value;
         
         int daysInMonth = DateTime.DaysInMonth(year, month);
         

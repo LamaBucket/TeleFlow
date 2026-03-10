@@ -19,8 +19,11 @@ internal static class MonthSelectionRenderService
 
         var b = new InlineKeyboardBuilder();
 
+        if (!model.YearSelected.HasValue)
+            throw new Exception();
+
         b.ButtonCallback(config.PrevYearItemButtonText, markupButtonActionCodec(CallbackActions.Ui.PrevPage));
-        b.ButtonCallback(model.YearSelected.ToString(), markupButtonActionCodec(CallbackActions.Ui.GoToPage((int)DateSelectionStepPage.YearSelection)));
+        b.ButtonCallback(model.YearSelected.Value.ToString(), markupButtonActionCodec(CallbackActions.Ui.GoToPage((int)DateSelectionStepPage.YearSelection)));
         b.ButtonCallback(config.NextYearItemButtonText, markupButtonActionCodec(CallbackActions.Ui.NextPage));
         b.NewRow();
 
