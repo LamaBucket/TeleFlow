@@ -1,12 +1,13 @@
 <Project>
   <ItemGroup>
-    <!-- TeleFlow family versions (used by meta-packages and any internal PackageReference) -->
+    <!-- TeleFlow family versions -->
     <PackageVersion Include="TeleFlow.Abstractions" Version="$(TeleFlowVersion)" />
     <PackageVersion Include="TeleFlow.Core" Version="$(TeleFlowVersion)" />
-    <PackageVersion Include="TeleFlow.Extensions.DI" Version="$(TeleFlowVersion)" />
-    <PackageVersion Include="TeleFlow.Extensions.DI.Polling" Version="$(TeleFlowVersion)" />
+    <PackageVersion Include="TeleFlow.DependencyInjection" Version="$(TeleFlowVersion)" />
+    <PackageVersion Include="TeleFlow.Fluent" Version="$(TeleFlowVersion)" />
+    <PackageVersion Include="TeleFlow.Hosting.Polling" Version="$(TeleFlowVersion)" />
     <PackageVersion Include="TeleFlow" Version="$(TeleFlowVersion)" />
-    <PackageVersion Include="TeleFlow.Polling" Version="2.0.0" />
+    <PackageVersion Include="TeleFlow.Polling" Version="2.0.1" />
     <!-- External dependencies -->
     <PackageVersion Include="Telegram.Bot" Version="21.7.1" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
