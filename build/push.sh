@@ -26,7 +26,6 @@ PUSH_SYMBOLS="true"
 DELETE_ON_SUCCESS="false"
 SOURCE=""
 
-# ---- args ----
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --env)
@@ -63,15 +62,13 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# ---- load env (optional) ----
 if [[ -f "$ENV_FILE" ]]; then
-  # shellcheck disable=SC1090
   set -a
+  # shellcheck disable=SC1090
   source "$ENV_FILE"
   set +a
 fi
 
-# ---- validate ----
 : "${NUGET_API_KEY:?NUGET_API_KEY is required (set it in build/.env or pass env file with --env)}"
 
 if [[ -z "${SOURCE}" ]]; then
@@ -84,7 +81,6 @@ if [[ ! -d "$ARTIFACTS" ]]; then
   exit 1
 fi
 
-# ---- collect packages (no mapfile; compatible with macOS bash 3.2) ----
 NUPKGS="$(find "$ARTIFACTS" -maxdepth 1 -type f -name "*.nupkg" ! -name "*.snupkg" | sort || true)"
 if [[ -z "$NUPKGS" ]]; then
   echo "Error: no .nupkg files found in $ARTIFACTS"
@@ -121,13 +117,11 @@ push_one() {
   "${cmd[@]}"
 }
 
-# ---- push nupkg ----
 echo "$NUPKGS" | while IFS= read -r pkg; do
   [[ -z "$pkg" ]] && continue
   push_one "$pkg"
 done
 
-# ---- push symbols (default ON) ----
 if [[ "$PUSH_SYMBOLS" == "true" ]]; then
   if [[ -z "$SNUPKGS" ]]; then
     echo "===> No .snupkg found (nothing to push)"
@@ -139,7 +133,6 @@ if [[ "$PUSH_SYMBOLS" == "true" ]]; then
   fi
 fi
 
-# ---- optional cleanup (only if everything above succeeded) ----
 if [[ "$DELETE_ON_SUCCESS" == "true" ]]; then
   echo "===> Deleting pushed artifacts from $ARTIFACTS"
   rm -f "$ARTIFACTS"/*.nupkg || true

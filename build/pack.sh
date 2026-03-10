@@ -33,8 +33,9 @@ SMOKE_DIR="$REPO_ROOT/.smoke"
 
 ABSTRACTIONS="$REPO_ROOT/src/TeleFlow.Abstractions/TeleFlow.Abstractions.csproj"
 CORE="$REPO_ROOT/src/TeleFlow.Core/TeleFlow.Core.csproj"
-DI="$REPO_ROOT/src/TeleFlow.Extensions.DI/TeleFlow.Extensions.DI.csproj"
-POLLING="$REPO_ROOT/src/TeleFlow.Extensions.DI.Polling/TeleFlow.Extensions.DI.Polling.csproj"
+DEPENDENCY_INJECTION="$REPO_ROOT/src/TeleFlow.DependencyInjection/TeleFlow.DependencyInjection.csproj"
+FLUENT="$REPO_ROOT/src/TeleFlow.Fluent/TeleFlow.Fluent.csproj"
+HOSTING_POLLING="$REPO_ROOT/src/TeleFlow.Hosting.Polling/TeleFlow.Hosting.Polling.csproj"
 
 META="$REPO_ROOT/src/meta/TeleFlow/TeleFlow.csproj"
 META_POLLING="$REPO_ROOT/src/meta/TeleFlow.Polling/TeleFlow.Polling.csproj"
@@ -43,7 +44,14 @@ echo "===> TeleFlow pack: $VERSION"
 echo "Repo:      $REPO_ROOT"
 echo "Artifacts: $ARTIFACTS"
 
-for p in "$ABSTRACTIONS" "$CORE" "$DI" "$POLLING" "$META" "$META_POLLING"; do
+for p in \
+  "$ABSTRACTIONS" \
+  "$CORE" \
+  "$DEPENDENCY_INJECTION" \
+  "$FLUENT" \
+  "$HOSTING_POLLING" \
+  "$META" \
+  "$META_POLLING"; do
   if [[ ! -f "$p" ]]; then
     echo "Error: project not found: $p"
     exit 1
@@ -55,18 +63,17 @@ mkdir -p "$ARTIFACTS"
 
 cd "$REPO_ROOT"
 
-# 1) Pack CORE first (this will build those projects; no restore/build of whole repo yet)
-echo "===> Packing CORE packages first"
-dotnet pack "$ABSTRACTIONS" -c Release -o "$ARTIFACTS" -p:TeleFlowVersion="$VERSION"
-dotnet pack "$CORE"         -c Release -o "$ARTIFACTS" -p:TeleFlowVersion="$VERSION"
-dotnet pack "$DI"           -c Release -o "$ARTIFACTS" -p:TeleFlowVersion="$VERSION"
-dotnet pack "$POLLING"      -c Release -o "$ARTIFACTS" -p:TeleFlowVersion="$VERSION"
+echo "===> Packing core/runtime packages first"
+dotnet pack "$ABSTRACTIONS"           -c Release -o "$ARTIFACTS" -p:TeleFlowVersion="$VERSION"
+dotnet pack "$CORE"                   -c Release -o "$ARTIFACTS" -p:TeleFlowVersion="$VERSION"
+dotnet pack "$DEPENDENCY_INJECTION"   -c Release -o "$ARTIFACTS" -p:TeleFlowVersion="$VERSION"
+dotnet pack "$FLUENT"                 -c Release -o "$ARTIFACTS" -p:TeleFlowVersion="$VERSION"
+dotnet pack "$HOSTING_POLLING"        -c Release -o "$ARTIFACTS" -p:TeleFlowVersion="$VERSION"
 
-echo "===> CORE packages:"
+echo "===> Core/runtime packages:"
 ls -lah "$ARTIFACTS"/*.nupkg
 
-# 2) Now META can restore TeleFlow.* from .artifacts (via your root NuGet.Config)
-echo "===> Packing META packages"
+echo "===> Packing meta packages"
 dotnet pack "$META"         -c Release -o "$ARTIFACTS" -p:TeleFlowVersion="$VERSION"
 dotnet pack "$META_POLLING" -c Release -o "$ARTIFACTS" -p:TeleFlowVersion="$VERSION"
 
@@ -88,10 +95,8 @@ if [[ "$RUN_SMOKE" == "true" ]]; then
   dotnet new console --name TeleFlow.ConsumerSmoke
   cd TeleFlow.ConsumerSmoke
 
-  # install from local artifacts
   dotnet add package TeleFlow.Polling --version "$VERSION" --source "$ARTIFACTS"
 
-  # ensure restore uses the same local source (belt & suspenders)
   dotnet restore --source "$ARTIFACTS" --source "https://api.nuget.org/v3/index.json"
   dotnet build -c Release
 
